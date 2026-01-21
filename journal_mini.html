@@ -1,0 +1,56 @@
+
+<!doctype html>
+<meta charset="utf-8">
+<title>journal_mini</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:20px;background:#0e1016;color:#e6e9ef}
+  .ev{display:inline-flex;align-items:center;gap:8px;margin:6px 8px 6px 0;padding:8px 10px;border-radius:10px;background:#111827;border:1px solid #1f2937;cursor:pointer}
+  .box{width:20px;height:20px;display:grid;place-items:center;border-radius:6px;background:#0d1322;border:1px solid #1d2233;color:#8892a6}
+  .ev[data-s="1"] .box{background:#05281f;border-color:#0e3;color:#8ff1c9}
+  .ev[data-s="-1"] .box{background:#2a1214;border-color:#b22;color:#f7a0a0}
+  .card{background:#111827;border:1px solid #1f2937;border-radius:12px;padding:12px;margin-top:14px}
+  .muted{color:#9aa3b2}
+</style>
+
+<h1>Mini‑journal (diag)</h1>
+<p class="muted">Clique une preuve pour faire : Inconnue → ✓ → ✕</p>
+
+<div id="evs"></div>
+<div class="card">
+  <b id="count">0 fantôme</b>
+  <ul id="list"></ul>
+</div>
+
+<script>
+const EVIDENCES=[['EMF5','EMF Level 5'],['SPIRIT_BOX','Spirit Box'],['DOTS','D.O.T.S'],['FINGER','Fingerprints'],['ORBS','Ghost Orbs'],['FREEZING','Freezing Temps'],['WRITING','Ghost Writing']];
+const GHOSTS=[
+  {name:'Spirit',evidences:['EMF5','SPIRIT_BOX','WRITING']},
+  {name:'Wraith',evidences:['EMF5','SPIRIT_BOX','DOTS']},
+  {name:'Phantom',evidences:['SPIRIT_BOX','FINGER','DOTS']},
+  {name:'Goryo',evidences:['EMF5','FINGER','DOTS']},
+  {name:'Revenant',evidences:['ORBS','WRITING','FREEZING']},
+];
+const state=Object.fromEntries(EVIDENCES.map(([k])=>[k,0])); // -1/0/1
+
+const $evs=document.getElementById('evs'), $list=document.getElementById('list'), $count=document.getElementById('count');
+function cycle(s){return s===0?1:(s===1?-1:0)}
+function inc(){return Object.entries(state).filter(([,v])=>v===1).map(([k])=>k)}
+function exc(){return Object.entries(state).filter(([,v])=>v===-1).map(([k])=>k)}
+function candidate(g){const a=inc(), b=exc(); return a.every(k=>g.evidences.includes(k)) && !b.some(k=>g.evidences.includes(k))}
+
+function render(){
+  // evidences
+  $evs.innerHTML='';
+  for(const [k,label] of EVIDENCES){
+    const d=document.createElement('div'); d.className='ev'; d.dataset.k=k; d.dataset.s=String(state[k]);
+    d.innerHTML=`<span class="box">${state[k]===1?'✓':state[k]===-1?'✕':''}</span> ${label}`;
+    d.onclick=()=>{ state[k]=cycle(state[k]); render(); };
+    $evs.appendChild(d);
+  }
+  // ghosts
+  const list=GHOSTS.filter(candidate);
+  $list.innerHTML=list.map(g=>`<li>${g.name} <span class="muted">(${g.evidences.join(', ')})</span></li>`).join('');
+  $count.textContent = `${list.length} ${list.length>1?'fantômes':'fantôme'}`;
+}
+render();
+</script>
