@@ -3,171 +3,315 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#111111" />
-  <title>Phasmo Guide – Filtres par preuves</title>
-
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Phasmophobia – Journal (clone fonctionnel)</title>
+  <meta name="theme-color" content="#0e1016" />
   <style>
     :root{
-      --bg:#0f1115; --panel:#141722; --muted:#9aa3b2; --text:#e6e9ef; --accent:#5eead4; --chip:#1f2433;
-      --danger:#ef4444; --ok:#22c55e; --border:#202534;
+      --bg:#0e1016; --paper:#121420; --ink:#e6e9ef; --muted:#9aa3b2; --accent:#5eead4;
+      --line:#1d2233; --tab:#0d1120; --chip:#1b2131; --ok:#22c55e; --no:#ef4444; --border:#20283a;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background:linear-gradient(180deg,#0d1016, #0f1115 15%) fixed; color:var(--text);
+      margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial;
     }
-    header{
-      position:sticky; top:0; z-index:10; background:rgba(15,17,21,.85); backdrop-filter:saturate(1.2) blur(6px);
-      border-bottom:1px solid var(--border);
+
+    /* ====== TOP TABS (marque-pages) ====== */
+    header{position:sticky; top:0; z-index:20; background:rgba(14,16,22,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
+    .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
+    .tabs{display:flex; gap:8px; flex-wrap:wrap}
+    .tab{
+      padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
+      background:var(--tab); color:#cfd6e6; cursor:pointer; user-select:none;
     }
-    .wrap{max-width:1100px; margin:0 auto; padding:14px 16px;}
-    .title{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
-    .badge{font-size:12px; padding:4px 8px; border:1px solid var(--border); border-radius:999px; color:var(--muted)}
-    .grid{display:grid; grid-template-columns:1fr; gap:14px}
-    @media (min-width:900px){ .grid{grid-template-columns: 320px 1fr} }
-    .panel{
-      background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    .tab[aria-selected="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff; }
+
+    /* ====== NOTEBOOK CONTAINER ====== */
+    main .book{
+      display:grid; grid-template-columns: 1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
+      background:var(--paper); border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35);
     }
-    h2{font-size:16px; margin:6px 0 10px; color:#cbd5e1}
-    .evidences{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
-    @media (min-width:520px){.evidences{grid-template-columns:repeat(3,minmax(0,1fr))}}
-    label.chk{
-      display:flex; align-items:center; gap:8px; background:#111522; border:1px solid var(--border); padding:10px 12px; border-radius:10px; cursor:pointer;
-      transition: border-color .2s, background .2s, transform .02s;
-      user-select:none;
+    @media (max-width:900px){ main .book{grid-template-columns:1fr} }
+
+    h2{margin:6px 0 10px; font-size:16px; color:#cbd5e1}
+    .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
+
+    /* ====== EVIDENCE LIST (tri-état) ====== */
+    .ev-list{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    @media (min-width:560px){ .ev-list{grid-template-columns:1fr 1fr 1fr} }
+    .ev{
+      display:flex; align-items:center; gap:10px; background:#0f1426; border:1px solid var(--border);
+      padding:10px 12px; border-radius:10px; cursor:pointer; user-select:none;
     }
-    label.chk:active{ transform:scale(.99) }
-    input[type=checkbox]{width:18px; height:18px; margin:0}
+    .ev .box{
+      width:22px; height:22px; display:grid; place-items:center; font-weight:700; border-radius:6px;
+      background:#0d1322; border:1px solid var(--line); color:#8892a6;
+    }
+    .ev[data-state="1"] .box{ background:#05281f; border-color:#0e3; color:#8ff1c9 } /* présente */
+    .ev[data-state="-1"] .box{ background:#2a1214; border-color:#b22; color:#f7a0a0 } /* absente */
+    .ev .lbl{flex:1}
+    .legend{font-size:12px; color:var(--muted)}
+    .legend .k{display:inline-block; padding:2px 6px; border:1px solid var(--border); border-radius:6px; background:#0f1528; margin-right:6px}
+
     .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
     button{
-      border:1px solid var(--border); background:#101523; color:var(--text); padding:10px 12px; border-radius:10px; cursor:pointer;
+      border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer;
     }
-    button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none; }
+    button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none }
     button.ghost{ background:transparent }
-    .results-header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px}
+
+    /* ====== GHOST LIST ====== */
+    .summary{display:flex; justify-content:space-between; align-items:center; gap:10px}
     .count{font-size:13px; color:var(--muted)}
-    .cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px}
-    .card{
-      background:#101523; border:1px solid var(--border); padding:12px; border-radius:12px; min-height:110px; display:flex; flex-direction:column; gap:8px;
+    .ghosts{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
+    .g{
+      background:#0f1426; border:1px solid var(--border); border-radius:12px; padding:12px; min-height:110px;
+      display:flex; flex-direction:column; gap:8px;
     }
-    .ghost{font-weight:600; letter-spacing:.2px}
+    .g .name{font-weight:700}
     .chips{display:flex; flex-wrap:wrap; gap:6px}
-    .chip{
-      background:var(--chip); color:#d0d6e1; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border)
-    }
-    .empty{
-      border:1px dashed var(--border); background:#0f1320; color:#cbd5e1; border-radius:12px; padding:20px; text-align:center
-    }
-    footer{ color:var(--muted); font-size:12px; text-align:center; padding:18px 0 40px}
-    a{color:var(--accent); text-decoration:none}
-    .muted{color:var(--muted)}
+    .chip{font-size:12px; padding:4px 8px; border-radius:999px; background:var(--chip); border:1px solid var(--border); color:#d0d6e1}
+    .g.excluded{opacity:.35; filter:grayscale(.4)}
+    .g .tools{display:flex; gap:6px}
+    .g .tools button{font-size:12px; padding:6px 8px}
+
+    /* ====== PAGES VISIBILITY ====== */
+    .page{display:none}
+    .page[aria-hidden="false"]{display:block}
+    .placeholder{color:var(--muted); font-size:14px}
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <div class="title">
-        <h1 style="margin:0;font-size:18px">Phasmo Guide</h1>
-        <span class="badge">PWA – Filtres par preuves</span>
-      </div>
+      <nav class="tabs" role="tablist" aria-label="Journal">
+        <div class="tab" role="tab" data-page="home" aria-selected="true">Home</div>
+        <div class="tab" role="tab" data-page="items">Items</div>
+        <div class="tab" role="tab" data-page="overview">Overview</div>
+        <div class="tab" role="tab" data-page="photos">Photos</div>
+        <div class="tab" role="tab" data-page="evidence">Evidence</div>
+        <div class="tab" role="tab" data-page="ghosts">Ghosts</div>
+        <div class="tab" role="tab" data-page="pause">Pause Menu</div>
+      </nav>
     </div>
   </header>
 
-  <main class="wrap" style="margin-top:12px">
-    <div class="grid">
-      <!-- Panneau filtres -->
-      <section class="panel">
-        <h2>Choisis tes preuves</h2>
-        <div class="evidences" id="evidences">
-          <!-- Les cases à cocher sont créées par JS à partir de EVIDENCES -->
+  <main class="wrap" style="margin-top:14px">
+    <!-- ====== HOME (placeholder visuel, comme sur le carnet) ====== -->
+    <section id="page-home" class="page" aria-hidden="false">
+      <div class="book">
+        <div>
+          <h2>Bienvenue dans le Journal</h2>
+          <div class="hr"></div>
+          <p class="placeholder">
+            Utilise les onglets en haut pour naviguer : <b>Evidence</b> (cocher/barrer les preuves) et <b>Ghosts</b> (voir/rayer les entités).
+          </p>
+          <p class="legend">
+            <span class="k">Présente</span>
+            <span class="k">Absente</span>
+            <span class="k">Inconnue</span>
+          </p>
+          <div class="actions">
+            <button id="goEvidence" class="primary">Aller à Evidence</button>
+            <button id="goGhosts">Voir Ghosts</button>
+          </div>
         </div>
-        <div class="actions">
-          <button id="reset" class="ghost">Tout effacer</button>
-          <button id="share" class="primary">Partager ces filtres</button>
+        <div class="placeholder">
+          <p>Les autres onglets imitent l’apparence du Journal, mais les deux sections fonctionnelles sont <b>Evidence</b> et <b>Ghosts</b>.</p>
         </div>
-        <p class="muted" style="margin-top:8px">
-          🛈 Astuce : l’URL se met à jour (ex. <code>?p=EMF5,DOTS</code>) et tu peux la partager.
-        </p>
-      </section>
-
-      <!-- Panneau résultats -->
-      <section class="panel">
-        <div class="results-header">
-          <h2>Résultats</h2>
-          <div class="count" id="count">0 fantôme</div>
-        </div>
-        <div id="empty" class="empty">
-          Sélectionne au moins <b>une preuve</b> pour commencer.
-        </div>
-        <div id="cards" class="cards" hidden></div>
-      </section>
-    </div>
-
-    <footer>
-      <div>Ne rien afficher tant qu’aucun filtre n’est choisi ✅</div>
-      <div class="muted" style="margin-top:4px">
-        (Tu peux adapter la liste des fantômes / preuves dans le code ci‑dessous)
       </div>
-    </footer>
+    </section>
+
+    <!-- ====== ITEMS / OVERVIEW / PHOTOS / PAUSE (placeholders graphiques) ====== -->
+    <section id="page-items" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Items – placeholder visuel.</div><div></div></div></section>
+    <section id="page-overview" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Overview – placeholder (lié au contrat dans le jeu).</div><div></div></div></section>
+    <section id="page-photos" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Photos/Média – placeholder (tied to game session).</div><div></div></div></section>
+    <section id="page-pause" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Pause Menu – placeholder visuel.</div><div></div></div></section>
+
+    <!-- ====== EVIDENCE ====== -->
+    <section id="page-evidence" class="page" aria-hidden="true">
+      <div class="book">
+        <div>
+          <h2>Evidence</h2>
+          <div class="hr"></div>
+          <div id="evList" class="ev-list"></div>
+          <div class="actions">
+            <button id="clearEv" class="ghost">Réinitialiser</button>
+            <button id="shareEv" class="primary">Partager (URL)</button>
+          </div>
+          <p class="legend" style="margin-top:8px">
+            Clique pour faire défiler : Inconnue → <span style="color:var(--ok)">Présente</span> → <span style="color:var(--no)">Absente</span>
+          </p>
+        </div>
+        <div>
+          <h2>Aperçu du filtrage</h2>
+          <div class="hr"></div>
+          <p class="placeholder">Les fantômes restants sont calculés automatiquement et visibles dans l’onglet <b>Ghosts</b>.</p>
+          <div class="actions">
+            <button id="goGhosts2" class="primary">Ouvrir Ghosts</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== GHOSTS ====== -->
+    <section id="page-ghosts" class="page" aria-hidden="true">
+      <div class="book">
+        <div style="grid-column:1/-1">
+          <div class="summary">
+            <h2>Ghosts</h2>
+            <div class="count" id="ghostCount">0 fantôme</div>
+          </div>
+          <div class="hr"></div>
+        </div>
+        <div style="grid-column:1/-1">
+          <div class="ghosts" id="ghostList"></div>
+          <div class="actions" style="margin-top:10px">
+            <button id="clearX" class="ghost">Désarayer tous</button>
+            <button id="shareAll" class="primary">Partager (URL)</button>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script type="module">
-    /* ---------------------------------------------
-     * 1) DÉFINITION DES PREUVES (FR)
-     * ------------------------------------------- */
+    /* ============================================================
+     * Données – 7 preuves (journal pré-refonte), 24 fantômes courants
+     * ============================================================ */
     const EVIDENCES = [
-      { key: 'EMF5',        label: 'EMF Niveau 5' },
-      { key: 'SPIRIT_BOX',  label: 'Spirit Box' },
-      { key: 'ORBS',        label: 'Orbes' },
-      { key: 'FINGER',      label: 'Empreintes' },
-      { key: 'FREEZING',    label: 'Températures glaciales' },
-      { key: 'WRITING',     label: 'Écriture' },
-      { key: 'DOTS',        label: 'D.O.T.S' }
+      { key: 'EMF5',       label: 'EMF Level 5' },
+      { key: 'SPIRIT_BOX', label: 'Spirit Box' },
+      { key: 'ORBS',       label: 'Ghost Orbs' },
+      { key: 'FINGER',     label: 'Fingerprints' },
+      { key: 'FREEZING',   label: 'Freezing Temps' },
+      { key: 'WRITING',    label: 'Ghost Writing' },
+      { key: 'DOTS',       label: 'D.O.T.S' },
     ];
 
-    /* ---------------------------------------------
-     * 2) DONNÉES MINIMALES DES FANTÔMES
-     * (liste courante – ajuste si besoin)
-     * ------------------------------------------- */
     const GHOSTS = [
-      { name:'Spirit',       evidences:['EMF5','SPIRIT_BOX','WRITING'] },
-      { name:'Wraith',       evidences:['EMF5','SPIRIT_BOX','DOTS'] },
-      { name:'Phantom',      evidences:['SPIRIT_BOX','FINGER','DOTS'] },
-      { name:'Poltergeist',  evidences:['SPIRIT_BOX','FINGER','WRITING'] },
-      { name:'Banshee',      evidences:['FINGER','ORBS','DOTS'] },
-      { name:'Jinn',         evidences:['EMF5','FINGER','FREEZING'] },
-      { name:'Mare',         evidences:['SPIRIT_BOX','ORBS','WRITING'] },
-      { name:'Revenant',     evidences:['ORBS','WRITING','FREEZING'] },
-      { name:'Shade',        evidences:['EMF5','WRITING','FREEZING'] },
-      { name:'Demon',        evidences:['FINGER','WRITING','FREEZING'] },
-      { name:'Yurei',        evidences:['ORBS','FREEZING','DOTS'] },
-      { name:'Oni',          evidences:['EMF5','FREEZING','DOTS'] },
-      { name:'Yokai',        evidences:['SPIRIT_BOX','ORBS','DOTS'] },
-      { name:'Hantu',        evidences:['FINGER','ORBS','FREEZING'] },
-      { name:'Goryo',        evidences:['EMF5','FINGER','DOTS'] },
-      { name:'Myling',       evidences:['EMF5','FINGER','WRITING'] },
-      { name:'Onryo',        evidences:['SPIRIT_BOX','ORBS','FREEZING'] },
-      { name:'The Twins',    evidences:['EMF5','SPIRIT_BOX','FREEZING'] },
-      { name:'Raiju',        evidences:['EMF5','ORBS','DOTS'] },
-      { name:'Obake',        evidences:['EMF5','FINGER','ORBS'] },
-      { name:'The Mimic',    evidences:['SPIRIT_BOX','FINGER','FREEZING'] }, /* + faux Orbs */
-      { name:'Moroi',        evidences:['SPIRIT_BOX','WRITING','FREEZING'] },
-      { name:'Deogen',       evidences:['SPIRIT_BOX','WRITING','DOTS'] },
-      { name:'Thaye',        evidences:['ORBS','WRITING','DOTS'] }
+      { name:'Spirit',      evidences:['EMF5','SPIRIT_BOX','WRITING'] },
+      { name:'Wraith',      evidences:['EMF5','SPIRIT_BOX','DOTS'] },
+      { name:'Phantom',     evidences:['SPIRIT_BOX','FINGER','DOTS'] },
+      { name:'Poltergeist', evidences:['SPIRIT_BOX','FINGER','WRITING'] },
+      { name:'Banshee',     evidences:['FINGER','ORBS','DOTS'] },
+      { name:'Jinn',        evidences:['EMF5','FINGER','FREEZING'] },
+      { name:'Mare',        evidences:['SPIRIT_BOX','ORBS','WRITING'] },
+      { name:'Revenant',    evidences:['ORBS','WRITING','FREEZING'] },
+      { name:'Shade',       evidences:['EMF5','WRITING','FREEZING'] },
+      { name:'Demon',       evidences:['FINGER','WRITING','FREEZING'] },
+      { name:'Yurei',       evidences:['ORBS','FREEZING','DOTS'] },
+      { name:'Oni',         evidences:['EMF5','FREEZING','DOTS'] },
+      { name:'Yokai',       evidences:['SPIRIT_BOX','ORBS','DOTS'] },
+      { name:'Hantu',       evidences:['FINGER','ORBS','FREEZING'] },
+      { name:'Goryo',       evidences:['EMF5','FINGER','DOTS'] },
+      { name:'Myling',      evidences:['EMF5','FINGER','WRITING'] },
+      { name:'Onryo',       evidences:['SPIRIT_BOX','ORBS','FREEZING'] },
+      { name:'The Twins',   evidences:['EMF5','SPIRIT_BOX','FREEZING'] },
+      { name:'Raiju',       evidences:['EMF5','ORBS','DOTS'] },
+      { name:'Obake',       evidences:['EMF5','FINGER','ORBS'] },
+      { name:'The Mimic',   evidences:['SPIRIT_BOX','FINGER','FREEZING'] }, // (+ faux Orbs en jeu)
+      { name:'Moroi',       evidences:['SPIRIT_BOX','WRITING','FREEZING'] },
+      { name:'Deogen',      evidences:['SPIRIT_BOX','WRITING','DOTS'] },
+      { name:'Thaye',       evidences:['ORBS','WRITING','DOTS'] },
     ];
 
-    /* ---------------------------------------------
-     * 3) UI – GÉNÉRATION DES CASES À COCHER
-     * ------------------------------------------- */
-    const $evRoot = document.getElementById('evidences');
-    const $cards  = document.getElementById('cards');
-    const $empty  = document.getElementById('empty');
-    const $count  = document.getElementById('count');
-    const $reset  = document.getElementById('reset');
-    const $share  = document.getElementById('share');
+    /* ============================================================
+     * État – Tri-état des preuves: -1 absente | 0 inconnue | 1 présente
+     * + Set des fantômes rayés manuellement
+     * ============================================================ */
+    const state = {
+      ev: Object.fromEntries(EVIDENCES.map(e => [e.key, 0])),
+      x: new Set(), // noms des fantômes exclus manuellement
+    };
 
-    function makeId(str){ return 'ev_' + str.toLowerCase().replace(/[^a-z0-9]+/g,'_') }
+    /* =========================
+     * Helpers UI / sélecteurs
+     * ========================= */
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
+    // TABS
+    const tabs = $$('.tab');
+    const pages = $$('.page');
+    const showPage = (name) => {
+      for (const t of tabs) t.setAttribute('aria-selected', String(t.dataset.page === name));
+      for (const p of pages) p.setAttribute('aria-hidden', String(p.id !== `page-${name}`));
+    };
+    document.addEventListener('click', (e)=>{
+      const t = e.target.closest('.tab');
+      if (t){ showPage(t.dataset.page); }
+    });
+
+    // Boutons nav rapides
+    $('#goEvidence')?.addEventListener('click', ()=>showPage('evidence'));
+    $('#goGhosts')?.addEventListener('click', ()=>showPage('ghosts'));
+    $('#goGhosts2')?.addEventListener('click', ()=>showPage('ghosts'));
+
+    /* =========================
+     * Génération Evidence (tri-état)
+     * ========================= */
+    const $evList = $('#evList');
+    function renderEvidence(){
+      $evList.innerHTML = '';
+      for (const ev of EVIDENCES){
+        const st = state.ev[ev.key] ?? 0;
+        const div = document.createElement('div');
+        div.className = 'ev';
+        div.dataset.key = ev.key;
+        div.dataset.state = String(st);
+        div.innerHTML = `
+          <div class="box">${ st === 1 ? '✓' : st === -1 ? '✕' : '' }</div>
+          <div class="lbl">${ev.label}</div>
+        `;
+        $evList.appendChild(div);
+      }
+    }
+    function cycleState(s){ return s === 0 ? 1 : (s === 1 ? -1 : 0); }
+    $evList.addEventListener('click', (e)=>{
+      const item = e.target.closest('.ev');
+      if (!item) return;
+      const key = item.dataset.key;
+      state.ev[key] = cycleState(state.ev[key] ?? 0);
+      renderEvidence(); // rafraîchit symboles et couleurs
+      renderGhosts();   // recalcule candidats
+      syncURL(true);    // remplace l’entrée sans spammer l’historique
+      save();
+    });
+
+    $('#clearEv').addEventListener('click', ()=>{
+      for (const k of Object.keys(state.ev)) state.ev[k] = 0;
+      renderEvidence(); renderGhosts(); syncURL(); save();
+    });
+
+    /* =========================
+     * Filtrage des fantômes
+     * ========================= */
+    const $ghostList = $('#ghostList');
+    const $ghostCount = $('#ghostCount');
+
+    function selectedIncluded(){ return Object.entries(state.ev).filter(([,v])=>v===1).map(([k])=>k); }
+    function selectedExcluded(){ return Object.entries(state.ev).filter(([,v])=>v===-1).map(([k])=>k); }
+
+    function isCandidate(g){
+      const inc = selectedIncluded();
+      const exc = selectedExcluded();
+      if (state.x.has(g.name)) return false;             // rayé manuellement
+      if (!inc.every(k => g.evidences.includes(k))) return false; // doit contenir toutes les présentes
+      if (exc.some(k => g.evidences.includes(k))) return false;   // ne doit contenir aucune absente
+      return true;
+    }
+
+    function renderGhosts(){
+      const list = GHOSTS.map(g => ({...g, candidate: isCandidate(g), excluded: state.x.has(g.name)}));
+      const candidates = list.filter(x=>x.candidate);
+      $ghostCount.textContent = `${candidates.length} ${candidates.length>1?'fantômes':'fantôme'}`;
+
+      $ghostList.innerHTML = '';
+      for (const g of list){
+        const el = document.createElement('div');
+        el.className = 'g' + (g.excluded ? ' excluded':'');
+        el.dataset.name = g.name;
+        el.innerHTML = `
