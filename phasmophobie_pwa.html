@@ -42,9 +42,19 @@
     .ev-list{display:grid; grid-template-columns:1fr 1fr; gap:8px}
     @media (min-width:560px){ .ev-list{grid-template-columns:1fr 1fr 1fr} }
     .ev{
-      display:flex; align-items:center; gap:10px; background:#0f1426; border:1px solid var(--border);
-      padding:10px 12px; border-radius:10px; cursor:pointer; user-select:none;
+      position:relative; padding:0;
+      background:#0f1426; border:1px solid var(--border);
+      border-radius:10px; user-select:none;
     }
+    /* bouton plein (clic garanti) */
+    .ev .ev-btn{
+      all: unset;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; width:100%; height:100%;
+      cursor:pointer;
+    }
+    .ev .ev-btn:focus-visible{ outline: 2px solid var(--accent); border-radius: 10px; }
+
     .ev .box{
       width:22px; height:22px; display:grid; place-items:center; font-weight:700; border-radius:6px;
       background:#0d1322; border:1px solid var(--line); color:#8892a6;
@@ -81,6 +91,9 @@
     .page{display:none}
     .page[aria-hidden="false"]{display:block}
     .placeholder{color:var(--muted); font-size:14px}
+
+    /* sécurité anti overlay bloquant (optionnel, inoffensif) */
+    .ev, .ev * { pointer-events:auto; }
   </style>
 </head>
 <body>
@@ -96,222 +109,3 @@
         <div class="tab" role="tab" data-page="pause">Pause Menu</div>
       </nav>
     </div>
-  </header>
-
-  <main class="wrap" style="margin-top:14px">
-    <!-- ====== HOME (placeholder visuel, comme sur le carnet) ====== -->
-    <section id="page-home" class="page" aria-hidden="false">
-      <div class="book">
-        <div>
-          <h2>Bienvenue dans le Journal</h2>
-          <div class="hr"></div>
-          <p class="placeholder">
-            Utilise les onglets en haut pour naviguer : <b>Evidence</b> (cocher/barrer les preuves) et <b>Ghosts</b> (voir/rayer les entités).
-          </p>
-          <p class="legend">
-            <span class="k">Présente</span>
-            <span class="k">Absente</span>
-            <span class="k">Inconnue</span>
-          </p>
-          <div class="actions">
-            <button id="goEvidence" class="primary">Aller à Evidence</button>
-            <button id="goGhosts">Voir Ghosts</button>
-          </div>
-        </div>
-        <div class="placeholder">
-          <p>Les autres onglets imitent l’apparence du Journal, mais les deux sections fonctionnelles sont <b>Evidence</b> et <b>Ghosts</b>.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====== ITEMS / OVERVIEW / PHOTOS / PAUSE (placeholders graphiques) ====== -->
-    <section id="page-items" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Items – placeholder visuel.</div><div></div></div></section>
-    <section id="page-overview" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Overview – placeholder (lié au contrat dans le jeu).</div><div></div></div></section>
-    <section id="page-photos" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Photos/Média – placeholder (tied to game session).</div><div></div></div></section>
-    <section id="page-pause" class="page" aria-hidden="true"><div class="book"><div class="placeholder">Pause Menu – placeholder visuel.</div><div></div></div></section>
-
-    <!-- ====== EVIDENCE ====== -->
-    <section id="page-evidence" class="page" aria-hidden="true">
-      <div class="book">
-        <div>
-          <h2>Evidence</h2>
-          <div class="hr"></div>
-          <div id="evList" class="ev-list"></div>
-          <div class="actions">
-            <button id="clearEv" class="ghost">Réinitialiser</button>
-            <button id="shareEv" class="primary">Partager (URL)</button>
-          </div>
-          <p class="legend" style="margin-top:8px">
-            Clique pour faire défiler : Inconnue → <span style="color:var(--ok)">Présente</span> → <span style="color:var(--no)">Absente</span>
-          </p>
-        </div>
-        <div>
-          <h2>Aperçu du filtrage</h2>
-          <div class="hr"></div>
-          <p class="placeholder">Les fantômes restants sont calculés automatiquement et visibles dans l’onglet <b>Ghosts</b>.</p>
-          <div class="actions">
-            <button id="goGhosts2" class="primary">Ouvrir Ghosts</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ====== GHOSTS ====== -->
-    <section id="page-ghosts" class="page" aria-hidden="true">
-      <div class="book">
-        <div style="grid-column:1/-1">
-          <div class="summary">
-            <h2>Ghosts</h2>
-            <div class="count" id="ghostCount">0 fantôme</div>
-          </div>
-          <div class="hr"></div>
-        </div>
-        <div style="grid-column:1/-1">
-          <div class="ghosts" id="ghostList"></div>
-          <div class="actions" style="margin-top:10px">
-            <button id="clearX" class="ghost">Désarayer tous</button>
-            <button id="shareAll" class="primary">Partager (URL)</button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script type="module">
-    /* ============================================================
-     * Données – 7 preuves (journal pré-refonte), 24 fantômes courants
-     * ============================================================ */
-    const EVIDENCES = [
-      { key: 'EMF5',       label: 'EMF Level 5' },
-      { key: 'SPIRIT_BOX', label: 'Spirit Box' },
-      { key: 'ORBS',       label: 'Ghost Orbs' },
-      { key: 'FINGER',     label: 'Fingerprints' },
-      { key: 'FREEZING',   label: 'Freezing Temps' },
-      { key: 'WRITING',    label: 'Ghost Writing' },
-      { key: 'DOTS',       label: 'D.O.T.S' },
-    ];
-
-    const GHOSTS = [
-      { name:'Spirit',      evidences:['EMF5','SPIRIT_BOX','WRITING'] },
-      { name:'Wraith',      evidences:['EMF5','SPIRIT_BOX','DOTS'] },
-      { name:'Phantom',     evidences:['SPIRIT_BOX','FINGER','DOTS'] },
-      { name:'Poltergeist', evidences:['SPIRIT_BOX','FINGER','WRITING'] },
-      { name:'Banshee',     evidences:['FINGER','ORBS','DOTS'] },
-      { name:'Jinn',        evidences:['EMF5','FINGER','FREEZING'] },
-      { name:'Mare',        evidences:['SPIRIT_BOX','ORBS','WRITING'] },
-      { name:'Revenant',    evidences:['ORBS','WRITING','FREEZING'] },
-      { name:'Shade',       evidences:['EMF5','WRITING','FREEZING'] },
-      { name:'Demon',       evidences:['FINGER','WRITING','FREEZING'] },
-      { name:'Yurei',       evidences:['ORBS','FREEZING','DOTS'] },
-      { name:'Oni',         evidences:['EMF5','FREEZING','DOTS'] },
-      { name:'Yokai',       evidences:['SPIRIT_BOX','ORBS','DOTS'] },
-      { name:'Hantu',       evidences:['FINGER','ORBS','FREEZING'] },
-      { name:'Goryo',       evidences:['EMF5','FINGER','DOTS'] },
-      { name:'Myling',      evidences:['EMF5','FINGER','WRITING'] },
-      { name:'Onryo',       evidences:['SPIRIT_BOX','ORBS','FREEZING'] },
-      { name:'The Twins',   evidences:['EMF5','SPIRIT_BOX','FREEZING'] },
-      { name:'Raiju',       evidences:['EMF5','ORBS','DOTS'] },
-      { name:'Obake',       evidences:['EMF5','FINGER','ORBS'] },
-      { name:'The Mimic',   evidences:['SPIRIT_BOX','FINGER','FREEZING'] }, // (+ faux Orbs en jeu)
-      { name:'Moroi',       evidences:['SPIRIT_BOX','WRITING','FREEZING'] },
-      { name:'Deogen',      evidences:['SPIRIT_BOX','WRITING','DOTS'] },
-      { name:'Thaye',       evidences:['ORBS','WRITING','DOTS'] },
-    ];
-
-    /* ============================================================
-     * État – Tri-état des preuves: -1 absente | 0 inconnue | 1 présente
-     * + Set des fantômes rayés manuellement
-     * ============================================================ */
-    const state = {
-      ev: Object.fromEntries(EVIDENCES.map(e => [e.key, 0])),
-      x: new Set(), // noms des fantômes exclus manuellement
-    };
-
-    /* =========================
-     * Helpers UI / sélecteurs
-     * ========================= */
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-    // TABS
-    const tabs = $$('.tab');
-    const pages = $$('.page');
-    const showPage = (name) => {
-      for (const t of tabs) t.setAttribute('aria-selected', String(t.dataset.page === name));
-      for (const p of pages) p.setAttribute('aria-hidden', String(p.id !== `page-${name}`));
-    };
-    document.addEventListener('click', (e)=>{
-      const t = e.target.closest('.tab');
-      if (t){ showPage(t.dataset.page); }
-    });
-
-    // Boutons nav rapides
-    $('#goEvidence')?.addEventListener('click', ()=>showPage('evidence'));
-    $('#goGhosts')?.addEventListener('click', ()=>showPage('ghosts'));
-    $('#goGhosts2')?.addEventListener('click', ()=>showPage('ghosts'));
-
-    /* =========================
-     * Génération Evidence (tri-état)
-     * ========================= */
-    const $evList = $('#evList');
-    function renderEvidence(){
-      $evList.innerHTML = '';
-      for (const ev of EVIDENCES){
-        const st = state.ev[ev.key] ?? 0;
-        const div = document.createElement('div');
-        div.className = 'ev';
-        div.dataset.key = ev.key;
-        div.dataset.state = String(st);
-        div.innerHTML = `
-          <div class="box">${ st === 1 ? '✓' : st === -1 ? '✕' : '' }</div>
-          <div class="lbl">${ev.label}</div>
-        `;
-        $evList.appendChild(div);
-      }
-    }
-    function cycleState(s){ return s === 0 ? 1 : (s === 1 ? -1 : 0); }
-    $evList.addEventListener('click', (e)=>{
-      const item = e.target.closest('.ev');
-      if (!item) return;
-      const key = item.dataset.key;
-      state.ev[key] = cycleState(state.ev[key] ?? 0);
-      renderEvidence(); // rafraîchit symboles et couleurs
-      renderGhosts();   // recalcule candidats
-      syncURL(true);    // remplace l’entrée sans spammer l’historique
-      save();
-    });
-
-    $('#clearEv').addEventListener('click', ()=>{
-      for (const k of Object.keys(state.ev)) state.ev[k] = 0;
-      renderEvidence(); renderGhosts(); syncURL(); save();
-    });
-
-    /* =========================
-     * Filtrage des fantômes
-     * ========================= */
-    const $ghostList = $('#ghostList');
-    const $ghostCount = $('#ghostCount');
-
-    function selectedIncluded(){ return Object.entries(state.ev).filter(([,v])=>v===1).map(([k])=>k); }
-    function selectedExcluded(){ return Object.entries(state.ev).filter(([,v])=>v===-1).map(([k])=>k); }
-
-    function isCandidate(g){
-      const inc = selectedIncluded();
-      const exc = selectedExcluded();
-      if (state.x.has(g.name)) return false;             // rayé manuellement
-      if (!inc.every(k => g.evidences.includes(k))) return false; // doit contenir toutes les présentes
-      if (exc.some(k => g.evidences.includes(k))) return false;   // ne doit contenir aucune absente
-      return true;
-    }
-
-    function renderGhosts(){
-      const list = GHOSTS.map(g => ({...g, candidate: isCandidate(g), excluded: state.x.has(g.name)}));
-      const candidates = list.filter(x=>x.candidate);
-      $ghostCount.textContent = `${candidates.length} ${candidates.length>1?'fantômes':'fantôme'}`;
-
-      $ghostList.innerHTML = '';
-      for (const g of list){
-        const el = document.createElement('div');
-        el.className = 'g' + (g.excluded ? ' excluded':'');
-        el.dataset.name = g.name;
-        el.innerHTML = `
