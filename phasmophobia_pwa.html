@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Phasmo Guide">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Guide Phasmophobia</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        #root {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // Icônes simplifiées
+        const Ghost = () => <span>👻</span>;
+        const Package = () => <span>📦</span>;
+        const Map = () => <span>🗺️</span>;
+        const ClipboardList = () => <span>📋</span>;
+        const Search = () => <span>🔍</span>;
+
+        const ghosts = [
+          {
+            id: 1,
+            name: "Esprit",
+            evidence: ["EMF Niveau 5", "Spirit Box", "Écriture Fantôme"],
+            strength: "Aucune",
+            weakness: "Les bâtons d'encens l'empêchent d'attaquer pendant 180 secondes",
+            description: "Le fantôme le plus commun. Il est très puissant mais peut être contrôlé avec de l'encens.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 2,
+            name: "Spectre",
+            evidence: ["EMF Niveau 5", "Spirit Box", "Projecteur D.O.T.S"],
+            strength: "Ne laisse pas d'empreintes UV",
+            weakness: "Réaction toxique au sel",
+            description: "Peut se téléporter près des joueurs et flotter.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 3,
+            name: "Fantôme",
+            evidence: ["Spirit Box", "Empreintes Digitales", "Projecteur D.O.T.S"],
+            strength: "Regarder le Fantôme diminue la santé mentale",
+            weakness: "Prendre une photo le fait disparaître",
+            description: "Induit la peur chez ceux qui l'entourent.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 4,
+            name: "Poltergeist",
+            evidence: ["Spirit Box", "Empreintes Digitales", "Écriture Fantôme"],
+            strength: "Peut lancer plusieurs objets à la fois",
+            weakness: "Devient inefficace dans une pièce vide",
+            description: "Manipule plusieurs objets simultanément.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 5,
+            name: "Banshee",
+            evidence: ["Empreintes Digitales", "Orbe Fantôme", "Projecteur D.O.T.S"],
+            strength: "Cible une seule personne à la fois",
+            weakness: "L'encens l'empêche de chasser pendant 90 secondes",
+            description: "Traque une seule cible à la fois.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 6,
+            name: "Djinn",
+            evidence: ["EMF Niveau 5", "Empreintes Digitales", "Températures Glaciales"],
+            strength: "Se déplace plus vite si sa cible est loin",
+            weakness: "Couper l'électricité empêche sa capacité",
+            description: "Plus rapide quand il est loin de sa cible.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 7,
+            name: "Cauchemar",
+            evidence: ["Spirit Box", "Orbe Fantôme", "Écriture Fantôme"],
+            strength: "Chasse plus souvent dans le noir",
+            weakness: "Allumer les lumières réduit ses chances",
+            description: "Préfère l'obscurité.",
+            huntThreshold: "60% (lumière) / 40% (noir)"
+          },
+          {
+            id: 8,
+            name: "Revenant",
+            evidence: ["Orbe Fantôme", "Écriture Fantôme", "Températures Glaciales"],
+            strength: "Très rapide quand il voit un joueur",
+            weakness: "Très lent quand il ne voit personne",
+            description: "Extrêmement rapide lorsqu'il traque.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 9,
+            name: "Ombre",
+            evidence: ["EMF Niveau 5", "Écriture Fantôme", "Températures Glaciales"],
+            strength: "Plus difficile à trouver",
+            weakness: "Ne chassera pas si plusieurs personnes sont proches",
+            description: "Très timide, préfère les joueurs isolés.",
+            huntThreshold: "35%"
+          },
+          {
+            id: 10,
+            name: "Démon",
+            evidence: ["Empreintes Digitales", "Écriture Fantôme", "Températures Glaciales"],
+            strength: "Chasse très fréquemment",
+            weakness: "L'encens l'empêche de chasser pendant 60 secondes",
+            description: "Le fantôme le plus agressif.",
+            huntThreshold: "70%"
+          },
+          {
+            id: 11,
+            name: "Yurei",
+            evidence: ["Orbe Fantôme", "Températures Glaciales", "Projecteur D.O.T.S"],
+            strength: "Draine la santé mentale rapidement",
+            weakness: "L'encens l'empêche de quitter sa pièce",
+            description: "Affecte gravement la santé mentale.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 12,
+            name: "Oni",
+            evidence: ["EMF Niveau 5", "Températures Glaciales", "Projecteur D.O.T.S"],
+            strength: "Plus actif quand les joueurs sont groupés",
+            weakness: "Plus visible pendant les manifestations",
+            description: "Très actif et agressif.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 13,
+            name: "Hantu",
+            evidence: ["Empreintes Digitales", "Orbe Fantôme", "Températures Glaciales"],
+            strength: "Plus vite dans le froid",
+            weakness: "Plus lent dans le chaud",
+            description: "Peut éteindre le disjoncteur.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 14,
+            name: "Yokai",
+            evidence: ["Spirit Box", "Orbe Fantôme", "Projecteur D.O.T.S"],
+            strength: "Parler près de lui déclenche une chasse",
+            weakness: "Entend uniquement les joueurs proches",
+            description: "Sensible aux voix.",
+            huntThreshold: "80% (si on parle) / 50%"
+          },
+          {
+            id: 15,
+            name: "Goryo",
+            evidence: ["EMF Niveau 5", "Empreintes Digitales", "Projecteur D.O.T.S"],
+            strength: "Visible uniquement sur caméra avec D.O.T.S",
+            weakness: "Ne change pas de pièce favorite",
+            description: "D.O.T.S visible QUE via caméra.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 16,
+            name: "Myling",
+            evidence: ["EMF Niveau 5", "Empreintes Digitales", "Écriture Fantôme"],
+            strength: "Fait moins de bruit en chasse",
+            weakness: "Sons paranormaux plus fréquents",
+            description: "Très silencieux en chasse.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 17,
+            name: "Onryo",
+            evidence: ["Spirit Box", "Orbe Fantôme", "Températures Glaciales"],
+            strength: "Éteindre une flamme peut provoquer une chasse",
+            weakness: "Les flammes réduisent sa capacité",
+            description: "Souffle les flammes.",
+            huntThreshold: "60%"
+          },
+          {
+            id: 18,
+            name: "Les Jumeaux",
+            evidence: ["EMF Niveau 5", "Spirit Box", "Températures Glaciales"],
+            strength: "Peut interagir depuis deux endroits",
+            weakness: "Vitesses différentes",
+            description: "Deux entités différentes.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 19,
+            name: "Raiju",
+            evidence: ["EMF Niveau 5", "Orbe Fantôme", "Projecteur D.O.T.S"],
+            strength: "Plus vite près d'équipements électroniques",
+            weakness: "Brouille les équipements de plus loin",
+            description: "Plus rapide près d'équipements actifs.",
+            huntThreshold: "65% (près équip) / 50%"
+          },
+          {
+            id: 20,
+            name: "Obake",
+            evidence: ["EMF Niveau 5", "Empreintes Digitales", "Orbe Fantôme"],
+            strength: "Empreintes à 6 doigts possibles",
+            weakness: "Peut ne pas laisser d'empreintes",
+            description: "Change de modèle en chasse.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 21,
+            name: "Le Mimic",
+            evidence: ["Spirit Box", "Empreintes Digitales", "Températures Glaciales", "Orbe Fantôme"],
+            strength: "Imite d'autres fantômes",
+            weakness: "Donne TOUJOURS Orbe Fantôme (4ème preuve)",
+            description: "Copie un autre fantôme régulièrement.",
+            huntThreshold: "Variable"
+          },
+          {
+            id: 22,
+            name: "Moroi",
+            evidence: ["Spirit Box", "Écriture Fantôme", "Températures Glaciales"],
+            strength: "Plus rapide avec santé mentale basse",
+            weakness: "Santé mentale diminue 2x plus vite avec encens",
+            description: "Vous maudit via Spirit Box.",
+            huntThreshold: "50%"
+          },
+          {
+            id: 23,
+            name: "Deogen",
+            evidence: ["Spirit Box", "Écriture Fantôme", "Projecteur D.O.T.S"],
+            strength: "Connaît toujours votre localisation",
+            weakness: "Très lent quand proche",
+            description: "Respiration lourde via Spirit Box.",
+            huntThreshold: "40%"
+          },
+          {
+            id: 24,
+            name: "Thaye",
+            evidence: ["Orbe Fantôme", "Écriture Fantôme", "Projecteur D.O.T.S"],
+            strength: "Très actif et rapide au début",
+            weakness: "Devient vieux, lent et passif",
+            description: "Vieillit avec le temps.",
+            huntThreshold: "75% (jeune) → 15% (vieux)"
+          }
+        ];
+
+        const equipment = [
+          {
+            id: 1,
+            name: "Lecteur EMF",
+            category: "Détection",
+            description: "Détecte l'activité électromagnétique. Niveau 5 = preuve.",
+            usage: "Placez près de la zone d'activité."
+          },
+          {
+            id: 2,
+            name: "Spirit Box",
+            category: "Communication",
+            description: "Permet de communiquer avec le fantôme.",
+            usage: "Éteignez les lumières, posez des questions."
+          },
+          {
+            id: 3,
+            name: "Lampe UV",
+            category: "Détection",
+            description: "Révèle les empreintes digitales UV.",
+            usage: "Éclairez portes, fenêtres, interrupteurs."
+          },
+          {
+            id: 4,
+            name: "Livre d'Écriture Fantôme",
+            category: "Détection",
+            description: "Le fantôme peut y écrire.",
+            usage: "Placez au sol dans la pièce du fantôme."
+          },
+          {
+            id: 5,
+            name: "Caméra Vidéo",
+            category: "Détection",
+            description: "Détecte les Orbes Fantômes sur écran.",
+            usage: "Installez dans la pièce, vérifiez depuis le camion."
+          },
+          {
+            id: 6,
+            name: "Thermomètre",
+            category: "Détection",
+            description: "Mesure la température. < 0°C = preuve.",
+            usage: "Surveillez la température dans les pièces."
+          },
+          {
+            id: 7,
+            name: "Projecteur D.O.T.S",
+            category: "Détection",
+            description: "Projette un laser vert.",
+            usage: "Placez sur un mur/sol."
+          },
+          {
+            id: 8,
+            name: "Crucifix",
+            category: "Protection",
+            description: "Empêche le fantôme de chasser.",
+            usage: "Placez au sol dans la pièce du fantôme."
+          },
+          {
+            id: 9,
+            name: "Bâtons d'Encens",
+            category: "Protection",
+            description: "Empêche temporairement le fantôme de chasser.",
+            usage: "Allumez avec un briquet."
+          },
+          {
+            id: 10,
+            name: "Pilules de Santé Mentale",
+            category: "Consommable",
+            description: "Restaure 40% de santé mentale.",
+            usage: "Consommez quand votre santé est basse."
+          }
+        ];
+
+        const maps = [
+          {
+            id: 1,
+            name: "Maison de Tanglewood Street",
+            size: "Petite",
+            difficulty: "Amateur",
+            description: "Maison à un étage avec garage.",
+            rooms: "8 pièces",
+            cursedObjects: [
+              "Miroir Hanté : Salle de bain, chambre ou garage",
+              "Boîte à Musique : Salon, cuisine ou garage",
+              "Planche Ouija : Salon, sous-sol ou garage",
+              "Poupée Vaudou : Chambre, grenier ou garage",
+              "Cercle Invocateur : Salon, chambre ou garage",
+              "Singe aux Cymbales : Cuisine, salon ou garage"
+            ]
+          },
+          {
+            id: 2,
+            name: "Maison d'Edgefield Street",
+            size: "Petite",
+            difficulty: "Amateur",
+            description: "Maison à deux étages.",
+            rooms: "10 pièces",
+            cursedObjects: [
+              "Miroir Hanté : Salle de bain (étage), chambre ou garage",
+              "Boîte à Musique : Salon, cuisine ou bureau",
+              "Planche Ouija : Salon, sous-sol ou garage"
+            ]
+          }
+        ];
+
+        const evidenceTypes = [
+          { id: 1, name: "EMF Niveau 5", tool: "Lecteur EMF" },
+          { id: 2, name: "Spirit Box", tool: "Spirit Box" },
+          { id: 3, name: "Empreintes Digitales", tool: "Lampe UV" },
+          { id: 4, name: "Orbe Fantôme", tool: "Caméra Vidéo" },
+          { id: 5, name: "Écriture Fantôme", tool: "Livre d'Écriture Fantôme" },
+          { id: 6, name: "Températures Glaciales", tool: "Thermomètre" },
+          { id: 7, name: "Projecteur D.O.T.S", tool: "Projecteur D.O.T.S" }
+        ];
+
+        function PhasmoGuide() {
+          const [activeTab, setActiveTab] = useState('ghosts');
+          const [searchTerm, setSearchTerm] = useState('');
+          const [selectedItem, setSelectedItem] = useState(null);
+          const [selectedEvidence, setSelectedEvidence] = useState([]);
+
+          const filteredGhosts = useMemo(() => {
+            return ghosts.filter(ghost =>
+              ghost.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              ghost.evidence.some(e => e.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+          }, [searchTerm]);
+
+          const filteredEquipment = useMemo(() => {
+            return equipment.filter(item =>
+              item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }, [searchTerm]);
+
+          const filteredMaps = useMemo(() => {
+            return maps.filter(map =>
+              map.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+          }, [searchTerm]);
+
+          const possibleGhosts = useMemo(() => {
+            if (selectedEvidence.length === 0) return ghosts;
+            return ghosts.filter(ghost =>
+              selectedEvidence.every(ev => ghost.evidence.includes(ev))
+            );
+          }, [selectedEvidence]);
+
+          const toggleEvidence = (evidence) => {
+            setSelectedEvidence(prev =>
+              prev.includes(evidence)
+                ? prev.filter(e => e !== evidence)
+                : [...prev, evidence]
+            );
+          };
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+              <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500">
+                <div className="max-w-4xl mx-auto px-4 py-4">
+                  <h1 className="text-2xl md:text-3xl font-bold text-purple-300 flex items-center gap-2">
+                    <Ghost />
+                    Guide Phasmophobia
+                  </h1>
+                </div>
+              </div>
+
+              <div className="bg-black bg-opacity-30 backdrop-blur-sm border-b border-purple-500">
+                <div className="max-w-4xl mx-auto px-2">
+                  <div className="flex gap-1 overflow-x-auto">
+                    <button
+                      onClick={() => { setActiveTab('ghosts'); setSearchTerm(''); setSelectedItem(null); }}
+                      className={`px-3 py-3 flex items-center gap-2 whitespace-nowrap transition-all text-sm ${
+                        activeTab === 'ghosts'
+                          ? 'bg-purple-600 text-white border-b-2 border-purple-300'
+                          : 'bg-transparent text-purple-300'
+                      }`}
+                    >
+                      <Ghost /> Fantômes
+                    </button>
+                    <button
+                      onClick={() => { setActiveTab('equipment'); setSearchTerm(''); setSelectedItem(null); }}
+                      className={`px-3 py-3 flex items-center gap-2 whitespace-nowrap transition-all text-sm ${
+                        activeTab === 'equipment'
+                          ? 'bg-purple-600 text-white border-b-2 border-purple-300'
+                          : 'bg-transparent text-purple-300'
+                      }`}
+                    >
+                      <Package /> Équipement
+                    </button>
+                    <button
+                      onClick={() => { setActiveTab('maps'); setSearchTerm(''); setSelectedItem(null); }}
+                      className={`px-3 py-3 flex items-center gap-2 whitespace-nowrap transition-all text-sm ${
+                        activeTab === 'maps'
+                          ? 'bg-purple-600 text-white border-b-2 border-purple-300'
+                          : 'bg-transparent text-purple-300'
+                      }`}
+                    >
+                      <Map /> Cartes
+                    </button>
+                    <button
+                      onClick={() => { setActiveTab('evidence'); setSearchTerm(''); setSelectedItem(null); }}
+                      className={`px-3 py-3 flex items-center gap-2 whitespace-nowrap transition-all text-sm ${
+                        activeTab === 'evidence'
+                          ? 'bg-purple-600 text-white border-b-2 border-purple-300'
+                          : 'bg-transparent text-purple-300'
+                      }`}
+                    >
+                      <ClipboardList /> Identifier
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {activeTab !== 'evidence' && (
+                <div className="max-w-4xl mx-auto px-4 py-4">
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-300">
+                      <Search />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Rechercher..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-black bg-opacity-40 border border-purple-500 rounded-lg text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="max-w-4xl mx-auto px-4 pb-8">
+                {activeTab === 'ghosts' && (
+                  <div className="space-y-3">
+                    {filteredGhosts.map(ghost => (
+                      <div key={ghost.id}>
+                        <button
+                          onClick={() => setSelectedItem(selectedItem?.id === ghost.id ? null : ghost)}
+                          className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="text-xl font-bold text-purple-200">{ghost.name}</h3>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                {ghost.evidence.map((ev, idx) => (
+                                  <span key={idx} className="px-2 py-1 bg-purple-600 bg-opacity-50 rounded text-sm text-purple-100">
+                                    {ev}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            <Ghost />
+                          </div>
+                        </button>
+                        
+                        {selectedItem?.id === ghost.id && (
+                          <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
+                            <p className="text-purple-100">{ghost.description}</p>
+                            <div>
+                              <p className="text-sm font-semibold text-purple-300">Seuil de chasse :</p>
+                              <p className="text-purple-100">{ghost.huntThreshold}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-green-400">Force :</p>
+                              <p className="text-purple-100">{ghost.strength}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-red-400">Faiblesse :</p>
+                              <p className="text-purple-100">{ghost.weakness}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'equipment' && (
+                  <div className="space-y-3">
+                    {filteredEquipment.map(item => (
+                      <div key={item.id}>
+                        <button
+                          onClick={() => setSelectedItem(selectedItem?.id === item.id ? null : item)}
+                          className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-bold text-purple-200">{item.name}</h3>
+                              <span className="inline-block mt-1 px-2 py-1 bg-blue-600 bg-opacity-50 rounded text-xs text-blue-100">
+                                {item.category}
+                              </span>
+                            </div>
+                            <Package />
+                          </div>
+                        </button>
+                        
+                        {selectedItem?.id === item.id && (
+                          <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
+                            <div>
+                              <p className="text-sm font-semibold text-purple-300">Description :</p>
+                              <p className="text-purple-100">{item.description}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-purple-300">Utilisation :</p>
+                              <p className="text-purple-100">{item.usage}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'maps' && (
+                  <div className="space-y-3">
+                    {filteredMaps.map(map => (
+                      <div key={map.id}>
+                        <button
+                          onClick={() => setSelectedItem(selectedItem?.id === map.id ? null : map)}
+                          className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="text-xl font-bold text-purple-200">{map.name}</h3>
+                              <div className="mt-2 flex gap-2">
+                                <span className="px-2 py-1 bg-orange-600 bg-opacity-50 rounded text-xs text-orange-100">
+                                  {map.size}
+                                </span>
+                                <span className="px-2 py-1 bg-red-600 bg-opacity-50 rounded text-xs text-red-100">
+                                  {map.difficulty}
+                                </span>
+                              </div>
+                            </div>
+                            <Map />
+                          </div>
+                        </button>
+                        
+                        {selectedItem?.id === map.id && (
+                          <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
+                            <p className="text-purple-100">{map.description}</p>
+                            <div>
+                              <p className="text-sm font-semibold text-purple-300">Nombre de pièces :</p>
+                              <p className="text-purple-100">{map.rooms}</p>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-yellow-400">Objets Maudits :</p>
+                              <ul className="mt-2 space-y-1">
+                                {map.cursedObjects.map((obj, idx) => (
+                                  <li key={idx} className="text-purple-100 text-sm">• {obj}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {activeTab === 'evidence' && (
+                  <div className="space-y-6">
+                    <div className="bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4">
+                      <h2 className="text-xl font-bold text-purple-200 mb-4">Sélectionnez les preuves</h2>
+                      <div className="space-y-2">
+                        {evidenceTypes.map(evidence => (
+                          <button
+                            key={evidence.id}
+                            onClick={() => toggleEvidence(evidence.name)}
+                            className={`w-full text-left p-3 rounded-lg transition-all border ${
+                              selectedEvidence.includes(evidence.name)
+                                ? 'bg-purple-600 bg-opacity-70 border-purple-300'
+                                : 'bg-black bg-opacity-40 border-purple-500'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="font-semibold text-purple-100">{evidence.name}</p>
+                                <p className="text-sm text-purple-300">{evidence.tool}</p>
+                              </div>
+                              {selectedEvidence.includes(evidence.name) && (
+                                <div className="w-6 h-6 bg-purple-400 
