@@ -1,813 +1,173 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Ghost, Package, Map, ClipboardList } from 'lucide-react';
 
-const ghosts = [
-  {
-    id: 1,
-    name: "Esprit",
-    evidence: ["EMF Niveau 5", "Spirit Box", "Écriture Fantôme"],
-    strength: "Aucune",
-    weakness: "Les bâtons d'encens l'empêchent d'attaquer pendant 180 secondes",
-    description: "Le fantôme le plus commun. Il est très puissant mais peut être contrôlé avec de l'encens.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 2,
-    name: "Spectre",
-    evidence: ["EMF Niveau 5", "Spirit Box", "Projecteur D.O.T.S"],
-    strength: "Ne laisse pas d'empreintes UV",
-    weakness: "Réaction toxique au sel",
-    description: "Peut se téléporter près des joueurs et flotter.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 3,
-    name: "Fantôme",
-    evidence: ["Spirit Box", "Empreintes Digitales", "Projecteur D.O.T.S"],
-    strength: "Regarder le Fantôme diminue la santé mentale",
-    weakness: "Prendre une photo le fait disparaître",
-    description: "Induit la peur chez ceux qui l'entourent.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 4,
-    name: "Poltergeist",
-    evidence: ["Spirit Box", "Empreintes Digitales", "Écriture Fantôme"],
-    strength: "Peut lancer plusieurs objets à la fois",
-    weakness: "Devient inefficace dans une pièce vide",
-    description: "Manipule plusieurs objets simultanément.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 5,
-    name: "Banshee",
-    evidence: ["Empreintes Digitales", "Orbe Fantôme", "Projecteur D.O.T.S"],
-    strength: "Cible une seule personne à la fois",
-    weakness: "L'encens l'empêche de chasser pendant 90 secondes",
-    description: "Traque une seule cible à la fois.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 6,
-    name: "Djinn",
-    evidence: ["EMF Niveau 5", "Empreintes Digitales", "Températures Glaciales"],
-    strength: "Se déplace plus vite si sa cible est loin",
-    weakness: "Couper l'électricité empêche sa capacité",
-    description: "Plus rapide quand il est loin de sa cible.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 7,
-    name: "Cauchemar",
-    evidence: ["Spirit Box", "Orbe Fantôme", "Écriture Fantôme"],
-    strength: "Chasse plus souvent dans le noir",
-    weakness: "Allumer les lumières réduit ses chances",
-    description: "Préfère l'obscurité.",
-    huntThreshold: "60% (lumière) / 40% (noir)"
-  },
-  {
-    id: 8,
-    name: "Revenant",
-    evidence: ["Orbe Fantôme", "Écriture Fantôme", "Températures Glaciales"],
-    strength: "Très rapide quand il voit un joueur",
-    weakness: "Très lent quand il ne voit personne",
-    description: "Extrêmement rapide lorsqu'il traque.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 9,
-    name: "Ombre",
-    evidence: ["EMF Niveau 5", "Écriture Fantôme", "Températures Glaciales"],
-    strength: "Plus difficile à trouver",
-    weakness: "Ne chassera pas si plusieurs personnes sont proches",
-    description: "Très timide, préfère les joueurs isolés.",
-    huntThreshold: "35%"
-  },
-  {
-    id: 10,
-    name: "Démon",
-    evidence: ["Empreintes Digitales", "Écriture Fantôme", "Températures Glaciales"],
-    strength: "Chasse très fréquemment",
-    weakness: "L'encens l'empêche de chasser pendant 60 secondes",
-    description: "Le fantôme le plus agressif.",
-    huntThreshold: "70%"
-  },
-  {
-    id: 11,
-    name: "Yurei",
-    evidence: ["Orbe Fantôme", "Températures Glaciales", "Projecteur D.O.T.S"],
-    strength: "Draine la santé mentale rapidement",
-    weakness: "L'encens l'empêche de quitter sa pièce",
-    description: "Affecte gravement la santé mentale.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 12,
-    name: "Oni",
-    evidence: ["EMF Niveau 5", "Températures Glaciales", "Projecteur D.O.T.S"],
-    strength: "Plus actif quand les joueurs sont groupés",
-    weakness: "Plus visible pendant les manifestations",
-    description: "Très actif et agressif.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 13,
-    name: "Hantu",
-    evidence: ["Empreintes Digitales", "Orbe Fantôme", "Températures Glaciales"],
-    strength: "Plus vite dans le froid",
-    weakness: "Plus lent dans le chaud",
-    description: "Peut éteindre le disjoncteur.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 14,
-    name: "Yokai",
-    evidence: ["Spirit Box", "Orbe Fantôme", "Projecteur D.O.T.S"],
-    strength: "Parler près de lui déclenche une chasse",
-    weakness: "Entend uniquement les joueurs proches",
-    description: "Sensible aux voix.",
-    huntThreshold: "80% (si on parle) / 50%"
-  },
-  {
-    id: 15,
-    name: "Goryo",
-    evidence: ["EMF Niveau 5", "Empreintes Digitales", "Projecteur D.O.T.S"],
-    strength: "Visible uniquement sur caméra avec D.O.T.S",
-    weakness: "Ne change pas de pièce favorite",
-    description: "D.O.T.S visible QUE via caméra.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 16,
-    name: "Myling",
-    evidence: ["EMF Niveau 5", "Empreintes Digitales", "Écriture Fantôme"],
-    strength: "Fait moins de bruit en chasse",
-    weakness: "Sons paranormaux plus fréquents",
-    description: "Très silencieux en chasse.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 17,
-    name: "Onryo",
-    evidence: ["Spirit Box", "Orbe Fantôme", "Températures Glaciales"],
-    strength: "Éteindre une flamme peut provoquer une chasse",
-    weakness: "Les flammes réduisent sa capacité",
-    description: "Souffle les flammes.",
-    huntThreshold: "60%"
-  },
-  {
-    id: 18,
-    name: "Les Jumeaux",
-    evidence: ["EMF Niveau 5", "Spirit Box", "Températures Glaciales"],
-    strength: "Peut interagir depuis deux endroits",
-    weakness: "Vitesses différentes",
-    description: "Deux entités différentes.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 19,
-    name: "Raiju",
-    evidence: ["EMF Niveau 5", "Orbe Fantôme", "Projecteur D.O.T.S"],
-    strength: "Plus vite près d'équipements électroniques",
-    weakness: "Brouille les équipements de plus loin",
-    description: "Plus rapide près d'équipements actifs.",
-    huntThreshold: "65% (près équip) / 50%"
-  },
-  {
-    id: 20,
-    name: "Obake",
-    evidence: ["EMF Niveau 5", "Empreintes Digitales", "Orbe Fantôme"],
-    strength: "Empreintes à 6 doigts possibles",
-    weakness: "Peut ne pas laisser d'empreintes",
-    description: "Change de modèle en chasse.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 21,
-    name: "Le Mimic",
-    evidence: ["Spirit Box", "Empreintes Digitales", "Températures Glaciales", "Orbe Fantôme"],
-    strength: "Imite d'autres fantômes",
-    weakness: "Donne TOUJOURS Orbe Fantôme (4ème preuve)",
-    description: "Copie un autre fantôme régulièrement.",
-    huntThreshold: "Variable"
-  },
-  {
-    id: 22,
-    name: "Moroi",
-    evidence: ["Spirit Box", "Écriture Fantôme", "Températures Glaciales"],
-    strength: "Plus rapide avec santé mentale basse",
-    weakness: "Santé mentale diminue 2x plus vite avec encens",
-    description: "Vous maudit via Spirit Box.",
-    huntThreshold: "50%"
-  },
-  {
-    id: 23,
-    name: "Deogen",
-    evidence: ["Spirit Box", "Écriture Fantôme", "Projecteur D.O.T.S"],
-    strength: "Connaît toujours votre localisation",
-    weakness: "Très lent quand proche",
-    description: "Respiration lourde via Spirit Box.",
-    huntThreshold: "40%"
-  },
-  {
-    id: 24,
-    name: "Thaye",
-    evidence: ["Orbe Fantôme", "Écriture Fantôme", "Projecteur D.O.T.S"],
-    strength: "Très actif et rapide au début",
-    weakness: "Devient vieux, lent et passif",
-    description: "Vieillit avec le temps.",
-    huntThreshold: "75% (jeune) → 15% (vieux)"
-  }
-];
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>Phasmo Guide – Filtres par preuves</title>
 
-const equipment = [
-  {
-    id: 1,
-    name: "Lecteur EMF",
-    category: "Détection",
-    description: "Détecte l'activité électromagnétique. Niveau 5 = preuve.",
-    usage: "Placez près de la zone d'activité.",
-    unlockLevel: 1
-  },
-  {
-    id: 2,
-    name: "Spirit Box",
-    category: "Communication",
-    description: "Permet de communiquer avec le fantôme.",
-    usage: "Éteignez les lumières, posez des questions.",
-    unlockLevel: 1
-  },
-  {
-    id: 3,
-    name: "Lampe UV",
-    category: "Détection",
-    description: "Révèle les empreintes digitales UV.",
-    usage: "Éclairez portes, fenêtres, interrupteurs.",
-    unlockLevel: 1
-  },
-  {
-    id: 4,
-    name: "Livre d'Écriture Fantôme",
-    category: "Détection",
-    description: "Le fantôme peut y écrire.",
-    usage: "Placez au sol dans la pièce du fantôme.",
-    unlockLevel: 1
-  },
-  {
-    id: 5,
-    name: "Caméra Vidéo",
-    category: "Détection",
-    description: "Détecte les Orbes Fantômes sur écran.",
-    usage: "Installez dans la pièce, vérifiez depuis le camion.",
-    unlockLevel: 1
-  },
-  {
-    id: 6,
-    name: "Thermomètre",
-    category: "Détection",
-    description: "Mesure la température. < 0°C = preuve.",
-    usage: "Surveillez la température dans les pièces.",
-    unlockLevel: 1
-  },
-  {
-    id: 7,
-    name: "Projecteur D.O.T.S",
-    category: "Détection",
-    description: "Projette un laser vert. Certains fantômes y apparaissent.",
-    usage: "Placez sur un mur/sol.",
-    unlockLevel: 2
-  },
-  {
-    id: 8,
-    name: "Crucifix",
-    category: "Protection",
-    description: "Empêche le fantôme de chasser dans un rayon de 3m.",
-    usage: "Placez au sol dans la pièce du fantôme.",
-    unlockLevel: 1
-  },
-  {
-    id: 9,
-    name: "Bâtons d'Encens",
-    category: "Protection",
-    description: "Empêche temporairement le fantôme de chasser.",
-    usage: "Allumez avec un briquet.",
-    unlockLevel: 1
-  },
-  {
-    id: 10,
-    name: "Pilules de Santé Mentale",
-    category: "Consommable",
-    description: "Restaure 40% de santé mentale.",
-    usage: "Consommez quand votre santé est basse.",
-    unlockLevel: 1
-  }
-];
-
-const maps = [
-  {
-    id: 1,
-    name: "Maison de Tanglewood Street",
-    size: "Petite",
-    difficulty: "Amateur",
-    description: "Maison à un étage avec garage. Idéale pour débuter.",
-    rooms: "8 pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salle de bain, chambre principale ou garage",
-      "Boîte à Musique : Salon, cuisine ou garage",
-      "Planche Ouija : Salon, sous-sol ou garage",
-      "Poupée Vaudou : Chambre, grenier ou garage",
-      "Cercle Invocateur : Salon, chambre ou garage",
-      "Singe aux Cymbales : Cuisine, salon ou garage",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 2,
-    name: "Maison d'Edgefield Street",
-    size: "Petite",
-    difficulty: "Amateur",
-    description: "Maison à deux étages.",
-    rooms: "10 pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salle de bain (étage), chambre ou garage",
-      "Boîte à Musique : Salon, cuisine ou bureau",
-      "Planche Ouija : Salon, sous-sol ou garage",
-      "Poupée Vaudou : Chambre (étage), grenier ou bureau",
-      "Cercle Invocateur : Salon, sous-sol ou garage",
-      "Singe aux Cymbales : Cuisine, salon ou garage",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 3,
-    name: "Maison de Ridgeview Road",
-    size: "Moyenne",
-    difficulty: "Intermédiaire",
-    description: "Grande maison avec sous-sol et grenier.",
-    rooms: "15 pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salle de bain, chambre principale ou garage",
-      "Boîte à Musique : Salon, salle à manger ou bureau",
-      "Planche Ouija : Sous-sol, grenier ou salon",
-      "Poupée Vaudou : Chambre d'enfant, grenier ou sous-sol",
-      "Cercle Invocateur : Sous-sol, garage ou grenier",
-      "Singe aux Cymbales : Cuisine, salon ou sous-sol",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 4,
-    name: "Ferme de Grafton",
-    size: "Moyenne",
-    difficulty: "Intermédiaire",
-    description: "Ferme avec dépendances.",
-    rooms: "12 pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salle de bain, chambre ou grange",
-      "Boîte à Musique : Salon, cuisine ou grange",
-      "Planche Ouija : Grange, sous-sol ou salon",
-      "Poupée Vaudou : Chambre, grenier ou grange",
-      "Cercle Invocateur : Grange, sous-sol ou extérieur",
-      "Singe aux Cymbales : Cuisine, grange ou garage",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 5,
-    name: "Ferme de Bleasdale",
-    size: "Moyenne",
-    difficulty: "Intermédiaire",
-    description: "Grande ferme avec grenier.",
-    rooms: "14 pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salle de bain (étage), chambre ou grenier",
-      "Boîte à Musique : Salon, salle à manger ou grenier",
-      "Planche Ouija : Grenier, sous-sol ou salon",
-      "Poupée Vaudou : Chambre, grenier ou sous-sol",
-      "Cercle Invocateur : Grenier, sous-sol ou extérieur",
-      "Singe aux Cymbales : Cuisine, grenier ou salon",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 6,
-    name: "Lycée de Brownstone",
-    size: "Grande",
-    difficulty: "Difficile",
-    description: "Lycée avec deux étages.",
-    rooms: "30+ pièces",
-    cursedObjects: [
-      "Miroir Hanté : Toilettes, vestiaires ou couloirs",
-      "Boîte à Musique : Salle de musique, cafétéria ou bibliothèque",
-      "Planche Ouija : Salles de classe, bibliothèque ou couloirs",
-      "Poupée Vaudou : Vestiaires, bureaux ou salles de classe",
-      "Cercle Invocateur : Gymnase, couloirs ou salles de classe",
-      "Singe aux Cymbales : Cafétéria, salles de classe ou couloirs",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 7,
-    name: "Prison",
-    size: "Grande",
-    difficulty: "Difficile",
-    description: "Prison avec blocs de cellules.",
-    rooms: "40+ pièces",
-    cursedObjects: [
-      "Miroir Hanté : Douches, toilettes ou bureaux",
-      "Boîte à Musique : Cafétéria, bureaux ou couloirs",
-      "Planche Ouija : Cellules, bureaux ou couloirs",
-      "Poupée Vaudou : Cellules, bureaux ou zones communes",
-      "Cercle Invocateur : Cour, couloirs ou cellules",
-      "Singe aux Cymbales : Cafétéria, bureaux ou couloirs",
-      "Tarot : N'importe quelle pièce"
-    ]
-  },
-  {
-    id: 8,
-    name: "Asile de Sunny Meadows",
-    size: "Grande",
-    difficulty: "Difficile",
-    description: "Asile abandonné, la plus grande carte.",
-    rooms: "50+ pièces",
-    cursedObjects: [
-      "Miroir Hanté : Salles de bain, chambres ou couloirs",
-      "Boîte à Musique : Salles communes, cafétéria ou bureaux",
-      "Planche Ouija : Chambres, bureaux ou couloirs",
-      "Poupée Vaudou : Chambres, bureaux ou salles de traitement",
-      "Cercle Invocateur : Chapelle, sous-sol ou couloirs",
-      "Singe aux Cymbales : Cafétéria, salles communes ou couloirs",
-      "Tarot : N'importe quelle pièce"
-    ]
-  }
-];
-
-const evidenceTypes = [
-  { id: 1, name: "EMF Niveau 5", tool: "Lecteur EMF" },
-  { id: 2, name: "Spirit Box", tool: "Spirit Box" },
-  { id: 3, name: "Empreintes Digitales", tool: "Lampe UV" },
-  { id: 4, name: "Orbe Fantôme", tool: "Caméra Vidéo" },
-  { id: 5, name: "Écriture Fantôme", tool: "Livre d'Écriture Fantôme" },
-  { id: 6, name: "Températures Glaciales", tool: "Thermomètre" },
-  { id: 7, name: "Projecteur D.O.T.S", tool: "Projecteur D.O.T.S" }
-];
-
-export default function PhasmoGuide() {
-  const [activeTab, setActiveTab] = useState('ghosts');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedEvidence, setSelectedEvidence] = useState([]);
-
-  const filteredGhosts = useMemo(() => {
-    return ghosts.filter(ghost =>
-      ghost.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ghost.evidence.some(e => e.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
-  }, [searchTerm]);
-
-  const filteredEquipment = useMemo(() => {
-    return equipment.filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
-
-  const filteredMaps = useMemo(() => {
-    return maps.filter(map =>
-      map.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
-
-  const possibleGhosts = useMemo(() => {
-    if (selectedEvidence.length === 0) return ghosts;
-    return ghosts.filter(ghost =>
-      selectedEvidence.every(ev => ghost.evidence.includes(ev))
-    );
-  }, [selectedEvidence]);
-
-  const toggleEvidence = (evidence) => {
-    setSelectedEvidence(prev =>
-      prev.includes(evidence)
-        ? prev.filter(e => e !== evidence)
-        : [...prev, evidence]
-    );
-  };
-
-  const resetEvidence = () => {
-    setSelectedEvidence([]);
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setSearchTerm('');
-    setSelectedItem(null);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      <div className="bg-black bg-opacity-50 backdrop-blur-sm border-b border-purple-500">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <h1 className="text-3xl font-bold text-purple-300 flex items-center gap-2">
-            <Ghost className="w-8 h-8" />
-            Guide Phasmophobia
-          </h1>
-        </div>
-      </div>
-
-      <div className="bg-black bg-opacity-30 backdrop-blur-sm border-b border-purple-500">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex gap-1 overflow-x-auto">
-            <TabButton
-              active={activeTab === 'ghosts'}
-              onClick={() => handleTabChange('ghosts')}
-              icon={<Ghost className="w-4 h-4" />}
-              label="Fantômes"
-            />
-            <TabButton
-              active={activeTab === 'equipment'}
-              onClick={() => handleTabChange('equipment')}
-              icon={<Package className="w-4 h-4" />}
-              label="Équipement"
-            />
-            <TabButton
-              active={activeTab === 'maps'}
-              onClick={() => handleTabChange('maps')}
-              icon={<Map className="w-4 h-4" />}
-              label="Cartes"
-            />
-            <TabButton
-              active={activeTab === 'evidence'}
-              onClick={() => handleTabChange('evidence')}
-              icon={<ClipboardList className="w-4 h-4" />}
-              label="Identifier"
-            />
-          </div>
-        </div>
-      </div>
-
-      {activeTab !== 'evidence' && (
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-300 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-black bg-opacity-40 border border-purple-500 rounded-lg text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="max-w-4xl mx-auto px-4 pb-8">
-        {activeTab === 'ghosts' && (
-          <GhostsTab ghosts={filteredGhosts} onSelect={setSelectedItem} selected={selectedItem} />
-        )}
-        {activeTab === 'equipment' && (
-          <EquipmentTab equipment={filteredEquipment} onSelect={setSelectedItem} selected={selectedItem} />
-        )}
-        {activeTab === 'maps' && (
-          <MapsTab maps={filteredMaps} onSelect={setSelectedItem} selected={selectedItem} />
-        )}
-        {activeTab === 'evidence' && (
-          <EvidenceIdentifier
-            evidenceTypes={evidenceTypes}
-            selectedEvidence={selectedEvidence}
-            toggleEvidence={toggleEvidence}
-            possibleGhosts={possibleGhosts}
-            resetEvidence={resetEvidence}
-          />
-        )}
+  <style>
+    :root{
+      --bg:#0f1115; --panel:#141722; --muted:#9aa3b2; --text:#e6e9ef; --accent:#5eead4; --chip:#1f2433;
+      --danger:#ef4444; --ok:#22c55e; --border:#202534;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background:linear-gradient(180deg,#0d1016, #0f1115 15%) fixed; color:var(--text);
+    }
+    header{
+      position:sticky; top:0; z-index:10; background:rgba(15,17,21,.85); backdrop-filter:saturate(1.2) blur(6px);
+      border-bottom:1px solid var(--border);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:14px 16px;}
+    .title{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .badge{font-size:12px; padding:4px 8px; border:1px solid var(--border); border-radius:999px; color:var(--muted)}
+    .grid{display:grid; grid-template-columns:1fr; gap:14px}
+    @media (min-width:900px){ .grid{grid-template-columns: 320px 1fr} }
+    .panel{
+      background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    h2{font-size:16px; margin:6px 0 10px; color:#cbd5e1}
+    .evidences{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px}
+    @media (min-width:520px){.evidences{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    label.chk{
+      display:flex; align-items:center; gap:8px; background:#111522; border:1px solid var(--border); padding:10px 12px; border-radius:10px; cursor:pointer;
+      transition: border-color .2s, background .2s, transform .02s;
+      user-select:none;
+    }
+    label.chk:active{ transform:scale(.99) }
+    input[type=checkbox]{width:18px; height:18px; margin:0}
+    .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    button{
+      border:1px solid var(--border); background:#101523; color:var(--text); padding:10px 12px; border-radius:10px; cursor:pointer;
+    }
+    button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none; }
+    button.ghost{ background:transparent }
+    .results-header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px}
+    .count{font-size:13px; color:var(--muted)}
+    .cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px}
+    .card{
+      background:#101523; border:1px solid var(--border); padding:12px; border-radius:12px; min-height:110px; display:flex; flex-direction:column; gap:8px;
+    }
+    .ghost{font-weight:600; letter-spacing:.2px}
+    .chips{display:flex; flex-wrap:wrap; gap:6px}
+    .chip{
+      background:var(--chip); color:#d0d6e1; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid var(--border)
+    }
+    .empty{
+      border:1px dashed var(--border); background:#0f1320; color:#cbd5e1; border-radius:12px; padding:20px; text-align:center
+    }
+    footer{ color:var(--muted); font-size:12px; text-align:center; padding:18px 0 40px}
+    a{color:var(--accent); text-decoration:none}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">
+        <h1 style="margin:0;font-size:18px">Phasmo Guide</h1>
+        <span class="badge">PWA – Filtres par preuves</span>
       </div>
     </div>
-  );
-}
+  </header>
 
-function TabButton({ active, onClick, icon, label }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`px-4 py-3 flex items-center gap-2 whitespace-nowrap transition-all ${
-        active
-          ? 'bg-purple-600 text-white border-b-2 border-purple-300'
-          : 'bg-transparent text-purple-300 hover:bg-purple-900 hover:bg-opacity-30'
-      }`}
-    >
-      {icon}
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-}
-
-function GhostsTab({ ghosts, onSelect, selected }) {
-  return (
-    <div className="space-y-3">
-      {ghosts.map(ghost => (
-        <div key={ghost.id}>
-          <button
-            onClick={() => onSelect(selected?.id === ghost.id ? null : ghost)}
-            className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4 hover:bg-opacity-60 transition-all"
-          >
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-purple-200">{ghost.name}</h3>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {ghost.evidence.map((ev, idx) => (
-                    <span key={idx} className="px-2 py-1 bg-purple-600 bg-opacity-50 rounded text-sm text-purple-100">
-                      {ev}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <Ghost className="w-6 h-6 text-purple-400" />
-            </div>
-          </button>
-          
-          {selected?.id === ghost.id && (
-            <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
-              <p className="text-purple-100">{ghost.description}</p>
-              <div>
-                <p className="text-sm font-semibold text-purple-300">Seuil de chasse :</p>
-                <p className="text-purple-100">{ghost.huntThreshold}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-green-400">Force :</p>
-                <p className="text-purple-100">{ghost.strength}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-red-400">Faiblesse :</p>
-                <p className="text-purple-100">{ghost.weakness}</p>
-              </div>
-            </div>
-          )}
+  <main class="wrap" style="margin-top:12px">
+    <div class="grid">
+      <!-- Panneau filtres -->
+      <section class="panel">
+        <h2>Choisis tes preuves</h2>
+        <div class="evidences" id="evidences">
+          <!-- Les cases à cocher sont créées par JS à partir de EVIDENCES -->
         </div>
-      ))}
+        <div class="actions">
+          <button id="reset" class="ghost">Tout effacer</button>
+          <button id="share" class="primary">Partager ces filtres</button>
+        </div>
+        <p class="muted" style="margin-top:8px">
+          🛈 Astuce : l’URL se met à jour (ex. <code>?p=EMF5,DOTS</code>) et tu peux la partager.
+        </p>
+      </section>
+
+      <!-- Panneau résultats -->
+      <section class="panel">
+        <div class="results-header">
+          <h2>Résultats</h2>
+          <div class="count" id="count">0 fantôme</div>
+        </div>
+        <div id="empty" class="empty">
+          Sélectionne au moins <b>une preuve</b> pour commencer.
+        </div>
+        <div id="cards" class="cards" hidden></div>
+      </section>
     </div>
-  );
-}
 
-function EquipmentTab({ equipment, onSelect, selected }) {
-  return (
-    <div className="space-y-3">
-      {equipment.map(item => (
-        <div key={item.id}>
-          <button
-            onClick={() => onSelect(selected?.id === item.id ? null : item)}
-            className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4 hover:bg-opacity-60 transition-all"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-bold text-purple-200">{item.name}</h3>
-                <span className="inline-block mt-1 px-2 py-1 bg-blue-600 bg-opacity-50 rounded text-xs text-blue-100">
-                  {item.category}
-                </span>
-              </div>
-              <Package className="w-6 h-6 text-purple-400" />
-            </div>
-          </button>
-          
-          {selected?.id === item.id && (
-            <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
-              <div>
-                <p className="text-sm font-semibold text-purple-300">Description :</p>
-                <p className="text-purple-100">{item.description}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-purple-300">Utilisation :</p>
-                <p className="text-purple-100">{item.usage}</p>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function MapsTab({ maps, onSelect, selected }) {
-  return (
-    <div className="space-y-3">
-      {maps.map(map => (
-        <div key={map.id}>
-          <button
-            onClick={() => onSelect(selected?.id === map.id ? null : map)}
-            className="w-full text-left bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4 hover:bg-opacity-60 transition-all"
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="text-xl font-bold text-purple-200">{map.name}</h3>
-                <div className="mt-2 flex gap-2">
-                  <span className="px-2 py-1 bg-orange-600 bg-opacity-50 rounded text-xs text-orange-100">
-                    {map.size}
-                  </span>
-                  <span className="px-2 py-1 bg-red-600 bg-opacity-50 rounded text-xs text-red-100">
-                    {map.difficulty}
-                  </span>
-                </div>
-              </div>
-              <Map className="w-6 h-6 text-purple-400" />
-            </div>
-          </button>
-          
-          {selected?.id === map.id && (
-            <div className="mt-2 bg-black bg-opacity-60 border border-purple-400 rounded-lg p-4 space-y-3">
-              <p className="text-purple-100">{map.description}</p>
-              <div>
-                <p className="text-sm font-semibold text-purple-300">Nombre de pièces :</p>
-                <p className="text-purple-100">{map.rooms}</p>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-yellow-400">Objets Maudits possibles :</p>
-                <ul className="mt-2 space-y-1">
-                  {map.cursedObjects.map((obj, idx) => (
-                    <li key={idx} className="text-purple-100 text-sm">• {obj}</li>
-                  ))}
-                </ul>
-                <p className="text-xs text-purple-300 mt-2 italic">Note : Un seul objet maudit apparaît par partie</p>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function EvidenceIdentifier({ evidenceTypes, selectedEvidence, toggleEvidence, possibleGhosts, resetEvidence }) {
-  return (
-    <div className="space-y-6">
-      <div className="bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4">
-        <h2 className="text-xl font-bold text-purple-200 mb-4">Sélectionnez les preuves trouvées</h2>
-        <div className="space-y-2">
-          {evidenceTypes.map(evidence => (
-            <button
-              key={evidence.id}
-              onClick={() => toggleEvidence(evidence.name)}
-              className={`w-full text-left p-3 rounded-lg transition-all border ${
-                selectedEvidence.includes(evidence.name)
-                  ? 'bg-purple-600 bg-opacity-70 border-purple-300'
-                  : 'bg-black bg-opacity-40 border-purple-500 hover:bg-opacity-60'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-purple-100">{evidence.name}</p>
-                  <p className="text-sm text-purple-300">{evidence.tool}</p>
-                </div>
-                {selectedEvidence.includes(evidence.name) && (
-                  <div className="w-6 h-6 bg-purple-400 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm">✓</span>
-                  </div>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-        
-        {selectedEvidence.length > 0 && (
-          <button
-            onClick={resetEvidence}
-            className="mt-4 w-full py-2 bg-red-600 bg-opacity-50 border border-red-400 rounded-lg text-red-100 hover:bg-opacity-70 transition-all"
-          >
-            Réinitialiser
-          </button>
-        )}
+    <footer>
+      <div>Ne rien afficher tant qu’aucun filtre n’est choisi ✅</div>
+      <div class="muted" style="margin-top:4px">
+        (Tu peux adapter la liste des fantômes / preuves dans le code ci‑dessous)
       </div>
+    </footer>
+  </main>
 
-      <div className="bg-black bg-opacity-40 border border-purple-500 rounded-lg p-4">
-        <h2 className="text-xl font-bold text-purple-200 mb-4">
-          Fantômes possibles ({possibleGhosts.length})
-        </h2>
-        {possibleGhosts.length === 0 ? (
-          <p className="text-purple-300">Aucun fantôme ne correspond à ces preuves.</p>
-        ) : (
-          <div className="space-y-2">
-            {possibleGhosts.map(ghost => (
-              <div
-                key={ghost.id}
-                className="p-3 bg-purple-900 bg-opacity-30 border border-purple-400 rounded-lg"
-              >
-                <h3 className="font-bold text-purple-100">{ghost.name}</h3>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {ghost.evidence.map((ev, idx) => (
-                    <span
-                      key={idx}
-                      className={`px-2 py-1 rounded text-xs ${
-                        selectedEvidence.includes(ev)
-                          ? 'bg-green-600 bg-opacity-50 text-green-100'
-                          : 'bg-gray-600 bg-opacity-50 text-gray-100'
-                      }`}
-                    >
-                      {ev}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+  <script type="module">
+    /* ---------------------------------------------
+     * 1) DÉFINITION DES PREUVES (FR)
+     * ------------------------------------------- */
+    const EVIDENCES = [
+      { key: 'EMF5',        label: 'EMF Niveau 5' },
+      { key: 'SPIRIT_BOX',  label: 'Spirit Box' },
+      { key: 'ORBS',        label: 'Orbes' },
+      { key: 'FINGER',      label: 'Empreintes' },
+      { key: 'FREEZING',    label: 'Températures glaciales' },
+      { key: 'WRITING',     label: 'Écriture' },
+      { key: 'DOTS',        label: 'D.O.T.S' }
+    ];
+
+    /* ---------------------------------------------
+     * 2) DONNÉES MINIMALES DES FANTÔMES
+     * (liste courante – ajuste si besoin)
+     * ------------------------------------------- */
+    const GHOSTS = [
+      { name:'Spirit',       evidences:['EMF5','SPIRIT_BOX','WRITING'] },
+      { name:'Wraith',       evidences:['EMF5','SPIRIT_BOX','DOTS'] },
+      { name:'Phantom',      evidences:['SPIRIT_BOX','FINGER','DOTS'] },
+      { name:'Poltergeist',  evidences:['SPIRIT_BOX','FINGER','WRITING'] },
+      { name:'Banshee',      evidences:['FINGER','ORBS','DOTS'] },
+      { name:'Jinn',         evidences:['EMF5','FINGER','FREEZING'] },
+      { name:'Mare',         evidences:['SPIRIT_BOX','ORBS','WRITING'] },
+      { name:'Revenant',     evidences:['ORBS','WRITING','FREEZING'] },
+      { name:'Shade',        evidences:['EMF5','WRITING','FREEZING'] },
+      { name:'Demon',        evidences:['FINGER','WRITING','FREEZING'] },
+      { name:'Yurei',        evidences:['ORBS','FREEZING','DOTS'] },
+      { name:'Oni',          evidences:['EMF5','FREEZING','DOTS'] },
+      { name:'Yokai',        evidences:['SPIRIT_BOX','ORBS','DOTS'] },
+      { name:'Hantu',        evidences:['FINGER','ORBS','FREEZING'] },
+      { name:'Goryo',        evidences:['EMF5','FINGER','DOTS'] },
+      { name:'Myling',       evidences:['EMF5','FINGER','WRITING'] },
+      { name:'Onryo',        evidences:['SPIRIT_BOX','ORBS','FREEZING'] },
+      { name:'The Twins',    evidences:['EMF5','SPIRIT_BOX','FREEZING'] },
+      { name:'Raiju',        evidences:['EMF5','ORBS','DOTS'] },
+      { name:'Obake',        evidences:['EMF5','FINGER','ORBS'] },
+      { name:'The Mimic',    evidences:['SPIRIT_BOX','FINGER','FREEZING'] }, /* + faux Orbs */
+      { name:'Moroi',        evidences:['SPIRIT_BOX','WRITING','FREEZING'] },
+      { name:'Deogen',       evidences:['SPIRIT_BOX','WRITING','DOTS'] },
+      { name:'Thaye',        evidences:['ORBS','WRITING','DOTS'] }
+    ];
+
+    /* ---------------------------------------------
+     * 3) UI – GÉNÉRATION DES CASES À COCHER
+     * ------------------------------------------- */
+    const $evRoot = document.getElementById('evidences');
+    const $cards  = document.getElementById('cards');
+    const $empty  = document.getElementById('empty');
+    const $count  = document.getElementById('count');
+    const $reset  = document.getElementById('reset');
+    const $share  = document.getElementById('share');
+
+    function makeId(str){ return 'ev_' + str.toLowerCase().replace(/[^a-z0-9]+/g,'_') }
+
