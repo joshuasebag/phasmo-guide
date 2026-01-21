@@ -4,8 +4,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Phasmophobia – Journal (hash tabs + fallback)</title>
+  <title>Phasmophobia – Journal (unblock build)</title>
   <meta name="theme-color" content="#0e1016" />
+
+  <!-- 🔧 HOTFIX: Nettoyage SW + caches (1 seule fois) -->
+  <script>
+  (async function hotfixSW(){
+    try{
+      const FLAG='phasmo:swCleaned_v2';
+      if(!localStorage.getItem(FLAG) && 'serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r=>r.unregister()));
+        if (window.caches && caches.keys) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k=>caches.delete(k)));
+        }
+        localStorage.setItem(FLAG,'1');
+        location.replace(location.pathname + location.search + '#evidence');
+      }
+    }catch(e){ /* silencieux */ }
+  })();
+  </script>
+
   <style>
     :root{
       --bg:#0e1016; --paper:#121420; --ink:#e6e9ef; --muted:#9aa3b2; --accent:#5eead4;
@@ -13,110 +33,26 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{
-      margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial;
-    }
-
-    /* ====== HEADER / TABS (liens ancrés) ====== */
+    body{ margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial; }
     header{position:sticky; top:0; z-index:20; background:rgba(14,16,22,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
     .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
     .tabs{display:flex; gap:8px; flex-wrap:wrap}
-    .tab{
-      padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
-      background:var(--tab); color:#cfd6e6; cursor:pointer; user-select:none; text-decoration:none;
-    }
-    .tab:is(:hover,:focus){ color:#fff }
-    /* état actif (CSS pur via :target + data-active JS) */
-    .tab[data-active="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff; }
+    .tab{ padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
+      background:#0d1120; color:#cfd6e6; cursor:pointer; text-decoration:none; user-select:none }
+    .tab[data-active="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff }
 
-    /* ====== BOOK CONTAINER ====== */
-    main .book{
-      display:grid; grid-template-columns: 1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
-      background:var(--paper); border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35);
-    }
+    main .book{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
+      background:#121420; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35) }
     @media (max-width:900px){ main .book{grid-template-columns:1fr} }
-
     h2{margin:6px 0 10px; font-size:16px; color:#cbd5e1}
     .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
-    .placeholder{color:var(--muted); font-size:14px}
-
-    /* ====== PAGES (fallback CSS par hash) ====== */
-    .page{display:none}
-    .page[aria-hidden="false"]{display:block}
-
-    /* ====== EVIDENCES ====== */
-    .ev-list{display:grid; grid-template-columns:1fr 1fr; gap:8px}
-    @media (min-width:560px){ .ev-list{grid-template-columns:1fr 1fr 1fr} }
-    .ev{
-      position:relative; padding:0;
-      background:#0f1426; border:1px solid var(--border);
-      border-radius:10px; user-select:none;
-    }
-    .ev .ev-btn{
-      all: unset;
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px; width:100%; height:100%;
-      cursor:pointer;
-    }
-    .ev .ev-btn:focus-visible{ outline: 2px solid var(--accent); border-radius: 10px; }
-    .ev .box{
-      width:22px; height:22px; display:grid; place-items:center; font-weight:700; border-radius:6px;
-      background:#0d1322; border:1px solid var(--line); color:#8892a6;
-    }
-    .ev[data-state="1"] .box{ background:#05281f; border-color:#0e3; color:#8ff1c9 } /* présente */
-    .ev[data-state="-1"] .box{ background:#2a1214; border-color:#b22; color:#f7a0a0 } /* absente */
-    .ev .lbl{flex:1}
-    .legend{font-size:12px; color:var(--muted)}
-    .legend .k{display:inline-block; padding:2px 6px; border:1px solid var(--border); border-radius:6px; background:#0f1528; margin-right:6px}
-
     .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    button{
-      border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer;
-    }
+    button{ border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer }
     button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none }
     button.ghost{ background:transparent }
+    .page{display:none}
+    .page[aria-hidden="false"]{display:block}
+    .placeholder{color:var(--muted); font-size:14px}
 
-    /* ====== GHOSTS ====== */
-    .summary{display:flex; justify-content:space-between; align-items:center; gap:10px}
-    .count{font-size:13px; color:var(--muted)}
-    .ghosts{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
-    .g{
-      background:#0f1426; border:1px solid var(--border); border-radius:12px; padding:12px; min-height:110px;
-      display:flex; flex-direction:column; gap:8px;
-    }
-    .g .name{font-weight:700}
-    .chips{display:flex; flex-wrap:wrap; gap:6px}
-    .chip{font-size:12px; padding:4px 8px; border-radius:999px; background:var(--chip); border:1px solid var(--border); color:#d0d6e1}
-    .g.excluded{opacity:.35; filter:grayscale(.4)}
-    .g .tools{display:flex; gap:6px}
-    .g .tools button{font-size:12px; padding:6px 8px}
-
-    /* Sécurité anti overlay bloquant */
-    .ev, .ev * { pointer-events:auto; }
-
-    /* ====== BANDEAU ERREUR JS ====== */
-    #jsError{
-      position:sticky; top:0; z-index:9999; display:none;
-      background:#2a1214; color:#ffd4d4; border-bottom:1px solid #b22; padding:8px 12px; font-size:12px;
-    }
-    #jsError code{white-space:pre-wrap}
-  </style>
-  <noscript>
-    <style>
-      /* Fallback sans JS : montrer la page ciblée par le hash (#...), sinon Evidence */
-      .page{display:none}
-      #evidence:target, #ghosts:target, #home:target, #items:target, #overview:target, #photos:target, #pause:target{display:block}
-      #evidence:not(:target):not(.touched) ~ .page-default{display:block}
-    </style>
-  </noscript>
-</head>
-<body>
-  <div id="jsError"></div>
-
-  <header>
-    <div class="wrap">
-      <nav class="tabs" role="tablist" aria-label="Journal">
-        <!-- Liens ancrés (fonctionnent sans JS) -->
-        #homeHome</a>
-        #itemsItems</a>
+    /* Evidence */
