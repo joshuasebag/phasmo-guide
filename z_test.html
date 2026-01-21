@@ -1,0 +1,61 @@
+
+<!doctype html>
+<meta charset="utf-8">
+<title>z_test</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:0;padding:24px;background:#0e1016;color:#e6e9ef}
+  .card{background:#121420;border:1px solid #20283a;border-radius:12px;padding:16px;max-width:720px}
+  .ok{color:#22c55e}.no{color:#ef4444}.muted{color:#9aa3b2}
+  button{margin-top:12px;padding:10px 14px;border-radius:10px;border:1px solid #20283a;background:#0e1426;color:#e6e9ef;cursor:pointer}
+</style>
+
+<div class="card">
+  <h1>Diagnostic rapide</h1>
+  <p id="build">BUILD: <b>2026‑01‑21‑T1</b></p>
+  <ul>
+    <li>Heure locale JS : <span id="now" class="muted">…</span></li>
+    <li>JS exécute le script : <b id="js" class="no">non</b></li>
+    <li>Service workers enregistrés : <b id="sw" class="muted">…</b></li>
+    <li>Caches du site (count) : <b id="caches" class="muted">…</b></li>
+  </ul>
+  <button id="btn">Clique-moi</button>
+  <p id="out" class="muted">Aucun clic.</p>
+</div>
+
+<script>
+(async function(){
+  // 1) JS s’exécute ?
+  const jsEl = document.getElementById('js');
+  jsEl.textContent = 'oui'; jsEl.className='ok';
+
+  // 2) L’heure prouve que ce JS tourne *maintenant*
+  document.getElementById('now').textContent = new Date().toISOString();
+
+  // 3) Interactions : clic bouton
+  const out = document.getElementById('out');
+  let n=0;
+  document.getElementById('btn').addEventListener('click', ()=>{
+    out.textContent = 'Clics : ' + (++n);
+    out.className = n ? 'ok' : 'muted';
+  });
+
+  // 4) SW & caches
+  try{
+    let swCount = 0;
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      swCount = regs.length;
+    }
+    document.getElementById('sw').textContent = String(swCount);
+
+    let cCount = 0;
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      cCount = keys.length;
+    }
+    document.getElementById('caches').textContent = String(cCount);
+  }catch(e){
+    document.getElementById('caches').textContent = 'err';
+  }
+})();
+</script>
