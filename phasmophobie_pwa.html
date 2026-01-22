@@ -2,57 +2,94 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Phasmophobia – Journal (unblock build)</title>
-  <meta name="theme-color" content="#0e1016" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PWA Diag Court</title>
+  <meta name="theme-color" content="#0e1016">
+  <style>
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:#0e1016;color:#e6e9ef}
+    .wrap{max-width:900px;margin:0 auto;padding:18px}
+    .banner{background:#0d1322;border:1px solid #20283a;border-radius:12px;padding:12px;margin:12px 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .ev{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:#111827;
+        border:1px solid #1f2937;cursor:pointer;user-select:none}
+    .box{width:20px;height:20px;display:grid;place-items:center;border-radius:6px;background:#0d1322;
+         border:1px solid #1d2233;color:#8892a6}
+    .ev[data-s="1"] .box{background:#05281f;border-color:#0e3;color:#8ff1c9}
+    .ev[data-s="-1"] .box{background:#2a1214;border-color:#b22;color:#f7a0a0}
+    .ok{color:#22c55e}.no{color:#ef4444}.muted{color:#9aa3b2}
+    pre{white-space:pre-wrap;background:#0d1322;border:1px solid #20283a;border-radius:8px;padding:8px}
+    #build{font-weight:700}
+  </style>
+  <noscript><div class="wrap"><div class="banner no">⚠️ JavaScript désactivé – active‑le pour tester.</div></div></noscript>
+</head>
+<body>
+  <div class="wrap">
+    <div class="banner"><div id="build">BUILD: PWA-DIAG-COURT-2026‑01‑21</div></div>
 
-  <!-- 🔧 HOTFIX: Nettoyage SW + caches (1 seule fois) -->
+    <div class="banner">
+      <div>JS s’exécute : <b id="js" class="no">non</b></div>
+      <div>Message d’erreur : <span id="err" class="muted">aucune</span></div>
+    </div>
+
+    <h2>Preuves (tri‑état)</h2>
+    <p class="muted">Clique → Inconnue → ✓ → ✕</p>
+    <div id="evs" class="row"></div>
+
+    <h2 style="margin-top:18px">Fantômes candidats</h2>
+    <div id="out" class="banner muted">0 fantôme</div>
+
+    <div class="banner">
+      <div>Debug console :</div>
+      <pre id="log"></pre>
+    </div>
+  </div>
+
   <script>
-  (async function hotfixSW(){
+  (function(){
+    const log = (m)=>{ const el=document.getElementById('log'); el.textContent += m + "\n"; console.log(m); };
     try{
-      const FLAG='phasmo:swCleaned_v2';
-      if(!localStorage.getItem(FLAG) && 'serviceWorker' in navigator){
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r=>r.unregister()));
-        if (window.caches && caches.keys) {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(k=>caches.delete(k)));
+      // 1) Indiquer que JS tourne
+      document.getElementById('js').textContent='oui';
+      document.getElementById('js').className='ok';
+      log('JS OK');
+
+      // 2) Données mini
+      const EVIDENCES=[['EMF5','EMF Level 5'],['DOTS','D.O.T.S'],['WRITING','Ghost Writing']];
+      const GHOSTS=[
+        {name:'Spirit',evidences:['EMF5','WRITING']},
+        {name:'Wraith',evidences:['EMF5','DOTS']},
+        {name:'Deogen',evidences:['WRITING','DOTS']},
+      ];
+      const state=Object.fromEntries(EVIDENCES.map(([k])=>[k,0])); // -1/0/1
+
+      // 3) UI evidences
+      const $evs=document.getElementById('evs');
+      const $out=document.getElementById('out');
+      function cycle(s){return s===0?1:(s===1?-1:0)}
+      function inc(){return Object.entries(state).filter(([,v])=>v===1).map(([k])=>k)}
+      function exc(){return Object.entries(state).filter(([,v])=>v===-1).map(([k])=>k)}
+      function candidate(g){const a=inc(), b=exc(); return a.every(k=>g.evidences.includes(k)) && !b.some(k=>g.evidences.includes(k))}
+      function render(){
+        $evs.innerHTML='';
+        for(const [k,label] of EVIDENCES){
+          const d=document.createElement('div'); d.className='ev'; d.dataset.k=k; d.dataset.s=String(state[k]);
+          d.innerHTML=`<span class="box">${state[k]===1?'✓':state[k]===-1?'✕':''}</span>${label}`;
+          d.onclick=()=>{ state[k]=cycle(state[k]); render(); };
+          $evs.appendChild(d);
         }
-        localStorage.setItem(FLAG,'1');
-        location.replace(location.pathname + location.search + '#evidence');
+        const list=GHOSTS.filter(candidate);
+        $out.textContent = (list.length)+' '+(list.length>1?'fantômes':'fantôme')+ (list.length?(' : '+list.map(g=>g.name).join(', ')):'');
+        $out.className='banner '+(list.length?'ok':'muted');
       }
-    }catch(e){ /* silencieux */ }
+      render();
+      log('UI ready');
+    }catch(e){
+      document.getElementById('err').textContent = e && e.message ? e.message : String(e);
+      document.getElementById('err').className = 'no';
+      log('ERROR: '+(e && e.stack ? e.stack : e));
+    }
   })();
   </script>
-
-  <style>
-    :root{
-      --bg:#0e1016; --paper:#121420; --ink:#e6e9ef; --muted:#9aa3b2; --accent:#5eead4;
-      --line:#1d2233; --tab:#0d1120; --chip:#1b2131; --ok:#22c55e; --no:#ef4444; --border:#20283a;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{ margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial; }
-    header{position:sticky; top:0; z-index:20; background:rgba(14,16,22,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
-    .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
-    .tabs{display:flex; gap:8px; flex-wrap:wrap}
-    .tab{ padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
-      background:#0d1120; color:#cfd6e6; cursor:pointer; text-decoration:none; user-select:none }
-    .tab[data-active="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff }
-
-    main .book{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
-      background:#121420; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35) }
-    @media (max-width:900px){ main .book{grid-template-columns:1fr} }
-    h2{margin:6px 0 10px; font-size:16px; color:#cbd5e1}
-    .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
-    .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    button{ border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer }
-    button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none }
-    button.ghost{ background:transparent }
-    .page{display:none}
-    .page[aria-hidden="false"]{display:block}
-    .placeholder{color:var(--muted); font-size:14px}
-
-    /* Evidence */
+</body>
+</html>
