@@ -18,7 +18,6 @@
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial;
     }
 
-    /* Header / Onglets (liens #hash) */
     header{position:sticky; top:0; z-index:20; background:rgba(14,16,22,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
     .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
     .tabs{display:flex; gap:8px; flex-wrap:wrap}
@@ -28,7 +27,6 @@
     }
     .tab[data-active="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff }
 
-    /* Contenu */
     main{padding:14px}
     main .book{
       display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
@@ -38,7 +36,6 @@
     h2{margin:6px 0 10px; font-size:16px; color:#cbd5e1}
     .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
 
-    /* Preuves */
     .chips{display:flex; flex-wrap:wrap; gap:8px}
     .chip{
       display:inline-flex; align-items:center; gap:8px; padding:8px 10px; background:var(--chip); border:1px solid var(--border);
@@ -46,20 +43,19 @@
     }
     .chip .name{font-weight:600}
     .chip .actions{display:flex; gap:6px}
-    .chip button{
+    .chip .btn{
       appearance:none; border:1px solid var(--border); background:#0e1322; color:#cfd6e6; padding:3px 7px;
       border-radius:7px; cursor:pointer; font-size:12px
     }
-    .chip button[data-state="include"]{border-color:#1e3a2f; background:#0c1713; color:#a7f3d0}
-    .chip button[data-state="exclude"]{border-color:#3a1e1e; background:#170c0c; color:#fecaca}
+    .chip .btn[data-state="include"]{border-color:#1e3a2f; background:#0c1713; color:#a7f3d0}
+    .chip .btn[data-state="exclude"]{border-color:#3a1e1e; background:#170c0c; color:#fecaca}
     .legend{color:var(--muted); font-size:13px}
 
-    /* Liste fantômes */
     .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .search{flex:1; min-width:220px}
     .search input{
       width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border);
-      background:#0d1120; color:var(--ink)
+      background:#0d1120; color:#var(--ink)
     }
     .ghosts{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     @media (max-width:900px){ .ghosts{grid-template-columns:1fr} }
@@ -76,7 +72,6 @@
     .badge.no{background:#1e0f0f; color:#fecaca; border-color:#3a1e1e}
     .count{color:var(--muted); font-size:13px}
 
-    /* Sections / onglets */
     section[hidden]{display:none !important}
   </style>
 </head>
@@ -84,120 +79,3 @@
   <header>
     <div class="wrap">
       <nav class="tabs" role="tablist" aria-label="Sections du journal">
-        <a class="tab" id="tab-journal" href="#journal">Journal</a>
-        <a class="tab" id="tab-fantomes" href="#fantomes">Fantômes</a>
-        <a class="tab" id="tab-options" href="#options">Options</a>
-      </nav>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <div class="book">
-      <!-- Journal / Preuves -->
-      <section id="journal" aria-labelledby="tab-journal">
-        <h2>Preuves</h2>
-        <p class="legend">Clique sur <strong>Inclure</strong> pour marquer une preuve trouvée, et sur <strong>Exclure</strong> pour l’écarter. Le filtrage des fantômes se met à jour automatiquement.</p>
-        <div class="chips" id="proof-chips"></div>
-        <div class="hr"></div>
-        <div class="count" id="state-summary" aria-live="polite"></div>
-      </section>
-
-      <!-- Fantômes filtrés -->
-      <section id="fantomes" aria-labelledby="tab-fantomes" hidden>
-        <div class="toolbar">
-          <div class="search">
-            <input type="search" id="ghost-search" placeholder="Rechercher un fantôme (nom, preuve)..." aria-label="Rechercher un fantôme" />
-          </div>
-          <div class="count" id="ghost-count"></div>
-        </div>
-        <div class="hr"></div>
-        <div class="ghosts" id="ghost-list"></div>
-      </section>
-
-      <!-- Options -->
-      <section id="options" aria-labelledby="tab-options" hidden>
-        <h2>Options</h2>
-        <button id="reset-all">Réinitialiser les preuves</button>
-        <p class="legend">La sélection est sauvegardée automatiquement sur cet appareil.</p>
-      </section>
-    </div>
-  </main>
-
-  <script>
-    /*************************
-     * Données du jeu
-     *************************/
-    const PROOFS = [
-      { id:'emf', label:'EMF Niveau 5' },
-      { id:'orbe', label:'Orbe' },
-      { id:'spirit', label:'Spirit Box' },
-      { id:'freezing', label:'Températures glaciales' },
-      { id:'uv', label:'Traces UV' },
-      { id:'dots', label:'D.O.T.S' },
-      { id:'writing', label:'Écriture fantomatique' },
-    ];
-
-    const GHOSTS = [
-      { name:'Esprit', proofs:['emf','spirit','writing'] },
-      { name:'Spectre', proofs:['emf','uv','dots'] },
-      { name:'Ombre', proofs:['emf','writing','freezing'] },
-      { name:'Poltergeist', proofs:['spirit','uv','writing'] },
-      { name:'Banshee', proofs:['orbe','uv','dots'] },
-      { name:'Jinn', proofs:['emf','uv','freezing'] },
-      { name:'Mare', proofs:['spirit','orbe','writing'] },
-      { name:'Revenant', proofs:['orbe','writing','freezing'] },
-      { name:'Oni', proofs:['emf','freezing','dots'] },
-      { name:'Yurei', proofs:['orbe','freezing','dots'] },
-      { name:'Hantu', proofs:['orbe','uv','freezing'] },
-      { name:'Goryo', proofs:['emf','uv','dots'] },
-      { name:'Myling', proofs:['emf','uv','writing'] },
-      { name:'Onryo', proofs:['spirit','orbe','freezing'] },
-      { name:'The Twins', proofs:['emf','spirit','freezing'] },
-      { name:'Raiju', proofs:['emf','orbe','dots'] },
-      { name:'Obake', proofs:['orbe','uv','emf'] },
-      { name:'Mimic', proofs:['spirit','uv','freezing'] },
-      { name:'Moroi', proofs:['spirit','writing','freezing'] },
-      { name:'Deogen', proofs:['spirit','writing','dots'] },
-      { name:'Thaye', proofs:['orbe','writing','dots'] },
-    ];
-
-    /*************************
-     * État + Persistance
-     *************************/
-    const STORAGE_KEY = 'phasmo_journal_v1';
-    const loadState = () => {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? { include:[], exclude:[], tab:'#journal' }; }
-      catch { return { include:[], exclude:[], tab:'#journal' }; }
-    };
-    const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-    let state = loadState();
-
-    /*************************
-     * UI – Onglets (hash)
-     *************************/
-    const tabs = [...document.querySelectorAll('.tab')];
-    const sections = {
-      '#journal': document.getElementById('journal'),
-      '#fantomes': document.getElementById('fantomes'),
-      '#options': document.getElementById('options'),
-    };
-
-    function setActiveTab(hash){
-      const h = sections[hash] ? hash : '#journal';
-      Object.entries(sections).forEach(([k,el]) => { if (el) el.hidden = (k !== h); });
-      tabs.forEach(a => a.dataset.active = (a.getAttribute('href') === h));
-      state.tab = h; saveState(state);
-      if (location.hash !== h) history.replaceState(null,'',h);
-    }
-
-    window.addEventListener('hashchange', () => setActiveTab(location.hash));
-    setActiveTab(state.tab || location.hash || '#journal');
-
-    /*************************
-     * UI – Preuves (chips)
-     *************************/
-    const chipsRoot = document.getElementById('proof-chips');
-    const summaryEl = document.getElementById('state-summary');
-
-    function renderChips(){
-      if (!chipsRoot) return;
