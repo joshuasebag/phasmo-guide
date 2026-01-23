@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="fr">
 <head>
@@ -85,9 +84,9 @@
   <header>
     <div class="wrap">
       <nav class="tabs" role="tablist" aria-label="Sections du journal">
-        <a class="tab" href="#journal" role="tab" aria-controls="journal" id="tab-journal">Journal</a>
-        <a class="tab" href="#fantomes" role="tab" aria-controls="fantomes" id="tab-fantomes">Fantômes</a>
-        <a class="tab" href="#options" role="tab" aria-controls="options" id="tab-options">Options</a>
+        <a class="tab" id="tab-journal" href="#journal">Journal</a>
+        <a class="tab" id="tab-fantomes" href="#fantomes">Fantômes</a>
+        <a class="tab" id="tab-options" href="#options">Options</a>
       </nav>
     </div>
   </header>
@@ -98,9 +97,7 @@
       <section id="journal" aria-labelledby="tab-journal">
         <h2>Preuves</h2>
         <p class="legend">Clique sur <strong>Inclure</strong> pour marquer une preuve trouvée, et sur <strong>Exclure</strong> pour l’écarter. Le filtrage des fantômes se met à jour automatiquement.</p>
-        <div class="chips" id="proof-chips">
-          <!-- rempli par JS -->
-        </div>
+        <div class="chips" id="proof-chips"></div>
         <div class="hr"></div>
         <div class="count" id="state-summary" aria-live="polite"></div>
       </section>
@@ -114,9 +111,7 @@
           <div class="count" id="ghost-count"></div>
         </div>
         <div class="hr"></div>
-        <div class="ghosts" id="ghost-list">
-          <!-- rempli par JS -->
-        </div>
+        <div class="ghosts" id="ghost-list"></div>
       </section>
 
       <!-- Options -->
@@ -142,7 +137,6 @@
       { id:'writing', label:'Écriture fantomatique' },
     ];
 
-    // Liste des fantômes et leurs preuves (à compléter/adapter si besoin)
     const GHOSTS = [
       { name:'Esprit', proofs:['emf','spirit','writing'] },
       { name:'Spectre', proofs:['emf','uv','dots'] },
@@ -161,11 +155,10 @@
       { name:'The Twins', proofs:['emf','spirit','freezing'] },
       { name:'Raiju', proofs:['emf','orbe','dots'] },
       { name:'Obake', proofs:['orbe','uv','emf'] },
-      { name:'Mimic', proofs:['spirit','uv','freezing'] },   // NB: le Mimic montre aussi des orbes factices en jeu
+      { name:'Mimic', proofs:['spirit','uv','freezing'] },
       { name:'Moroi', proofs:['spirit','writing','freezing'] },
       { name:'Deogen', proofs:['spirit','writing','dots'] },
       { name:'Thaye', proofs:['orbe','writing','dots'] },
-      // Ajoute/maj selon ta version du jeu
     ];
 
     /*************************
@@ -177,7 +170,6 @@
       catch { return { include:[], exclude:[], tab:'#journal' }; }
     };
     const saveState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-
     let state = loadState();
 
     /*************************
@@ -192,14 +184,13 @@
 
     function setActiveTab(hash){
       const h = sections[hash] ? hash : '#journal';
-      Object.entries(sections).forEach(([k,el]) => el.hidden = (k !== h));
+      Object.entries(sections).forEach(([k,el]) => { if (el) el.hidden = (k !== h); });
       tabs.forEach(a => a.dataset.active = (a.getAttribute('href') === h));
       state.tab = h; saveState(state);
-      history.replaceState(null,'',h);
+      if (location.hash !== h) history.replaceState(null,'',h);
     }
 
     window.addEventListener('hashchange', () => setActiveTab(location.hash));
-    // Initial
     setActiveTab(state.tab || location.hash || '#journal');
 
     /*************************
@@ -209,92 +200,4 @@
     const summaryEl = document.getElementById('state-summary');
 
     function renderChips(){
-      chipsRoot.innerHTML = '';
-      PROOFS.forEach(p => {
-        const wrap = document.createElement('div');
-        wrap.className = 'chip';
-        wrap.innerHTML = `
-          <span class="name">${p.label}</span>
-          <span class="actions">
-            <button type="button" data-proof="${p.id}" data-action="include" ${state.include.includes(p.id)?'data-state="include"':''} aria-pressed="${state.include.includes(p.id)}">Inclure</button>
-            <button type="button" data-proof="${p.id}" data-action="exclude" ${state.exclude.includes(p.id)?'data-state="exclude"':''} aria-pressed="${state.exclude.includes(p.id)}">Exclure</button>
-            <button type="button" data-proof="${p.id}" data-action="clear">Effacer</button>
-          </span>
-        `;
-        chipsRoot.appendChild(wrap);
-      });
-      updateSummary();
-    }
-
-    function updateSummary(){
-      const inc = state.include.map(id => PROOFS.find(p=>p.id===id)?.label).filter(Boolean);
-      const exc = state.exclude.map(id => PROOFS.find(p=>p.id===id)?.label).filter(Boolean);
-      summaryEl.textContent = `Inclus: ${inc.length?inc.join(', '):'—'} | Exclus: ${exc.length?exc.join(', '):'—'}`;
-    }
-
-    chipsRoot.addEventListener('click', (e) => {
-      const btn = e.target.closest('button'); if(!btn) return;
-      const id = btn.dataset.proof, action = btn.dataset.action;
-      if(!id) return;
-
-      // Retirer des deux listes d'abord (toggle propre)
-      state.include = state.include.filter(x => x !== id);
-      state.exclude = state.exclude.filter(x => x !== id);
-
-      if(action === 'include') state.include.push(id);
-      else if(action === 'exclude') state.exclude.push(id);
-      // action 'clear' → rien à ajouter
-
-      saveState(state);
-      renderChips();
-      renderGhosts(); // MAJ filtrage
-    });
-
-    /*************************
-     * Filtrage fantômes
-     *************************/
-    const ghostListEl = document.getElementById('ghost-list');
-    const ghostCountEl = document.getElementById('ghost-count');
-    const searchInput = document.getElementById('ghost-search');
-
-    function matchesSearch(ghost, query){
-      if(!query) return true;
-      const q = query.toLowerCase();
-      const labels = ghost.proofs.map(id => PROOFS.find(p=>p.id===id)?.label?.toLowerCase() ?? '');
-      return (
-        ghost.name.toLowerCase().includes(q) ||
-        labels.some(l => l.includes(q))
-      );
-    }
-
-    function ghostAllowed(ghost){
-      // Toutes les preuves incluses doivent être présentes
-      const allIncluded = state.include.every(id => ghost.proofs.includes(id));
-      // Aucune preuve exclue ne doit être présente
-      const noneExcluded = state.exclude.every(id => !ghost.proofs.includes(id));
-      return allIncluded && noneExcluded;
-    }
-
-    function renderGhosts(){
-      const q = searchInput.value?.trim() ?? '';
-      const ghosts = GHOSTS
-        .filter(g => ghostAllowed(g))
-        .filter(g => matchesSearch(g, q));
-
-      ghostListEl.innerHTML = '';
-      ghosts.forEach(g => {
-        const div = document.createElement('div');
-        div.className = 'ghost';
-        const badges = g.proofs.map(id => {
-          const inInc = state.include.includes(id);
-          const inExc = state.exclude.includes(id);
-          const label = PROOFS.find(p=>p.id===id)?.label ?? id;
-          const cls = inInc ? 'badge ok' : inExc ? 'badge no' : 'badge';
-          return `<span class="${cls}">${label}</span>`;
-        }).join('');
-        div.innerHTML = `
-          <div class="name">${g.name}</div>
-          <div class="badges">${badges}</div>
-        `;
-        ghostListEl.appendChild(div);
-
+      if (!chipsRoot) return;
