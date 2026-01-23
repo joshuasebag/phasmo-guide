@@ -1,5 +1,4 @@
 
-
 <!doctype html>
 <html lang="fr">
 <head>
@@ -14,26 +13,36 @@
     }
     *{box-sizing:border-box}
     html,body{height:100%}
-    body{ margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial; }
+    body{
+      margin:0; background:linear-gradient(180deg,#0c0f15,#0e1016 12%) fixed; color:var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Noto Sans", Arial;
+    }
 
     /* Header / Tabs (liens hash => marche même sans JS) */
     header{position:sticky; top:0; z-index:20; background:rgba(14,16,22,.9); backdrop-filter:blur(6px); border-bottom:1px solid var(--border)}
     .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
     .tabs{display:flex; gap:8px; flex-wrap:wrap}
-    .tab{ padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
-      background:#0d1120; color:#cfd6e6; cursor:pointer; text-decoration:none; user-select:none }
+    .tab{
+      padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0;
+      background:var(--tab); color:#cfd6e6; cursor:pointer; text-decoration:none; user-select:none
+    }
     .tab[data-active="true"]{ background:linear-gradient(180deg,#151a2a,#101626); color:#fff }
 
-    main .book{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
-      background:#121420; border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35) }
+    main .book{
+      display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px; border:1px solid var(--border);
+      background:var(--paper); border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.35)
+    }
     @media (max-width:900px){ main .book{grid-template-columns:1fr} }
     h2{margin:6px 0 10px; font-size:16px; color:#cbd5e1}
     .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
+
     .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    button{ border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer }
-    button.primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none }
-    button.ghost{ background:transparent }
+    button, .btn{
+      border:1px solid var(--border); background:#0e1426; color:var(--ink); padding:10px 12px; border-radius:10px; cursor:pointer;
+      text-decoration:none; display:inline-block
+    }
+    .primary{ background:linear-gradient(135deg,#0f766e,#14b8a6); border:none; color:#fff }
+    .ghost{ background:transparent }
 
     /* Pages */
     .page{display:none}
@@ -80,7 +89,7 @@
 </head>
 <body>
   <div id="jsError"></div>
-  <div id="buildBadge">BUILD: JOURNAL‑STABLE‑2026‑01‑23</div>
+  <div id="buildBadge">BUILD: JOURNAL‑OK‑2026‑01‑23</div>
 
   <!-- Onglets (hash) -->
   <header>
@@ -103,6 +112,7 @@
           <div class="actions">
             <button id="clearEv" class="ghost">Réinitialiser</button>
             <button id="shareEv" class="primary">Partager (URL)</button>
+            <a class="btn primary" href="#ghosts">Ouvrir Ghosts</a>
           </div>
           <p class="legend" style="margin-top:8px">
             Clique : Inconnue → <span style="color:var(--ok)">Présente</span> → <span style="color:var(--no)">Absente</span>
@@ -112,7 +122,6 @@
           <h2>Aperçu</h2>
           <div class="hr"></div>
           <p class="placeholder">Les candidats s’actualisent en direct dans l’onglet <b>Ghosts</b>.</p>
-          <div class="actions"><a href="#ghosts"><button class="primary" type="button">Ouvrir Ghosts</button></a></div>
         </div>
       </div>
     </section>
@@ -132,6 +141,7 @@
           <div class="actions" style="margin-top:10px">
             <button id="clearX" class="ghost">Désarayer tous</button>
             <button id="shareAll" class="primary">Partager (URL)</button>
+            <a class="btn" href="#evidence">Revenir à Evidence</a>
           </div>
         </div>
       </div>
@@ -139,193 +149,3 @@
   </main>
 
   <!-- Script defer protégé -->
-  <script defer>
-  (function(){
-    const $ = (s, r=document)=>r.querySelector(s);
-    const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
-    const errBar = $('#jsError');
-    function showError(msg){ if(!errBar)return; errBar.style.display='block'; errBar.innerHTML='⚠️ Erreur JavaScript : <code>'+String(msg)+'</code>'; }
-
-    try{
-      // Tabs (hash) => synchro visuelle
-      function syncTabs(){
-        const hash = location.hash || '#evidence';
-        for (const sec of $$('.page')) sec.setAttribute('aria-hidden', String('#'+sec.id !== hash));
-        for (const t of $$('.tab')) t.dataset.active = String(t.getAttribute('href') === hash);
-      }
-      addEventListener('hashchange', syncTabs);
-      document.addEventListener('DOMContentLoaded', ()=>{
-        if (!location.hash) location.hash='#evidence';
-        syncTabs();
-      });
-
-      // Données : 7 preuves, 24 fantômes (liste classique)
-      const EVIDENCES = [
-        { key:'EMF5', label:'EMF Level 5' },
-        { key:'SPIRIT_BOX', label:'Spirit Box' },
-        { key:'ORBS', label:'Ghost Orbs' },
-        { key:'FINGER', label:'Fingerprints' },
-        { key:'FREEZING', label:'Freezing Temps' },
-        { key:'WRITING', label:'Ghost Writing' },
-        { key:'DOTS', label:'D.O.T.S' },
-      ];
-      const GHOSTS = [
-        { name:'Spirit',      evidences:['EMF5','SPIRIT_BOX','WRITING'] },
-        { name:'Wraith',      evidences:['EMF5','SPIRIT_BOX','DOTS'] },
-        { name:'Phantom',     evidences:['SPIRIT_BOX','FINGER','DOTS'] },
-        { name:'Poltergeist', evidences:['SPIRIT_BOX','FINGER','WRITING'] },
-        { name:'Banshee',     evidences:['FINGER','ORBS','DOTS'] },
-        { name:'Jinn',        evidences:['EMF5','FINGER','FREEZING'] },
-        { name:'Mare',        evidences:['SPIRIT_BOX','ORBS','WRITING'] },
-        { name:'Revenant',    evidences:['ORBS','WRITING','FREEZING'] },
-        { name:'Shade',       evidences:['EMF5','WRITING','FREEZING'] },
-        { name:'Demon',       evidences:['FINGER','WRITING','FREEZING'] },
-        { name:'Yurei',       evidences:['ORBS','FREEZING','DOTS'] },
-        { name:'Oni',         evidences:['EMF5','FREEZING','DOTS'] },
-        { name:'Yokai',       evidences:['SPIRIT_BOX','ORBS','DOTS'] },
-        { name:'Hantu',       evidences:['FINGER','ORBS','FREEZING'] },
-        { name:'Goryo',       evidences:['EMF5','FINGER','DOTS'] },
-        { name:'Myling',      evidences:['EMF5','FINGER','WRITING'] },
-        { name:'Onryo',       evidences:['SPIRIT_BOX','ORBS','FREEZING'] },
-        { name:'The Twins',   evidences:['EMF5','SPIRIT_BOX','FREEZING'] },
-        { name:'Raiju',       evidences:['EMF5','ORBS','DOTS'] },
-        { name:'Obake',       evidences:['EMF5','FINGER','ORBS'] },
-        { name:'The Mimic',   evidences:['SPIRIT_BOX','FINGER','FREEZING'] },
-        { name:'Moroi',       evidences:['SPIRIT_BOX','WRITING','FREEZING'] },
-        { name:'Deogen',      evidences:['SPIRIT_BOX','WRITING','DOTS'] },
-        { name:'Thaye',       evidences:['ORBS','WRITING','DOTS'] },
-      ];
-
-      // État : -1 absente | 0 inconnue | 1 présente + fantômes rayés
-      const state = {
-        ev: Object.fromEntries(EVIDENCES.map(e => [e.key, 0])),
-        x: new Set(),
-      };
-
-      // Evidence UI
-      const $evList = $('#evList');
-      const $ghostList = $('#ghostList');
-      const $ghostCount = $('#ghostCount');
-
-      function labelOf(k){ return (EVIDENCES.find(e=>e.key===k)?.label) ?? k; }
-      function cycleState(s){ return s===0?1:(s===1?-1:0); }
-      function renderEvidence(){
-        $evList.innerHTML='';
-        for (const ev of EVIDENCES){
-          const st = state.ev[ev.key] ?? 0;
-          const div = document.createElement('div');
-          div.className='ev'; div.dataset.key=ev.key; div.dataset.state=String(st);
-          const btn = document.createElement('button');
-          btn.type='button'; btn.className='ev-btn'; btn.setAttribute('aria-label', `${ev.label} – état`); btn.tabIndex=0;
-          btn.innerHTML = `<span class="box">${ st===1?'✓':(st===-1?'✕':'') }</span><span class="lbl">${ev.label}</span>`;
-          div.appendChild(btn); $evList.appendChild(div);
-        }
-      }
-      function selectedIncluded(){ return Object.entries(state.ev).filter(([,v])=>v===1).map(([k])=>k); }
-      function selectedExcluded(){ return Object.entries(state.ev).filter(([,v])=>v===-1).map(([k])=>k); }
-
-      function isCandidate(g){
-        const inc=selectedIncluded(), exc=selectedExcluded();
-        if (state.x.has(g.name)) return false;
-        if (!inc.every(k=>g.evidences.includes(k))) return false;
-        if (exc.some(k=>g.evidences.includes(k))) return false;
-        return true;
-      }
-      function renderGhosts(){
-        const list = GHOSTS.map(g=>({...g, candidate:isCandidate(g), excluded:state.x.has(g.name)}));
-        const candidates = list.filter(x=>x.candidate);
-        $ghostCount.textContent = `${candidates.length} ${candidates.length>1?'fantômes':'fantôme'}`;
-        $ghostList.innerHTML='';
-        for (const g of list){
-          const el = document.createElement('div');
-          el.className='g'+(g.excluded?' excluded':''); el.dataset.name=g.name;
-          el.innerHTML = `
-            <div class="name">${g.name}</div>
-            <div class="chips">${g.evidences.map(k=>`<span class="chip">${labelOf(k)}</span>`).join('')}</div>
-            <div class="tools">
-              <button data-act="toggle">${g.excluded ? 'Désarayer' : 'Rayer'}</button>
-              <button data-act="noop">${g.candidate ? 'Candidat ✓' : 'Hors critère'}</button>
-            </div>`;
-          $ghostList.appendChild(el);
-        }
-      }
-
-      // Interactions Evidence
-      $evList.addEventListener('click', (e)=>{
-        const item = e.target.closest('.ev'); if(!item) return;
-        const key = item.dataset.key; state.ev[key] = cycleState(state.ev[key]??0);
-        renderEvidence(); renderGhosts(); syncURL(true); save();
-      });
-      $evList.addEventListener('keydown', (e)=>{
-        if(e.key!=='Enter' && e.key!==' ') return;
-        const btn=e.target.closest('.ev-btn'); if(!btn) return; e.preventDefault();
-        const key = btn.closest('.ev')?.dataset.key; if(!key) return;
-        state.ev[key] = cycleState(state.ev[key]??0);
-        renderEvidence(); renderGhosts(); syncURL(true); save();
-      });
-
-      // Interactions Ghosts
-      $ghostList.addEventListener('click', (e)=>{
-        const btn=e.target.closest('button[data-act]'); if(!btn) return;
-        if(btn.dataset.act==='toggle'){
-          const name=e.target.closest('.g')?.dataset.name; if(!name) return;
-          if(state.x.has(name)) state.x.delete(name); else state.x.add(name);
-          renderGhosts(); syncURL(); save();
-        }
-      });
-      $('#clearEv').addEventListener('click', ()=>{
-        for(const k of Object.keys(state.ev)) state.ev[k]=0;
-        renderEvidence(); renderGhosts(); syncURL(); save();
-      });
-      $('#clearX').addEventListener('click', ()=>{
-        state.x.clear(); renderGhosts(); syncURL(); save();
-      });
-
-      // URL & stockage
-      function syncURL(replace=false){
-        const inc=selectedIncluded(), exc=selectedExcluded(), x=Array.from(state.x);
-        const p=new URLSearchParams(); if(inc.length)p.set('e',inc.join(',')); if(exc.length)p.set('ne',exc.join(',')); if(x.length)p.set('x',x.join(','));
-        const url = location.pathname + (p.toString()?('?'+p):'') + (location.hash || '#evidence');
-        history[replace?'replaceState':'pushState']({},'',url); return url;
-      }
-      function loadFromURL(){
-        const p=new URLSearchParams(location.search);
-        const e =(p.get('e')||'').split(',').map(s=>s.trim()).filter(Boolean);
-        const ne=(p.get('ne')||'').split(',').map(s=>s.trim()).filter(Boolean);
-        const x =(p.get('x')||'').split(',').map(s=>s.trim()).filter(Boolean);
-        for(const k of Object.keys(state.ev)) state.ev[k]=0;
-        for(const k of e)  if(state.ev[k]!=null) state.ev[k]=1;
-        for(const k of ne) if(state.ev[k]!=null) state.ev[k]=-1;
-        state.x=new Set(x.filter(n=>GHOSTS.some(g=>g.name===n)));
-      }
-      function save(){ try{ localStorage.setItem('phasmo:journal', JSON.stringify({ev:state.ev,x:[...state.x]})); }catch{} }
-      function restore(){
-        try{
-          const raw=localStorage.getItem('phasmo:journal'); if(!raw) return;
-          const obj=JSON.parse(raw); if(obj?.ev) for(const k of Object.keys(state.ev)) state.ev[k]=obj.ev[k]??0;
-          if(obj?.x) state.x=new Set(obj.x);
-        }catch{}
-      }
-
-      async function share(url, btn){
-        try{
-          if(navigator.share){ await navigator.share({title:'Phasmo – Journal', url}); }
-          else if(navigator.clipboard){ await navigator.clipboard.writeText(url); if(btn){ const t=btn.textContent; btn.textContent='Lien copié ✅'; setTimeout(()=>btn.textContent=t,1200);} }
-          else alert(url);
-        }catch{}
-      }
-      $('#shareEv').addEventListener('click', ()=>share(syncURL(), $('#shareEv')));
-      $('#shareAll').addEventListener('click', ()=>share(syncURL(), $('#shareAll')));
-
-      // Init
-      function init(){
-        if(location.search) loadFromURL(); else restore();
-        renderEvidence(); renderGhosts(); syncTabs(); syncURL(true);
-      }
-      init();
-
-    }catch(err){ console.error(err); showError(err && err.message ? err.message : err); }
-  })();
-  </script>
-</body>
-</html>
