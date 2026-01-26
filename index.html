@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PHASMO-TRACKER v4.5 | Full Database & Maps</title>
+  <title>PHASMO-TRACKER v4.8 | Full Fix</title>
   <style>
     :root {
       --bg: #0b0e14; --card-bg: #161b26; --header-bg: rgba(22, 27, 38, 0.95);
@@ -19,10 +19,10 @@
     }
 
     .nav-tabs { display: flex; gap: 10px; background: #0b0e14; padding: 5px; border-radius: 8px; border: 1px solid var(--border); }
-    .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-weight: bold; padding: 8px 16px; border-radius: 6px; transition: 0.2s; }
+    .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-weight: bold; padding: 8px 16px; border-radius: 6px; }
     .nav-btn.active { color: #000; background: var(--accent); }
 
-    .dashboard { display: flex; max-width: 1600px; margin: 20px auto; gap: 20px; padding: 0 20px; align-items: flex-start; }
+    .dashboard { display: flex; max-width: 1600px; margin: 20px auto; gap: 20px; padding: 0 20px; }
     
     /* Layout Tracker */
     aside { width: 340px; position: sticky; top: 100px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
@@ -34,7 +34,7 @@
     .timer-btn { flex: 1; padding: 10px 5px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: bold; background: #1e2533; color: white; }
     .timer-btn.running { background: var(--warning); color: black; border-color: white; }
 
-    /* Grille Fantômes */
+    /* Grille Fantômes - Forcer l'affichage */
     #page-tracker { display: flex; gap: 20px; width: 100%; }
     .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; flex-grow: 1; }
     .ghost-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; transition: 0.3s; opacity: 0.3; filter: grayscale(1); }
@@ -44,10 +44,9 @@
     /* Page Cartes */
     #page-maps { display: none; width: 100%; flex-direction: column; gap: 20px; }
     .map-select { width: 100%; padding: 15px; background: var(--card-bg); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1rem; cursor: pointer; }
-    .map-viewer { width: 100%; background: #000; border-radius: 12px; border: 1px solid var(--border); display: flex; justify-content: center; overflow: hidden; padding: 20px; }
-    .map-viewer img { max-width: 100%; height: auto; border-radius: 5px; }
+    .map-viewer { width: 100%; min-height: 500px; background: #000; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+    .map-viewer img { max-width: 100%; height: auto; border: 1px solid var(--border); margin-top: 15px; }
 
-    /* Boutons Preuves */
     .proof-item { padding: 8px 0; border-bottom: 1px solid #232a37; }
     .btn-group { display: flex; gap: 4px; margin-top: 5px; }
     .btn-action { flex: 1; border: 1px solid var(--border); background: #1e2533; color: var(--muted); padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
@@ -82,7 +81,7 @@
         <div class="timer-display" id="timer-val">00:00</div>
         <div class="timer-btns">
           <button id="timer-90" class="timer-btn" onclick="handleTimer(90, this)">90s</button>
-          <button id="timer-180" class="timer-btn" onclick="handleTimer(180, this)">180s (Esprit)</button>
+          <button id="timer-180" class="timer-btn" onclick="handleTimer(180, this)">180s</button>
           <button class="timer-btn" style="background:#451a1a; flex:0.4" onclick="stopTimer()">X</button>
         </div>
       </div>
@@ -101,28 +100,28 @@
 
   <div id="page-maps">
     <div class="card">
-      <h2 style="margin:0 0 10px 0;">Plan technique & Objets Maudits 🗺️</h2>
+      <h2 style="margin:0 0 10px 0;">Emplacement des Objets 🗺️</h2>
       <select class="map-select" onchange="loadMap(this.value)">
-        <option value="">-- Sélectionner une carte --</option>
-        <option value="tanglewood">6 Tanglewood Drive</option>
-        <option value="willow">Willow Street</option>
-        <option value="ridgeview">10 Ridgeview Court</option>
-        <option value="edgefield">42 Edgefield Road</option>
-        <option value="grafton">Grafton Farmhouse</option>
-        <option value="bleasdale">Bleasdale Farmhouse</option>
-        <option value="woodwind">Camp Woodwind</option>
-        <option value="prison">Prison</option>
-        <option value="asylum">Sunny Meadows</option>
+        <option value="">-- Choisir une carte --</option>
+        <option value="Tanglewood">Tanglewood Drive</option>
+        <option value="Willow">Willow Street</option>
+        <option value="Ridgeview">Ridgeview Court</option>
+        <option value="Edgefield">Edgefield Road</option>
+        <option value="Grafton">Grafton Farmhouse</option>
+        <option value="Bleasdale">Bleasdale Farmhouse</option>
+        <option value="Woodwind">Camp Woodwind</option>
+        <option value="Prison">Prison</option>
+        <option value="SunnyMeadows">Sunny Meadows</option>
       </select>
     </div>
     <div class="map-viewer" id="map-container">
-        <p style="color:var(--muted)">Sélectionnez une carte pour charger le plan technique.</p>
+        <p style="color:var(--muted)">Plan technique en attente...</p>
     </div>
   </div>
 </main>
 
 <script>
-/* --- LOGIQUE FANTÔMES (24 ENTITÉS) --- */
+/* --- BASE DE DONNÉES INTÉGRALE --- */
 const PROOFS = [
   { id:'emf', label:'📶 EMF Niveau 5' }, { id:'orbe', label:'🔮 Orbe' },
   { id:'spirit', label:'📻 Spirit Box' }, { id:'freezing', label:'❄️ Temp. Glaciales' },
@@ -131,34 +130,37 @@ const PROOFS = [
 
 const GHOST_DATA = [
   { name:'Esprit', proofs:['emf','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Encens : Bloque les chasses 180s." },
-  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne laisse jamais d'empreinte." },
-  { name:'Fantôme', proofs:['dots','uv','spirit'], threshold: 50, speed:"1.7 m/s", test:"Clignote lentement en chasse." },
-  { name:'Poltergeist', proofs:['uv','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Lance plusieurs objets à la fois." },
+  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne marche jamais dedans." },
+  { name:'Fantôme', proofs:['dots','uv','spirit'], threshold: 50, speed:"1.7 m/s", test:"Disparaît si photographié." },
+  { name:'Poltergeist', proofs:['uv','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Lancers multiples d'objets." },
   { name:'Banshee', proofs:['dots','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Cri unique au micro parabolique." },
-  { name:'Djinn', proofs:['emf','uv','freezing'], threshold: 50, speed:"1.7-2.5m/s", test:"Ne coupe jamais le courant lui-même." },
-  { name:'Jument', proofs:['orbe','spirit','writing'], threshold: 60, speed:"1.7 m/s", test:"Plus active dans l'obscurité." },
-  { name:'Revenant', proofs:['orbe','writing','freezing'], threshold: 50, speed:"1.1-3.0m/s", test:"Ligne de vue : Accélère violemment." },
-  { name:'Ombre', proofs:['emf','writing','freezing'], threshold: 35, speed:"1.7 m/s", test:"Ne chasse pas si groupés." },
-  { name:'Démon', proofs:['writing','uv','freezing'], threshold: 70, speed:"1.7 m/s", test:"Délai réduit entre les chasses (20s)." },
-  { name:'Yurei', proofs:['dots','orbe','freezing'], threshold: 50, speed:"1.7 m/s", test:"Fermeture de porte drainant 15% SAN." },
-  { name:'Oni', proofs:['dots','emf','freezing'], threshold: 50, speed:"1.7 m/s", test:"Très visible pendant les chasses." },
-  { name:'Yokai', proofs:['dots','orbe','spirit'], threshold: 80, speed:"1.7 m/s", test:"Audition réduite en chasse (2m)." },
-  { name:'Hantu', proofs:['orbe','uv','freezing'], threshold: 50, speed:"1.4-2.7m/s", test:"Rapide dans le froid, lent au chaud." },
-  { name:'Goryo', proofs:['dots','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"DOTS visibles uniquement sur caméra." },
-  { name:'Myling', proofs:['writing','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"Pas inaudibles à longue distance." },
-  { name:'Onryo', proofs:['orbe','freezing','spirit'], threshold: 60, speed:"1.7 m/s", test:"Éteindre 3 bougies = Chasse immédiate." },
-  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], threshold: 50, speed:"1.5-1.9m/s", test:"Interactions doubles simultanées." },
-  { name:'Raiju', proofs:['dots','emf','orbe'], threshold: 65, speed:"1.7-2.5m/s", test:"Vitesse accrue près de l'électronique." },
-  { name:'Obake', proofs:['emf','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Chance d'empreinte à 6 doigts." },
-  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Varie", test:"Présente toujours des Orbes (Fake)." },
-  { name:'Moroi', proofs:['spirit','writing','freezing'], threshold: 50, speed:"1.5-2.2m/s", test:"Vitesse liée à votre santé mentale." },
-  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Sait où vous êtes. Ralentit proche." },
-  { name:'Thaye', proofs:['dots','orbe','writing'], threshold: 75, speed:"2.7-1.0m/s", test:"Plus lent au fil de la partie." }
+  { name:'Djinn', proofs:['emf','uv','freezing'], threshold: 50, speed:"1.7-2.5m/s", test:"Accélère si courant ON." },
+  { name:'Jument', proofs:['orbe','spirit','writing'], threshold: 60, speed:"1.7 m/s", test:"Chasse plus tôt dans le noir." },
+  { name:'Revenant', proofs:['orbe','writing','freezing'], threshold: 50, speed:"1.1-3.0m/s", test:"Très rapide si ligne de vue." },
+  { name:'Ombre', proofs:['emf','writing','freezing'], threshold: 35, speed:"1.7 m/s", test:"Inactif si vous êtes groupés." },
+  { name:'Démon', proofs:['writing','uv','freezing'], threshold: 70, speed:"1.7 m/s", test:"Chasse possible dès 100% SAN." },
+  { name:'Yurei', proofs:['dots','orbe','freezing'], threshold: 50, speed:"1.7 m/s", test:"Fermeture de porte (drain SAN)." },
+  { name:'Oni', proofs:['dots','emf','freezing'], threshold: 50, speed:"1.7 m/s", test:"Très visible en chasse." },
+  { name:'Yokai', proofs:['dots','orbe','spirit'], threshold: 80, speed:"1.7 m/s", test:"Chasse si vous parlez près de lui." },
+  { name:'Hantu', proofs:['orbe','uv','freezing'], threshold: 50, speed:"1.4-2.7m/s", test:"Rapide dans le froid." },
+  { name:'Goryo', proofs:['dots','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"DOTS sur caméra seulement." },
+  { name:'Myling', proofs:['writing','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"Pas inaudibles de loin." },
+  { name:'Onryo', proofs:['orbe','freezing','spirit'], threshold: 60, speed:"1.7 m/s", test:"Peur du feu (bougies)." },
+  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], threshold: 50, speed:"1.5-1.9m/s", test:"Interactions doubles." },
+  { name:'Raiju', proofs:['dots','emf','orbe'], threshold: 65, speed:"1.7-2.5m/s", test:"Boosté par l'électronique." },
+  { name:'Obake', proofs:['emf','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Empreintes à 6 doigts." },
+  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Variable", test:"Orbes (Fake) toujours présents." },
+  { name:'Moroi', proofs:['spirit','writing','freezing'], threshold: 50, speed:"1.5-2.2m/s", test:"Vitesse liée à la SAN basse." },
+  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Sait toujours où vous êtes." },
+  { name:'Thaye', proofs:['dots','orbe','writing'], threshold: 75, speed:"2.7-1.0m/s", test:"Ralentit avec l'âge." }
 ];
 
 let state = { include: [], exclude: [], san: 100 };
+let timerId = null;
 
+/* --- MOTEUR DE RENDU --- */
 function render() {
+  // Preuves
   document.getElementById('proof-list').innerHTML = PROOFS.map(p => {
     const isInc = state.include.includes(p.id);
     const isExc = state.exclude.includes(p.id);
@@ -169,16 +171,17 @@ function render() {
     </div></div>`;
   }).join('');
 
+  // Fantômes
   document.getElementById('ghost-display').innerHTML = GHOST_DATA.map(g => {
     let gp = [...g.proofs]; if(g.name === 'Le Mimic') gp.push('orbe');
     const isCandidate = state.include.every(id => gp.includes(id)) && state.exclude.every(id => !gp.includes(id));
     const canHunt = state.san <= g.threshold;
     return `
       <div class="ghost-card ${isCandidate ? 'candidate' : ''} ${canHunt && isCandidate ? 'can-hunt' : ''}">
-        <div class="ghost-header"><div class="ghost-name">${g.name}</div><div class="hunt-tag">${canHunt ? '⚠️ CHASSE' : ''}</div></div>
+        <div class="ghost-header"><div class="ghost-name">${g.name}</div><div class="hunt-tag" style="color:var(--danger)">${canHunt?'⚠️ CHASSE':''}</div></div>
         <div style="font-size:0.7rem; color:var(--warning); margin-bottom:8px">Seuil : ${g.threshold}% | Vitesse : ${g.speed}</div>
-        <div class="badge-list">${g.proofs.map(pID => `<span class="badge ${state.include.includes(pID)?'ok':''}">${PROOFS.find(x=>x.id===pID).label}</span>`).join('')}</div>
-        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">SÉCRETS ▼</button>
+        <div class="badge-list">${g.proofs.map(pID => `<span class="badge ${state.include.includes(pID)?'ok':''}">${pID.toUpperCase()}</span>`).join('')}</div>
+        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">VOIR TEST ▼</button>
         <div class="secrets-content">${g.test}</div>
       </div>`;
   }).join('');
@@ -191,59 +194,53 @@ function toggleProof(id, action) {
 }
 
 function updateSan(v) { state.san = v; document.getElementById('san-val').textContent = v + "%"; render(); }
-function resetAll() { state = { include: [], exclude: [], san: 100 }; document.getElementById('san-slider').value = 100; updateSan(100); stopTimer(); }
 
-/* --- LOGIQUE CHRONO --- */
-let timerId = null;
-let timeLeft = 0;
-
-function handleTimer(secs, btn) {
-  stopTimer();
-  timeLeft = secs;
-  btn.classList.add('running');
-  updateTimerDisplay();
-  timerId = setInterval(() => {
-    timeLeft--;
-    updateTimerDisplay();
-    if (timeLeft <= 0) { stopTimer(); document.getElementById('timer-val').textContent = "PRÊT !"; }
-  }, 1000);
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timeLeft / 60); const s = timeLeft % 60;
-  document.getElementById('timer-val').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
-function stopTimer() {
-  clearInterval(timerId); timeLeft = 0; document.getElementById('timer-val').textContent = "00:00";
-  document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('running'));
-}
-
-/* --- LOGIQUE NAVIGATION & MAPS --- */
+/* --- NAVIGATION & CHRONO --- */
 function switchPage(page) {
   document.getElementById('page-tracker').style.display = (page === 'tracker' ? 'flex' : 'none');
   document.getElementById('page-maps').style.display = (page === 'maps' ? 'flex' : 'none');
-  document.getElementById('nav-tracker').classList.toggle('active', page === 'tracker');
-  document.getElementById('nav-maps').classList.toggle('active', page === 'maps');
+  document.getElementById('nav-tracker').className = `nav-btn ${page === 'tracker' ? 'active' : ''}`;
+  document.getElementById('nav-maps').className = `nav-btn ${page === 'maps' ? 'active' : ''}`;
 }
 
-function loadMap(map) {
-    const container = document.getElementById('map-container');
-    if(!map) return;
-    const urls = {
-        'tanglewood': 'https://static.wikia.nocookie.net/phasmophobia/images/1/1d/Tanglewood_Drive_Map.png',
-        'willow': 'https://static.wikia.nocookie.net/phasmophobia/images/4/4b/Willow_Street_House_Map.png',
-        'ridgeview': 'https://static.wikia.nocookie.net/phasmophobia/images/7/77/10_Ridgeview_Court_Map.png',
-        'edgefield': 'https://static.wikia.nocookie.net/phasmophobia/images/0/01/42_Edgefield_Road_Map.png',
-        'grafton': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Grafton_Farmhouse_Map.png',
-        'bleasdale': 'https://static.wikia.nocookie.net/phasmophobia/images/0/00/Bleasdale_Farmhouse_Map.png',
-        'woodwind': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Camp_Woodwind_Map.png',
-        'prison': 'https://static.wikia.nocookie.net/phasmophobia/images/d/d4/Prison_Map.png',
-        'asylum': 'https://static.wikia.nocookie.net/phasmophobia/images/e/e0/Sunny_Meadows_Mental_Institution_Map.png'
-    };
-    container.innerHTML = `<img src="${urls[map]}" alt="Carte ${map}">`;
+function handleTimer(secs, btn) {
+  stopTimer(); btn.classList.add('running'); let time = secs;
+  const update = () => {
+    let m = Math.floor(time/60), s = time%60;
+    document.getElementById('timer-val').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  };
+  update();
+  timerId = setInterval(() => {
+    time--; update();
+    if(time <= 0) { stopTimer(); document.getElementById('timer-val').textContent = "PRÊT !"; }
+  }, 1000);
 }
 
+function stopTimer() {
+  clearInterval(timerId); document.getElementById('timer-val').textContent = "00:00";
+  document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('running'));
+}
+
+/* --- FIX CARTES --- */
+function loadMap(name) {
+  const container = document.getElementById('map-container');
+  if(!name) return;
+  // URLs simplifiées et robustes
+  const maps = {
+    'Tanglewood': 'https://static.wikia.nocookie.net/phasmophobia/images/1/1d/Tanglewood_Drive_Map.png',
+    'Willow': 'https://static.wikia.nocookie.net/phasmophobia/images/4/4b/Willow_Street_House_Map.png',
+    'Ridgeview': 'https://static.wikia.nocookie.net/phasmophobia/images/7/77/10_Ridgeview_Court_Map.png',
+    'Edgefield': 'https://static.wikia.nocookie.net/phasmophobia/images/0/01/42_Edgefield_Road_Map.png',
+    'Grafton': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Grafton_Farmhouse_Map.png',
+    'Bleasdale': 'https://static.wikia.nocookie.net/phasmophobia/images/0/00/Bleasdale_Farmhouse_Map.png',
+    'Woodwind': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Camp_Woodwind_Map.png',
+    'Prison': 'https://static.wikia.nocookie.net/phasmophobia/images/d/d4/Prison_Map.png',
+    'SunnyMeadows': 'https://static.wikia.nocookie.net/phasmophobia/images/e/e0/Sunny_Meadows_Mental_Institution_Map.png'
+  };
+  container.innerHTML = `<p style="margin-bottom:10px">Carte de <b>${name}</b> :</p><img src="${maps[name]}" onerror="this.src='https://via.placeholder.com/800x600?text=Erreur+de+chargement+Image'">`;
+}
+
+function resetAll() { state = { include: [], exclude: [], san: 100 }; document.getElementById('san-slider').value = 100; updateSan(100); stopTimer(); }
 render();
 </script>
 </body>
