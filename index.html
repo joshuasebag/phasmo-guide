@@ -7,13 +7,13 @@
   <title>Journal Phasmophobia – Preuves & Fantômes</title>
 
   <style>
-    /* --- Base --- */
     :root{
-      --border:#20283a; --ink:#e6e9ef; --muted:#9aa3b2;
+      --bg:#0e1016; --paper:#121420; --ink:#e6e9ef; --muted:#9aa3b2; --accent:#5eead4;
+      --line:#1a2235; --chip:#1b2131; --border:#20283a; --ok:#22c55e; --no:#ef4444;
     }
     body{margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:#0e1016; color:var(--ink)}
-    header{position:sticky; top:0; background:#121420; padding:12px 14px; border-bottom:1px solid var(--border)}
-    .wrap{max-width:1000px; margin:0 auto; padding:0 14px}
+    header{position:sticky; top:0; background:#121420; padding:12px 14px; border-bottom:1px solid var(--border); z-index:10}
+    .wrap{max-width:1100px; margin:0 auto; padding:0 14px}
     .tabs{display:flex; gap:8px}
     .tab{padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0; background:#0d1120; color:#cfd6e6; text-decoration:none}
     .tab[data-active="true"]{background:#151a2a; color:#fff}
@@ -21,21 +21,19 @@
     main{padding:14px}
     .book{display:grid; grid-template-columns:1fr; gap:18px; background:#121420; border:1px solid var(--border); border-radius:14px; padding:18px}
 
-    /* --- Preuves (chips) --- */
+    /* Preuves */
     .chips{display:flex; flex-wrap:wrap; gap:8px}
-    .chip{display:flex; align-items:center; gap:8px; padding:8px 10px; background:#1b2131; border:1px solid var(--border); border-radius:999px}
+    .chip{display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--chip); border:1px solid var(--border); border-radius:999px}
     .chip .name{font-weight:600}
     .chip button{appearance:none; border:1px solid var(--border); background:#0e1322; color:#cfd6e6; padding:3px 7px; border-radius:7px; cursor:pointer; font-size:12px}
     .chip button[data-state="include"]{border-color:#1e3a2f; background:#0c1713; color:#a7f3d0}
     .chip button[data-state="exclude"]{border-color:#3a1e1e; background:#170c0c; color:#fecaca}
 
     section[hidden]{display:none !important}
-    .count{color:var(--muted)}
+    .count{color:#9aa3b2}
+    .hr{height:1px; background:linear-gradient(90deg,transparent,var(--line),transparent); margin:10px 0}
 
-    /* --- HR --- */
-    .hr{height:1px; background:linear-gradient(90deg,transparent,#1a2235,transparent); margin:10px 0}
-
-    /* --- Carte Probables --- */
+    /* Carte probables (Journal) */
     .card{border:1px solid var(--border); background:#0d1120; border-radius:12px; padding:12px}
     .card-title{font-weight:700; margin-bottom:8px}
     .mini-list{display:flex; flex-wrap:wrap; gap:8px}
@@ -44,18 +42,15 @@
       font-size:12px; color:#cfe3ff
     }
 
-    /* --- Onglet Fantômes --- */
+    /* Fantômes */
     .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px}
     .search{flex:1; min-width:220px}
-    .search input{
-      width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border);
-      background:#0d1120; color:#e6e9ef
-    }
+    .search input{width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:#0d1120; color:#e6e9ef}
 
-    .ghosts{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
+    .ghosts{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px}
     .ghost{
       border:1px solid var(--border); background:#0d1120; border-radius:12px; padding:12px;
-      display:flex; flex-direction:column; gap:8px
+      display:flex; flex-direction:column; gap:10px
     }
     .ghost.candidate{ outline:1px solid #1c3b2f; box-shadow:0 0 0 2px rgba(34,197,94,.15) inset }
     .name{font-weight:700}
@@ -66,7 +61,20 @@
     }
     .badge.ok{background:#0e1e17; color:#befae2; border-color:#1c3b2f}
     .badge.no{background:#1e0f0f; color:#fecaca; border-color:#3a1e1e}
-    .badge.mimic{background:#241a0b; color:#f7e3b3; border-color:#6b4e1e}
+
+    .ghost .meta{display:flex; gap:8px; flex-wrap:wrap; font-size:12px; color:#9aa3b2}
+    .tag{border:1px solid var(--border); background:#0f1526; border-radius:6px; padding:2px 6px}
+    .more{display:none; border-top:1px dashed #1e2a48; padding-top:8px}
+    .ghost.open .more{display:block}
+    .ghost .tools{display:flex; gap:8px; flex-wrap:wrap}
+    .ghost .btn{
+      appearance:none; cursor:pointer; border:1px solid var(--border); background:#0e1322; color:#cfd6e6;
+      padding:6px 10px; border-radius:8px; font-size:12px; text-decoration:none
+    }
+    .ghost .btn.primary{background:#103a33; border-color:#1c3b2f; color:#a7f3d0}
+    .ghost .btn.link{background:transparent; border-color:#2a3759}
+    .src{font-size:12px; color:#9aa3b2}
+    .src a{color:#a7f3d0; text-decoration:none}
   </style>
 </head>
 
@@ -86,7 +94,7 @@
     <div class="book">
 
       <!-- JOURNAL -->
-      <section id="journal">
+      <section id="journal" aria-labelledby="tab-journal">
         <h2>Preuves</h2>
         <p class="count" id="state-summary" aria-live="polite"></p>
         <div class="chips" id="proof-chips"></div>
@@ -100,10 +108,10 @@
       </section>
 
       <!-- FANTOMES -->
-      <section id="fantomes" hidden>
+      <section id="fantomes" aria-labelledby="tab-fantomes" hidden>
         <div class="toolbar">
           <div class="search">
-            <input type="search" id="ghost-search" placeholder="Rechercher un fantôme (nom, preuve)…" aria-label="Rechercher un fantôme">
+            <input type="search" id="ghost-search" placeholder="Rechercher un fantôme (nom, preuve)…" aria-label="Rechercher un fantôme" />
           </div>
           <div class="count" id="ghost-count"></div>
         </div>
@@ -114,34 +122,5 @@
       </section>
 
       <!-- OPTIONS -->
-      <section id="options" hidden>
+      <section id="options" aria-labelledby="tab-options" hidden>
         <button id="reset-all">Réinitialiser</button>
-      </section>
-
-    </div>
-  </main>
-
-<script>
-/* =========================
-   DONNÉES DES PREUVES
-========================= */
-const PROOFS = [
-  { id:'emf',      label:'EMF Niveau 5' },
-  { id:'orbe',     label:'Orbe' },
-  { id:'spirit',   label:'Spirit Box' },
-  { id:'freezing', label:'Températures glaciales' },
-  { id:'uv',       label:'Traces UV' },
-  { id:'dots',     label:'D.O.T.S' },
-  { id:'writing',  label:'Écriture fantomatique' },
-];
-
-/* =========================
-   DONNÉES DES FANTÔMES (27)
-   v0.15.x + Dayan/Gallu/Obambo
-========================= */
-const GHOSTS = [
-  { name:'Esprit',        proofs:['emf','spirit','writing'] },                  // Spirit
-  { name:'Spectre',       proofs:['dots','emf','spirit'] },                     // Wraith
-  { name:'Fantôme',       proofs:['dots','uv','spirit'] },                      // Phantom
-  { name:'Poltergeist',   proofs:['uv','spirit','writing'] },
-  { name:'Banshee',       proofs:['dots','orbe','uv'] },
