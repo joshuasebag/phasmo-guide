@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v6.2 (Horizontal)</title>
+  <title>PHASMO-TRACKER v6.3 (Custom)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -30,10 +30,10 @@
     .nav-item.active { background: var(--accent); color: #0f172a; }
     .btn-reset { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* LAYOUT HORIZONTAL FORCÉ */
+    /* LAYOUT HORIZONTAL */
     .container {
       display: grid;
-      grid-template-columns: 320px 1fr; /* Colonne gauche fixe, droite flexible */
+      grid-template-columns: 320px 1fr;
       gap: 20px;
       max-width: 1600px;
       margin: 20px auto;
@@ -42,16 +42,14 @@
       width: 100%;
     }
 
-    /* BARRE LATÉRALE GAUCHE */
     aside { 
       display: flex; flex-direction: column; gap: 15px; 
-      position: sticky; top: 80px; height: fit-content; /* Reste visible au scroll */
+      position: sticky; top: 80px; height: fit-content;
     }
     
     .main-content { min-width: 0; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
 
-    /* FOOTER */
     footer {
       text-align: center; padding: 20px; margin-top: 20px;
       border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem;
@@ -86,7 +84,7 @@
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUE EMPLACEMENTS (Tableau) */
+    /* VUE EMPLACEMENTS */
     #view-maps { display: none; }
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -95,7 +93,6 @@
     .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
-    /* Responsive uniquement sur Mobile (Portrait) */
     @media(max-width: 768px){ 
       .container { grid-template-columns: 1fr; } 
       aside { position: relative; top: 0; width: 100%; }
@@ -105,7 +102,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v6.2</div>
+  <div class="brand">PHASMO-TRACKER v6.3</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -174,6 +171,7 @@ const PROOFS = [
   { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
 ];
 
+// LISTE INCLUANT DAYAN, GALLU, OBAMBO
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Encens bloque 180s.' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche jamais dans le sel.' },
@@ -198,7 +196,12 @@ const GHOSTS = [
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'A toujours des orbes (4e).' },
   { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Vitesse selon SAN.' },
   { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Sait où vous êtes.' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' }
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' },
+  
+  // ENTITÉS CUSTOM / MODS
+  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'Vite si joueur bouge.' },
+  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'Enragé par objets défensifs.' },
+  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'Alterne Calme/Agressif.' }
 ];
 
 const LOCATIONS = {
