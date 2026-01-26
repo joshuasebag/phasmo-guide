@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v9.0 (Encyclopedia)</title>
+  <title>PHASMO-TRACKER v10.1 (Auto-Save)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -49,6 +49,12 @@
     .timer-guide b { color: var(--accent); }
     .timer-guide span { display: block; margin-bottom: 4px; }
 
+    /* CHECKLIST */
+    .check-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
+    .check-row:last-child { border-bottom: none; }
+    .check-label { font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
+    .check-input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+
     /* FILTRE VITESSE */
     .speed-opts { display:flex; gap:5px; margin-top:10px; }
     .btn-speed { flex:1; padding:6px; background:#0f172a; border:1px solid #334155; color:#94a3b8; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:bold; }
@@ -86,7 +92,7 @@
     /* VUE GUIDES */
     #view-guide { display: none; column-count: 2; column-gap: 20px; }
     .guide-section { margin-bottom: 20px; break-inside: avoid; }
-    .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+    .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
     .guide-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     .guide-table th { text-align: left; color: #94a3b8; padding: 6px; border-bottom: 1px solid #334155; }
     .guide-table td { padding: 6px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
@@ -103,7 +109,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v9.0</div>
+  <div class="brand">PHASMO-TRACKER v10.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -124,7 +130,27 @@
       </div>
       <div class="timer-guide">
         <span><b>90s :</b> Temps standard. S'il chasse avant, c'est un Démon (60s).</span>
-        <span><b>180s :</b> Test Esprit. S'il chasse avant la fin, ce n'est <u>PAS</u> un Esprit.</span>
+        <span><b>180s :</b> Test Esprit. S'il chasse avant, ce n'est <u>PAS</u> un Esprit.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-weight:800; color:var(--accent); margin-bottom:10px; font-size:0.9rem; border-bottom:1px solid #334155; padding-bottom:5px;">MISSIONS 📝</div>
+      <div class="check-row">
+        <label class="check-label" for="chk-bone">🦴 Os récupéré</label>
+        <input type="checkbox" id="chk-bone" class="check-input" onchange="saveState()">
+      </div>
+      <div class="check-row">
+        <label class="check-label" for="chk-obj1">📌 Objectif 2</label>
+        <input type="checkbox" id="chk-obj1" class="check-input" onchange="saveState()">
+      </div>
+      <div class="check-row">
+        <label class="check-label" for="chk-obj2">📌 Objectif 3</label>
+        <input type="checkbox" id="chk-obj2" class="check-input" onchange="saveState()">
+      </div>
+      <div class="check-row">
+        <label class="check-label" for="chk-photo">📸 Photos Parfaites</label>
+        <input type="checkbox" id="chk-photo" class="check-input" onchange="saveState()">
       </div>
     </div>
 
@@ -133,13 +159,13 @@
         <span style="font-size:0.9rem; font-weight:bold">Santé Mentale</span>
         <span style="color:var(--accent); font-weight:bold" id="san-disp">100%</span>
       </div>
-      <input type="range" min="0" max="100" value="100" style="width:100%" oninput="setSan(this.value)">
+      <input type="range" min="0" max="100" value="100" style="width:100%" id="san-input" oninput="setSan(this.value)">
       <div style="margin-top:15px; border-top:1px solid #334155; padding-top:10px;">
-        <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:5px;">FILTRE VITESSE DE CHASSE :</span>
+        <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:5px;">FILTRE VITESSE :</span>
         <div class="speed-opts">
-          <button class="btn-speed active" onclick="setSpeed('all', this)">TOUT</button>
-          <button class="btn-speed" onclick="setSpeed('normal', this)">NORMAL</button>
-          <button class="btn-speed" onclick="setSpeed('fast', this)">ATYPIQUE</button>
+          <button class="btn-speed active" id="sp-all" onclick="setSpeed('all', this)">TOUT</button>
+          <button class="btn-speed" id="sp-normal" onclick="setSpeed('normal', this)">NORMAL</button>
+          <button class="btn-speed" id="sp-fast" onclick="setSpeed('fast', this)">ATYPIQUE</button>
         </div>
       </div>
     </div>
@@ -152,7 +178,7 @@
     <div id="tab-tracker" class="grid"></div>
 
     <div id="tab-maps">
-      <select class="map-select" onchange="loadLocs(this.value)">
+      <select class="map-select" id="map-selector" onchange="loadLocs(this.value)">
         <option value="">-- CHOISIR UNE CARTE --</option>
         <option value="tanglewood">6 Tanglewood Drive</option>
         <option value="willow">Willow Street</option>
@@ -170,7 +196,6 @@
     </div>
 
     <div id="tab-guide">
-      
       <div class="card guide-section">
         <div class="guide-title">🧩 OUIJA</div>
         <table class="guide-table">
@@ -178,79 +203,41 @@
           <tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr>
           <tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr>
           <tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr>
-          <tr><td>Quel âge avez-vous ?</td><td class="cost">-5%</td></tr>
-          <tr><td>Cache-cache ! (Chasse)</td><td class="cost">-25%</td></tr>
+          <tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr>
         </table>
       </div>
-
       <div class="card guide-section">
         <div class="guide-title">🃏 TAROT (10 Cartes)</div>
         <table class="guide-table">
           <tr><th>Carte</th><th>Effet</th></tr>
-          <tr><td style="color:#facc15">The Sun</td><td>Santé Mentale à 100%</td></tr>
-          <tr><td style="color:#ef4444">The Moon</td><td>Santé Mentale à 0%</td></tr>
-          <tr><td style="color:#2dd4bf">The Tower</td><td>Interaction Forcée</td></tr>
-          <tr><td style="color:#f472b6">The Wheel</td><td>+25% ou -25% Sanité</td></tr>
-          <tr><td style="color:#ef4444">The Devil</td><td>Event Fantôme</td></tr>
-          <tr><td style="color:#ef4444">The Death</td><td>CHASSE MAUDITE</td></tr>
-          <tr><td style="color:#a855f7">The Hermit</td><td>Bloque le fantôme (1min)</td></tr>
-          <tr><td style="color:#10b981">High Priestess</td><td>Ressuscite un mort</td></tr>
-          <tr><td style="color:#ef4444">The Hanged Man</td><td>TUÉ INSTANTANÉMENT</td></tr>
+          <tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr>
+          <tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr>
+          <tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr>
+          <tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr>
+          <tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr>
+          <tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr>
+          <tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr>
         </table>
       </div>
-
-      <div class="card guide-section">
-        <div class="guide-title">🧸 POUPÉE VAUDOU</div>
-        <table class="guide-table">
-          <tr><th>Action</th><th>Coût SAN</th></tr>
-          <tr><td>Enfoncer 1 aiguille</td><td class="cost">-5%</td></tr>
-          <tr><td>Aiguille Cœur</td><td class="cost">-10% + CHASSE</td></tr>
-          <tr><td>Si Sanité < 5%</td><td class="cost">CHASSE (Toutes)</td></tr>
-        </table>
-      </div>
-
-      <div class="card guide-section">
-        <div class="guide-title">🎶 BOÎTE À MUSIQUE</div>
-        <table class="guide-table">
-          <tr><th>Effet</th><th>Détails</th></tr>
-          <tr><td>Chant</td><td>Le fantôme chante (invisible)</td></tr>
-          <tr><td>Coût</td><td class="cost">-2.5% / sec</td></tr>
-          <tr><td>Chasse</td><td>Si la boîte touche le sol ou si le fantôme touche le joueur.</td></tr>
-        </table>
-      </div>
-
-      <div class="card guide-section">
-        <div class="guide-title">🔮 MIROIR HANTÉ</div>
-        <table class="guide-table">
-          <tr><th>Effet</th><th>Détails</th></tr>
-          <tr><td>Vision</td><td>Montre la pièce du fantôme</td></tr>
-          <tr><td>Coût</td><td class="cost">-7.5% / sec</td></tr>
-          <tr><td>Casse</td><td>Si 0% Sanité => CHASSE MAUDITE</td></tr>
-        </table>
-      </div>
-
       <div class="card guide-section">
         <div class="guide-title">✋ PATTE DE SINGE</div>
         <table class="guide-table">
           <tr><th>Vœu</th><th>Effet</th></tr>
           <tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr>
-          <tr><td>Voir le fantôme</td><td>Event (puis Aveugle)</td></tr>
+          <tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr>
           <tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr>
           <tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr>
-          <tr><td>De la connaissance</td><td>Barre 1 fantôme</td></tr>
         </table>
       </div>
-
       <div class="card guide-section">
-        <div class="guide-title">⭕ CERCLE D'INVOCATION</div>
+        <div class="guide-title">🔮 MIROIR / 🎶 BOÎTE / 🧸 VAUDOU</div>
         <table class="guide-table">
-          <tr><th>Action</th><th>Effet</th></tr>
-          <tr><td>Allumer 5 bougies</td><td>Invoque le fantôme</td></tr>
-          <tr><td>Coût</td><td class="cost">-16% / bougie</td></tr>
-          <tr><td>Chasse</td><td>Après 5s (Immobilisé au début)</td></tr>
+          <tr><th>Objet</th><th>Risque</th></tr>
+          <tr><td>Miroir</td><td>Chasse si 0% Sanité (-7.5%/s)</td></tr>
+          <tr><td>Boîte</td><td>Chasse si fantôme touche joueur</td></tr>
+          <tr><td>Vaudou</td><td>Aiguille cœur = Chasse (-10%)</td></tr>
         </table>
       </div>
-
     </div>
 
   </div>
@@ -261,7 +248,7 @@
 </footer>
 
 <script>
-/* ================= DONNÉES ================= */
+/* === DONNÉES === */
 const PROOFS = [
   { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' },
   { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' },
@@ -271,10 +258,10 @@ const PROOFS = [
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo. Clignote lent en chasse (Invisible longtemps).' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets pour tester.' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo. Clignote lent en chasse.' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets.' },
   { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le courant. Rapide de loin si courant ON.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le disjoncteur. Rapide de loin si courant ON.' },
   { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Lumière:</b> Éteint la lumière direct. Attaque à 60% dans le noir.' },
   { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit.' },
   { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
@@ -283,110 +270,68 @@ const GHOSTS = [
   { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée".' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
   { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'<b style="color:#2dd4bf">Test Froid:</b> Très rapide au froid (buée), lent au chaud.' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra (jamais à l\'œil nu).' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et si personne dans la pièce.' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles. Si vous entendez ses pas, votre lampe clignote déjà.' },
   { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE.' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse de chasse varie.' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse varie.' },
   { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets électroniques actifs.' },
   { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse.' },
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les autres.' },
   { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Vitesse augmente si Sanité basse.' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. Rapide loin, escargot proche.' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Demander âge Ouija. Rapide au début -> Lent à la fin.' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. VOUS VOIT. Rapide loin, escargot proche.' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Rapide au début -> Lent à la fin.' },
   { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'<b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
   { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
 const LOCATIONS = {
-  'tanglewood': [
-    { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre parentale)' },
-    { i:'🧩', n:'Ouija', l:'Sous-sol (Fond à gauche)' },
-    { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' },
-    { i:'⭕', n:'Cercle', l:'Sous-sol' },
-    { i:'🃏', n:'Tarot', l:'Salon (Table basse)' },
-    { i:'📦', n:'Boîte', l:'Nursery (Chambre bébé)' },
-    { i:'✋', n:'Patte', l:'Salle à manger (Meuble vitré)' }
-  ],
-  'willow': [
-    { i:'🔮', n:'Miroir', l:'Couloir (Coin buanderie)' },
-    { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' },
-    { i:'🧸', n:'Poupée', l:'Chambre garçons (Armoire)' },
-    { i:'⭕', n:'Cercle', l:'Sous-sol' },
-    { i:'🃏', n:'Tarot', l:'Salon (Table basse)' },
-    { i:'📦', n:'Boîte', l:'Salon (Sur meuble TV)' },
-    { i:'✋', n:'Patte', l:'Couloir (Meuble)' }
-  ],
-  'edgefield': [
-    { i:'🔮', n:'Miroir', l:'1er étage (Bas escalier)' },
-    { i:'🧩', n:'Ouija', l:'Buanderie (Arrière cuisine)' },
-    { i:'🧸', n:'Poupée', l:'1er étage (Chambre ado grande)' },
-    { i:'⭕', n:'Cercle', l:'Sous-sol' },
-    { i:'🃏', n:'Tarot', l:'Entrée (Table derrière porte)' },
-    { i:'📦', n:'Boîte', l:'Salon' },
-    { i:'✋', n:'Patte', l:'Cuisine (Table)' }
-  ],
-  'ridgeview': [
-    { i:'🔮', n:'Miroir', l:'Rez-de-chaussée (Escaliers)' },
-    { i:'🧩', n:'Ouija', l:'Buanderie' },
-    { i:'🧸', n:'Poupée', l:'Couloir RDC (En face)' },
-    { i:'⭕', n:'Cercle', l:'Sous-sol' },
-    { i:'🃏', n:'Tarot', l:'Entrée (Commode)' },
-    { i:'📦', n:'Boîte', l:'Chambre Fille (2e étage)' },
-    { i:'✋', n:'Patte', l:'Chambre Garçon (2e étage)' }
-  ],
-  'grafton': [
-    { i:'🔮', n:'Miroir', l:'Salon (Coin cheminée)' },
-    { i:'🧩', n:'Ouija', l:'Chambre Master (Placard)' },
-    { i:'🧸', n:'Poupée', l:'Nursery (Étage)' },
-    { i:'⭕', n:'Cercle', l:'Entrepôt' },
-    { i:'🃏', n:'Tarot', l:'Salle à manger' },
-    { i:'📦', n:'Boîte', l:'Entrée' },
-    { i:'✋', n:'Patte', l:'Chambre Jumelle (Étage)' }
-  ],
-  'woodwind': [
-    { i:'🔮', n:'Miroir', l:'Tente départ (Arbre)' },
-    { i:'🧩', n:'Ouija', l:'Zone Jeux' },
-    { i:'🧸', n:'Poupée', l:'Tente rouge (Nourriture)' },
-    { i:'⭕', n:'Cercle', l:'Tente Nourriture' },
-    { i:'🃏', n:'Tarot', l:'Entrée (Sur table)' },
-    { i:'📦', n:'Boîte', l:'Tente Jaune' },
-    { i:'✋', n:'Patte', l:'Zone Feu de camp' }
-  ],
-  'bleasdale': [
-    { i:'🔮', n:'Miroir', l:'Bureau (RDC)' },
-    { i:'🧩', n:'Ouija', l:'Atelier' },
-    { i:'🧸', n:'Poupée', l:'Couloir (2e étage)' },
-    { i:'⭕', n:'Cercle', l:'Grenier' },
-    { i:'🃏', n:'Tarot', l:'Bureau (RDC)' },
-    { i:'📦', n:'Boîte', l:'Salon' },
-    { i:'✋', n:'Patte', l:'Chambre Master' }
-  ],
-  'prison': [
-    { i:'🔮', n:'Miroir', l:'Entrée (Chaises)' },
-    { i:'🧩', n:'Ouija', l:'Arrière cellules A' },
-    { i:'🧸', n:'Poupée', l:'Accueil (Bureau)' },
-    { i:'⭕', n:'Cercle', l:'Cafétéria' },
-    { i:'🃏', n:'Tarot', l:'Entrée (Détecteurs)' },
-    { i:'📦', n:'Boîte', l:'Entrée (Casiers)' },
-    { i:'✋', n:'Patte', l:'Visiteurs' }
-  ],
-  'sunny': [
-    { i:'🔮', n:'Miroir', l:'Chapelle' },
-    { i:'🧩', n:'Ouija', l:'Chapelle' },
-    { i:'🧸', n:'Poupée', l:'Chapelle' },
-    { i:'⭕', n:'Cercle', l:'Chapelle' },
-    { i:'🃏', n:'Tarot', l:'Chapelle' },
-    { i:'📦', n:'Boîte', l:'Chapelle' },
-    { i:'✋', n:'Patte', l:'Chapelle' }
-  ]
+  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
+  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
+  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
+  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
+  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
+  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
+  'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
+  'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
+  'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
 };
 
-/* ================= LOGIQUE ================= */
-let state = { inc: [], exc: [], san: 100, speed: 'all' };
+/* === STATE MANAGER === */
+let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', checks: {} };
 let tInterval = null;
 
 function init() {
+  loadState(); // Charger sauvegarde
+  renderProofs();
+  render();
+  // Restore Inputs
+  document.getElementById('san-input').value = state.san;
+  document.getElementById('map-selector').value = state.map;
+  loadLocs(state.map);
+  // Restore Checks
+  ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
+    document.getElementById(id).checked = state.checks[id] || false;
+  });
+  setSpeed(state.speed, document.getElementById('sp-' + state.speed));
+}
+
+function saveState() {
+  // Save Checks
+  ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
+    state.checks[id] = document.getElementById(id).checked;
+  });
+  localStorage.setItem('phasmo_save_v10', JSON.stringify(state));
+}
+
+function loadState() {
+  const saved = localStorage.getItem('phasmo_save_v10');
+  if (saved) {
+    try { state = JSON.parse(saved); } catch(e) { console.log('Reset save'); }
+  }
+}
+
+function renderProofs() {
   document.getElementById('proofs-list').innerHTML = PROOFS.map(p => `
     <div class="proof-row">
       <span class="proof-label">${p.label}</span>
@@ -397,7 +342,6 @@ function init() {
       </div>
     </div>
   `).join('');
-  render();
 }
 
 function toggle(pid, type) {
@@ -405,13 +349,7 @@ function toggle(pid, type) {
   state.exc = state.exc.filter(x => x !== pid);
   if (type === 'inc') state.inc.push(pid);
   if (type === 'exc') state.exc.push(pid);
-  render();
-}
-
-function setSpeed(mode, btn) {
-  state.speed = mode;
-  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  saveState();
   render();
 }
 
@@ -468,10 +406,21 @@ function render() {
 function setSan(val) {
   state.san = val;
   document.getElementById('san-disp').innerText = val + "%";
+  saveState();
+  render();
+}
+
+function setSpeed(mode, btn) {
+  state.speed = mode;
+  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  saveState();
   render();
 }
 
 function loadLocs(key) {
+  state.map = key;
+  saveState();
   const area = document.getElementById('loc-area');
   if (!key || !LOCATIONS[key]) {
     area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>';
@@ -522,13 +471,9 @@ function stopTimer() {
 }
 
 function resetAll() {
-  state = { inc: [], exc: [], san: 100, speed: 'all' };
-  document.querySelector('input[type="range"]').value = 100;
-  setSan(100);
-  stopTimer();
-  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
-  document.querySelector('.btn-speed').classList.add('active');
-  render();
+  state = { inc: [], exc: [], san: 100, speed: 'all', map: '', checks: {} };
+  localStorage.removeItem('phasmo_save_v10'); // Clear save
+  location.reload(); // Reload to clean
 }
 
 init();
