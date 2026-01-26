@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v8.0 (Speed Filter)</title>
+  <title>PHASMO-TRACKER v9.0 (Encyclopedia)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
-      --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b;
+      --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --purple: #a855f7;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
@@ -32,30 +32,12 @@
 
     /* LAYOUT */
     .container {
-      display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 20px;
-      max-width: 1600px;
-      margin: 20px auto;
-      padding: 0 20px;
-      flex: 1;
-      width: 100%;
+      display: grid; grid-template-columns: 320px 1fr; gap: 20px;
+      max-width: 1600px; margin: 20px auto; padding: 0 20px; flex: 1; width: 100%;
     }
-
-    aside { 
-      display: flex; flex-direction: column; gap: 15px; 
-      position: sticky; top: 80px; height: fit-content;
-    }
-    
+    aside { display: flex; flex-direction: column; gap: 15px; position: sticky; top: 80px; height: fit-content; }
     .main-content { min-width: 0; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
-
-    footer {
-      text-align: center; padding: 20px; margin-top: 20px;
-      border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem;
-      background: #0b1120;
-    }
-    .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
 
     /* TIMER */
     .timer-box { text-align: center; margin-bottom: 10px; }
@@ -67,7 +49,7 @@
     .timer-guide b { color: var(--accent); }
     .timer-guide span { display: block; margin-bottom: 4px; }
 
-    /* FILTRE VITESSE (NOUVEAU) */
+    /* FILTRE VITESSE */
     .speed-opts { display:flex; gap:5px; margin-top:10px; }
     .btn-speed { flex:1; padding:6px; background:#0f172a; border:1px solid #334155; color:#94a3b8; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:bold; }
     .btn-speed.active { background:var(--accent); color:#020617; border-color:var(--accent); }
@@ -85,12 +67,10 @@
     .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
-    
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
-    
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
@@ -103,29 +83,31 @@
     .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
-    /* VUE GUIDE VOCAL */
-    #view-guide { display: none; }
-    .guide-section { margin-bottom: 25px; }
-    .guide-title { font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-weight: bold; }
-    .guide-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    .guide-table th { text-align: left; color: #94a3b8; padding: 8px; border-bottom: 1px solid #334155; }
-    .guide-table td { padding: 8px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
-    .cost { color: var(--danger); font-weight: bold; font-family: monospace; }
+    /* VUE GUIDES */
+    #view-guide { display: none; column-count: 2; column-gap: 20px; }
+    .guide-section { margin-bottom: 20px; break-inside: avoid; }
+    .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+    .guide-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .guide-table th { text-align: left; color: #94a3b8; padding: 6px; border-bottom: 1px solid #334155; }
+    .guide-table td { padding: 6px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
+    .cost { color: var(--danger); font-weight: bold; font-family: monospace; white-space: nowrap; }
+    .rare { color: var(--purple); font-weight: bold; }
 
-    @media(max-width: 768px){ 
-      .container { grid-template-columns: 1fr; } 
-      aside { position: relative; top: 0; width: 100%; }
-    }
+    footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
+    .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
+
+    @media(max-width: 1200px){ #view-guide { column-count: 1; } }
+    @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v8.0</div>
+  <div class="brand">PHASMO-TRACKER v9.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
-    <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
-    <button class="nav-item" onclick="setTab('guide', this)">GUIDE VOCAL</button>
+    <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
+    <button class="nav-item" onclick="setTab('guide', this)">GUIDES</button>
   </div>
   <button class="btn-reset" onclick="resetAll()">RESET</button>
 </header>
@@ -152,7 +134,6 @@
         <span style="color:var(--accent); font-weight:bold" id="san-disp">100%</span>
       </div>
       <input type="range" min="0" max="100" value="100" style="width:100%" oninput="setSan(this.value)">
-      
       <div style="margin-top:15px; border-top:1px solid #334155; padding-top:10px;">
         <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:5px;">FILTRE VITESSE DE CHASSE :</span>
         <div class="speed-opts">
@@ -183,49 +164,90 @@
         <option value="prison">Prison</option>
         <option value="sunny">Sunny Meadows</option>
       </select>
-      
       <div id="loc-area">
-        <div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir la liste des objets.</div>
+        <div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>
       </div>
     </div>
 
     <div id="tab-guide">
       
       <div class="card guide-section">
-        <div class="guide-title">🧩 OUIJA (Santé Mentale)</div>
+        <div class="guide-title">🧩 OUIJA</div>
         <table class="guide-table">
           <tr><th>Question</th><th>Coût SAN</th></tr>
           <tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr>
           <tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr>
           <tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr>
           <tr><td>Quel âge avez-vous ?</td><td class="cost">-5%</td></tr>
-          <tr><td>Combien de temps êtes-vous mort ?</td><td class="cost">-5%</td></tr>
-          <tr><td>Cache-cache ! (Déclenche chasse)</td><td class="cost">-25%</td></tr>
+          <tr><td>Cache-cache ! (Chasse)</td><td class="cost">-25%</td></tr>
         </table>
       </div>
 
       <div class="card guide-section">
-        <div class="guide-title">✋ PATTE DE SINGE (Vœux)</div>
+        <div class="guide-title">🃏 TAROT (10 Cartes)</div>
+        <table class="guide-table">
+          <tr><th>Carte</th><th>Effet</th></tr>
+          <tr><td style="color:#facc15">The Sun</td><td>Santé Mentale à 100%</td></tr>
+          <tr><td style="color:#ef4444">The Moon</td><td>Santé Mentale à 0%</td></tr>
+          <tr><td style="color:#2dd4bf">The Tower</td><td>Interaction Forcée</td></tr>
+          <tr><td style="color:#f472b6">The Wheel</td><td>+25% ou -25% Sanité</td></tr>
+          <tr><td style="color:#ef4444">The Devil</td><td>Event Fantôme</td></tr>
+          <tr><td style="color:#ef4444">The Death</td><td>CHASSE MAUDITE</td></tr>
+          <tr><td style="color:#a855f7">The Hermit</td><td>Bloque le fantôme (1min)</td></tr>
+          <tr><td style="color:#10b981">High Priestess</td><td>Ressuscite un mort</td></tr>
+          <tr><td style="color:#ef4444">The Hanged Man</td><td>TUÉ INSTANTANÉMENT</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">🧸 POUPÉE VAUDOU</div>
+        <table class="guide-table">
+          <tr><th>Action</th><th>Coût SAN</th></tr>
+          <tr><td>Enfoncer 1 aiguille</td><td class="cost">-5%</td></tr>
+          <tr><td>Aiguille Cœur</td><td class="cost">-10% + CHASSE</td></tr>
+          <tr><td>Si Sanité < 5%</td><td class="cost">CHASSE (Toutes)</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">🎶 BOÎTE À MUSIQUE</div>
+        <table class="guide-table">
+          <tr><th>Effet</th><th>Détails</th></tr>
+          <tr><td>Chant</td><td>Le fantôme chante (invisible)</td></tr>
+          <tr><td>Coût</td><td class="cost">-2.5% / sec</td></tr>
+          <tr><td>Chasse</td><td>Si la boîte touche le sol ou si le fantôme touche le joueur.</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">🔮 MIROIR HANTÉ</div>
+        <table class="guide-table">
+          <tr><th>Effet</th><th>Détails</th></tr>
+          <tr><td>Vision</td><td>Montre la pièce du fantôme</td></tr>
+          <tr><td>Coût</td><td class="cost">-7.5% / sec</td></tr>
+          <tr><td>Casse</td><td>Si 0% Sanité => CHASSE MAUDITE</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">✋ PATTE DE SINGE</div>
         <table class="guide-table">
           <tr><th>Vœu</th><th>Effet</th></tr>
-          <tr><td style="color:#2dd4bf; font-weight:bold">Je souhaite la vie</td><td class="cost">Ressuscite un ami (50% de mourir)</td></tr>
-          <tr><td>Je souhaite voir le fantôme</td><td>Event fantôme (Aveugle ensuite)</td></tr>
-          <tr><td>Je souhaite être en sécurité</td><td>Débloque une cachette</td></tr>
-          <tr><td>Je souhaite partir</td><td>Ouvre la porte (ralentit joueurs)</td></tr>
-          <tr><td>Je souhaite de la connaissance</td><td>Barre un fantôme (Sourd/Aveugle)</td></tr>
-          <tr><td>Je souhaite de l'activité</td><td>Double activité (Porte fermée)</td></tr>
+          <tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr>
+          <tr><td>Voir le fantôme</td><td>Event (puis Aveugle)</td></tr>
+          <tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr>
+          <tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr>
+          <tr><td>De la connaissance</td><td>Barre 1 fantôme</td></tr>
         </table>
       </div>
 
       <div class="card guide-section">
-        <div class="guide-title">📻 SPIRIT BOX (Questions Fiables)</div>
+        <div class="guide-title">⭕ CERCLE D'INVOCATION</div>
         <table class="guide-table">
-          <tr><th>Phrase</th><th>Utilité</th></tr>
-          <tr><td>Où êtes-vous ?</td><td>Localisation</td></tr>
-          <tr><td>Êtes-vous ici / proche ?</td><td>Localisation</td></tr>
-          <tr><td>Quel âge avez-vous ?</td><td>Info (Jeune/Vieux)</td></tr>
-          <tr><td>Êtes-vous fâché ?</td><td>Interaction</td></tr>
-          <tr><td>Que voulez-vous ?</td><td>Interaction</td></tr>
+          <tr><th>Action</th><th>Effet</th></tr>
+          <tr><td>Allumer 5 bougies</td><td>Invoque le fantôme</td></tr>
+          <tr><td>Coût</td><td class="cost">-16% / bougie</td></tr>
+          <tr><td>Chasse</td><td>Après 5s (Immobilisé au début)</td></tr>
         </table>
       </div>
 
@@ -249,30 +271,28 @@ const PROOFS = [
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo (pas de glitch visuel). En chasse, clignote lentement (invisible longtemps).' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets pour tester l\'explosion.' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique. Chant en chasse.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le disjoncteur. Rapide de loin si courant ON.' },
-  { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Lumière:</b> Éteint la lumière direct. Attaque à 60% dans le noir, 40% si allumé.' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit. Le plus dangereux.' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce. Events ombre/nuage.' },
-  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s. Rayon crucifix 5m.' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo. Clignote lent en chasse (Invisible longtemps).' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets pour tester.' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le courant. Rapide de loin si courant ON.' },
+  { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Lumière:</b> Éteint la lumière direct. Attaque à 60% dans le noir.' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit.' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
+  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée" (sifflement).' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée".' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'<b style="color:#2dd4bf">Test Froid:</b> Très rapide au froid, lent au chaud. Buée buccale si courant OFF.' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra (jamais à l\'œil nu) et si personne dans la pièce.' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'<b style="color:#2dd4bf">Test Froid:</b> Très rapide au froid (buée), lent au chaud.' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra (jamais à l\'œil nu).' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles. Si vous entendez ses pas, votre lampe clignote déjà.' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Si elle s\'éteint 3 fois => CHASSE forcée.' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse de chasse varie (lent ou rapide).' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets électroniques actifs. Brouille de loin.' },
-  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse (clignote).' },
-  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les pouvoirs des autres.' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Plus votre Sanité est basse, plus il est rapide.' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. VOUS VOIT. Rapide loin, escargot proche.' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Demander âge Ouija. Rapide/Actif au début -> Lent/Calme à la fin.' },
-  
-  // CUSTOM
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE.' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse de chasse varie.' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets électroniques actifs.' },
+  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse.' },
+  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les autres.' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Vitesse augmente si Sanité basse.' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. Rapide loin, escargot proche.' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Demander âge Ouija. Rapide au début -> Lent à la fin.' },
   { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'<b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
   { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
@@ -396,7 +416,6 @@ function setSpeed(mode, btn) {
 }
 
 function render() {
-  // Update Preuves Btn
   PROOFS.forEach(p => {
     const bInc = document.getElementById(`btn-inc-${p.id}`);
     const bExc = document.getElementById(`btn-exc-${p.id}`);
@@ -406,23 +425,17 @@ function render() {
     if (state.exc.includes(p.id)) bExc.setAttribute('data-status', 'no');
   });
 
-  // Filtrage Fantômes
   document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
-
-    // 1. Check Preuves
     const allInc = state.inc.every(id => gp.includes(id));
     const noneExc = state.exc.every(id => {
        if (g.n === 'Mimic' && id === 'orb') return false; 
        return !gp.includes(id);
     });
-
-    // 2. Check Vitesse
     let speedMatch = true;
     if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
     if (state.speed === 'fast' && g.sp === '1.7') speedMatch = false;
 
-    // Résultat
     const isMatch = allInc && noneExc && speedMatch;
     const canHunt = state.san <= g.th;
     
@@ -458,42 +471,27 @@ function setSan(val) {
   render();
 }
 
-/* ================= NAVIGATION ================= */
 function loadLocs(key) {
   const area = document.getElementById('loc-area');
   if (!key || !LOCATIONS[key]) {
     area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>';
     return;
   }
-  
   const items = LOCATIONS[key];
-  area.innerHTML = `<div class="loc-grid">
-    ${items.map(item => `
-      <div class="loc-card">
-        <div class="loc-icon">${item.i}</div>
-        <div class="loc-info">
-          <h4>${item.n}</h4>
-          <p>${item.l}</p>
-        </div>
-      </div>
-    `).join('')}
-  </div>`;
+  area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`;
 }
 
 function setTab(tab, btn) {
   document.getElementById('tab-tracker').style.display = 'none';
   document.getElementById('tab-maps').style.display = 'none';
   document.getElementById('tab-guide').style.display = 'none';
-  
   if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid';
   if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block';
   if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block';
-
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
-/* ================= TIMER ================= */
 function runTimer(sec, btn) {
   clearInterval(tInterval);
   document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
@@ -528,9 +526,8 @@ function resetAll() {
   document.querySelector('input[type="range"]').value = 100;
   setSan(100);
   stopTimer();
-  // Reset speed btns
   document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
-  document.querySelector('.btn-speed').classList.add('active'); // First one
+  document.querySelector('.btn-speed').classList.add('active');
   render();
 }
 
