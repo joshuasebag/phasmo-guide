@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PHASMO-TRACKER v3.0 | Expert Edition</title>
+  <title>PHASMO-TRACKER v3.5 | Expert & Timers</title>
   <style>
     :root {
       --bg: #0b0e14; --card-bg: #161b26; --header-bg: rgba(22, 27, 38, 0.95);
       --accent: #5eead4; --text: #e2e8f0; --muted: #94a3b8; --border: #2d3748;
       --danger: #f87171; --success: #34d399; --warning: #fbbf24;
     }
-    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); }
     
     header { 
       position: sticky; top: 0; background: var(--header-bg); backdrop-filter: blur(12px);
@@ -20,12 +20,16 @@
 
     .dashboard { display: flex; max-width: 1400px; margin: 20px auto; gap: 20px; padding: 0 20px; align-items: flex-start; }
     
-    /* Barre Latérale Fixe */
     aside { width: 320px; position: sticky; top: 100px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
-    
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
     
-    /* Santé Mentale Slider */
+    /* Timer Style */
+    .timer-display { font-family: monospace; font-size: 2rem; text-align: center; color: var(--warning); margin-bottom: 10px; }
+    .timer-btns { display: flex; gap: 5px; }
+    .timer-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; background: var(--border); color: white; }
+    .timer-btn.active { background: var(--warning); color: black; }
+
+    /* Santé Mentale */
     .san-display { font-size: 1.5rem; font-weight: 900; color: var(--accent); text-align: center; margin: 10px 0; }
     input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
 
@@ -36,14 +40,9 @@
     .btn-action[data-state="include"] { background: var(--success); color: #000; }
     .btn-action[data-state="exclude"] { background: var(--danger); color: #fff; }
 
-    /* Grille des Fantômes */
-    .ghost-container { flex-grow: 1; }
-    .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; }
-    
-    .ghost-card { 
-        background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; 
-        padding: 1.2rem; transition: 0.3s; position: relative; opacity: 0.4; filter: grayscale(0.8);
-    }
+    /* Grille */
+    .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; flex-grow: 1; }
+    .ghost-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; transition: 0.3s; opacity: 0.35; filter: grayscale(1); }
     .ghost-card.candidate { opacity: 1; filter: none; border-color: var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     .ghost-card.can-hunt { border-left: 4px solid var(--danger); }
 
@@ -65,17 +64,26 @@
 <body>
 
 <header>
-  <div style="font-weight:900; color:var(--accent)">PHASMO-TRACKER <span style="font-weight:300">v3.0</span></div>
+  <div style="font-weight:900; color:var(--accent)">PHASMO-TRACKER <span style="font-weight:300">v3.5</span></div>
   <button onclick="resetAll()" style="background:var(--danger); border:none; color:white; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold">NOUVELLE CHASSE</button>
 </header>
 
 <main class="dashboard">
   <aside>
     <div class="card">
+      <h2 style="font-size:0.8rem; color:var(--warning)">💨 CHRONO ENCENS</h2>
+      <div class="timer-display" id="timer-val">00:00</div>
+      <div class="timer-btns">
+        <button class="timer-btn" onclick="startTimer(90)">90s</button>
+        <button class="timer-btn" onclick="startTimer(180)">180s (Esprit)</button>
+        <button class="timer-btn" style="background:#451a1a" onclick="stopTimer()">X</button>
+      </div>
+    </div>
+
+    <div class="card">
       <h2>Santé Mentale 🧠</h2>
       <div class="san-display" id="san-val">100%</div>
       <input type="range" id="san-slider" min="0" max="100" value="100" oninput="updateSan(this.value)">
-      <p style="font-size:0.7rem; color:var(--muted); margin-top:5px">Glissez pour voir qui peut chasser.</p>
     </div>
 
     <div class="card">
@@ -84,9 +92,7 @@
     </div>
   </aside>
 
-  <section class="ghost-container">
-    <div class="ghost-grid" id="ghost-display"></div>
-  </section>
+  <div class="ghost-grid" id="ghost-display"></div>
 </main>
 
 <script>
@@ -98,32 +104,56 @@ const PROOFS = [
 
 const GHOST_DATA = [
   { name:'Esprit', proofs:['emf','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Encens : Inactif pendant 180s (au lieu de 90s)." },
-  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne laisse jamais d'empreinte de pas. Peut se téléporter (EMF 2)." },
-  { name:'Fantôme', proofs:['dots','uv','spirit'], threshold: 50, speed:"1.7 m/s", test:"Photo : Disparaît si pris en photo. Clignote lentement en chasse." },
-  { name:'Poltergeist', proofs:['uv','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Lancer : Peut jeter plusieurs objets (2% SAN/objet)." },
-  { name:'Banshee', proofs:['dots','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Micro Parabolique : Cri rare unique. Cible un seul joueur." },
-  { name:'Djinn', proofs:['emf','uv','freezing'], threshold: 50, speed:"1.7-2.5m/s", test:"Courant : Ne coupe jamais le disjoncteur. Accélère si courant ON." },
-  { name:'Jument', proofs:['orbe','spirit','writing'], threshold: 60, speed:"1.7 m/s", test:"Lumière : Chasse à 60% (Noir) ou 40% (Allumé). Éteint les lampes." },
-  { name:'Revenant', proofs:['orbe','writing','freezing'], threshold: 50, speed:"1.1-3.0m/s", test:"Ligne de vue : Très lent si caché, missile s'il vous voit." },
-  { name:'Ombre', proofs:['emf','writing','freezing'], threshold: 35, speed:"1.7 m/s", test:"Timide : Ne chasse pas si vous êtes groupés. Très peu actif." },
-  { name:'Démon', proofs:['writing','uv','freezing'], threshold: 70, speed:"1.7 m/s", test:"Crucifix : Portée 5m. Peut chasser à n'importe quel moment (Capacité)." },
-  { name:'Yurei', proofs:['dots','orbe','freezing'], threshold: 50, speed:"1.7 m/s", test:"Porte : Claque les portes (15% SAN). Encens le bloque 90s." },
-  { name:'Oni', proofs:['dots','emf','freezing'], threshold: 50, speed:"1.7 m/s", test:"Actif : Clignote peu en chasse. Pas de boule de fumée." },
-  { name:'Yokai', proofs:['dots','orbe','spirit'], threshold: 80, speed:"1.7 m/s", test:"Voix : Chasse tôt si vous parlez. Sourd au-delà de 2m." },
-  { name:'Hantu', proofs:['orbe','uv','freezing'], threshold: 50, speed:"1.4-2.7m/s", test:"Froid : Rapide dans le froid. Buée buccale si courant OFF." },
-  { name:'Goryo', proofs:['dots','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"D.O.T.S : Uniquement sur caméra. Ne change jamais de pièce." },
-  { name:'Myling', proofs:['writing','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"Silencieux : Pas audibles seulement si lampe clignote." },
-  { name:'Onryo', proofs:['orbe','freezing','spirit'], threshold: 60, speed:"1.7 m/s", test:"Bougie : Éteindre 3 bougies = Chasse. Flamme = Crucifix." },
-  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], threshold: 50, speed:"1.5-1.9m/s", test:"Double : Interactions simultanées à deux endroits." },
-  { name:'Raiju', proofs:['dots','emf','orbe'], threshold: 65, speed:"1.7-2.5m/s", test:"Électronique : Accélère près des objets allumés au sol." },
-  { name:'Obake', proofs:['emf','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"6 Doigts : Chance d'empreinte unique. Change de forme en chasse." },
-  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Variable", test:"4ème Preuve : Toujours des Orbes (Factice) en plus du reste." },
-  { name:'Moroi', proofs:['spirit','writing','freezing'], threshold: 50, speed:"1.5-2.2m/s", test:"Malédiction : Plus vous êtes fou, plus il court vite." },
-  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Loop : Sait où vous êtes. Ralentit quand il est sur vous." },
-  { name:'Thaye', proofs:['dots','orbe','writing'], threshold: 75, speed:"2.7-1.0m/s", test:"Âge : Très actif au début, s'épuise avec le temps." }
+  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne marche jamais dedans. Peut se TP (EMF 2)." },
+  { name:'Fantôme', proofs:['dots','uv','spirit'], threshold: 50, speed:"1.7 m/s", test:"Photo : Disparaît si photographié. Clignote lentement." },
+  { name:'Poltergeist', proofs:['uv','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Multi-lancer : Jette plusieurs objets d'un coup." },
+  { name:'Banshee', proofs:['dots','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Cri unique au micro parabolique. Ne cible qu'un joueur." },
+  { name:'Djinn', proofs:['emf','uv','freezing'], threshold: 50, speed:"1.7-2.5m/s", test:"Courant : Ne le coupe jamais. Accélère si courant ON." },
+  { name:'Jument', proofs:['orbe','spirit','writing'], threshold: 60, speed:"1.7 m/s", test:"Lumière : Chasse à 60% (Noir) ou 40% (Allumé)." },
+  { name:'Revenant', proofs:['orbe','writing','freezing'], threshold: 50, speed:"1.1-3.0m/s", test:"Ligne de vue : Lent si caché, sprinte s'il vous voit." },
+  { name:'Ombre', proofs:['emf','writing','freezing'], threshold: 35, speed:"1.7 m/s", test:"Timide : Ne chasse pas si vous êtes groupés." },
+  { name:'Démon', proofs:['writing','uv','freezing'], threshold: 70, speed:"1.7 m/s", test:"Crucifix : Portée 5m. Peut chasser à tout moment." },
+  { name:'Yurei', proofs:['dots','orbe','freezing'], threshold: 50, speed:"1.7 m/s", test:"Porte : Claque les portes (15% SAN)." },
+  { name:'Oni', proofs:['dots','emf','freezing'], threshold: 50, speed:"1.7 m/s", test:"Visibilité : Clignote peu en chasse. Très actif." },
+  { name:'Yokai', proofs:['dots','orbe','spirit'], threshold: 80, speed:"1.7 m/s", test:"Voix : Chasse tôt si vous parlez. Sourd à +2m." },
+  { name:'Hantu', proofs:['orbe','uv','freezing'], threshold: 50, speed:"1.4-2.7m/s", test:"Froid : Rapide dans le froid. Pas d'accélération ligne de vue." },
+  { name:'Goryo', proofs:['dots','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"D.O.T.S : Uniquement sur caméra." },
+  { name:'Myling', proofs:['writing','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"Pas : Silencieux si lampe ne clignote pas." },
+  { name:'Onryo', proofs:['orbe','freezing','spirit'], threshold: 60, speed:"1.7 m/s", test:"Bougie : Éteindre 3 bougies = Chasse forcée." },
+  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], threshold: 50, speed:"1.5-1.9m/s", test:"Double interaction : Courbe EMF bizarre." },
+  { name:'Raiju', proofs:['dots','emf','orbe'], threshold: 65, speed:"1.7-2.5m/s", test:"Électronique : Accélère près des objets au sol." },
+  { name:'Obake', proofs:['emf','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"6 Doigts : Chance d'empreinte unique." },
+  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Variable", test:"4ème Preuve : Toujours des Orbes (Factice)." },
+  { name:'Moroi', proofs:['spirit','writing','freezing'], threshold: 50, speed:"1.5-2.2m/s", test:"Vitesse proportionnelle à votre perte de SAN." },
+  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Incontournable : Sait où vous êtes. Ralentit proche de vous." },
+  { name:'Thaye', proofs:['dots','orbe','writing'], threshold: 75, speed:"2.7-1.0m/s", test:"Vieillit : Ralentit avec le temps." }
 ];
 
 let state = { include: [], exclude: [], san: 100 };
+let timerInterval = null;
+
+// Fonctions Timer
+function startTimer(seconds) {
+  stopTimer();
+  let time = seconds;
+  const display = document.getElementById('timer-val');
+  timerInterval = setInterval(() => {
+    let mins = Math.floor(time / 60);
+    let secs = time % 60;
+    display.textContent = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    if (time <= 0) {
+        clearInterval(timerInterval);
+        display.textContent = "TERMINÉ !";
+        new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play();
+    }
+    time--;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  document.getElementById('timer-val').textContent = "00:00";
+}
 
 function updateSan(v) { 
     state.san = v; 
@@ -157,8 +187,8 @@ function render() {
         <div class="badge-list">
           ${g.proofs.map(pID => `<span class="badge ${state.include.includes(pID)?'ok':''}">${PROOFS.find(x=>x.id===pID).label}</span>`).join('')}
         </div>
-        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">PRO-TESTS ▼</button>
-        <div class="secrets-content"><strong>Capacité :</strong> ${g.test}</div>
+        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">VOIR SECRETS ▼</button>
+        <div class="secrets-content"><strong>Expert Test :</strong> ${g.test}</div>
       </div>
     `;
   }).join('');
@@ -172,7 +202,12 @@ function toggleProof(id, action) {
   render();
 }
 
-function resetAll() { state = { include: [], exclude: [], san: 100 }; document.getElementById('san-slider').value = 100; updateSan(100); }
+function resetAll() { 
+    state = { include: [], exclude: [], san: 100 }; 
+    document.getElementById('san-slider').value = 100; 
+    stopTimer();
+    updateSan(100); 
+}
 render();
 </script>
 </body>
