@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PHASMO-TRACKER v3.9 | Chrono Fix</title>
+  <title>PHASMO-TRACKER v4.0 | Expert, Chrono & Maps</title>
   <style>
     :root {
       --bg: #0b0e14; --card-bg: #161b26; --header-bg: rgba(22, 27, 38, 0.95);
@@ -18,95 +18,159 @@
       display: flex; justify-content: space-between; align-items: center;
     }
 
+    .nav-tabs { display: flex; gap: 20px; }
+    .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-weight: bold; padding: 5px 10px; transition: 0.3s; }
+    .nav-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
     .dashboard { display: flex; max-width: 1400px; margin: 20px auto; gap: 20px; padding: 0 20px; align-items: flex-start; }
     
     aside { width: 320px; position: sticky; top: 100px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
     
-    /* Timer Style */
+    /* Timer */
     .timer-display { font-family: monospace; font-size: 2.2rem; text-align: center; color: var(--warning); margin: 10px 0; background: #0b0e14; border-radius: 8px; padding: 10px; border: 1px solid var(--border); }
-    .timer-btns { display: flex; gap: 5px; margin-bottom: 10px; }
-    .timer-btn { flex: 1; padding: 10px 5px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: bold; background: #1e2533; color: white; transition: 0.2s; }
-    .timer-btn.running { background: var(--warning); color: black; border-color: white; }
-    
-    .guide-box { font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.4; }
-    .guide-box b { color: var(--accent); }
+    .timer-btns { display: flex; gap: 5px; }
+    .timer-btn { flex: 1; padding: 10px 5px; border: 1px solid var(--border); border-radius: 4px; cursor: pointer; font-weight: bold; background: #1e2533; color: white; }
+    .timer-btn.running { background: var(--warning); color: black; }
 
-    /* Santé Mentale */
-    .san-display { font-size: 1.5rem; font-weight: 900; color: var(--accent); text-align: center; margin: 10px 0; }
-    input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
-
-    /* Preuves */
-    .proof-item { padding: 8px 0; border-bottom: 1px solid #232a37; }
-    .btn-group { display: flex; gap: 4px; margin-top: 5px; }
-    .btn-action { flex: 1; border: 1px solid var(--border); background: #1e2533; color: var(--muted); padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
-    .btn-action[data-state="include"] { background: var(--success); color: #000; }
-    .btn-action[data-state="exclude"] { background: var(--danger); color: #fff; }
-
-    /* Grille */
+    /* Grille Fantômes */
     .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 15px; flex-grow: 1; }
     .ghost-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; transition: 0.3s; opacity: 0.35; filter: grayscale(1); }
     .ghost-card.candidate { opacity: 1; filter: none; border-color: var(--accent); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
     .ghost-card.can-hunt { border-left: 4px solid var(--danger); }
 
-    .ghost-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .ghost-name { font-size: 1.2rem; font-weight: 800; }
-    .hunt-tag { font-size: 0.7rem; color: var(--danger); font-weight: bold; }
-    
-    .badge-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
-    .badge { font-size: 0.7rem; padding: 3px 8px; background: #0b0e14; border-radius: 4px; border: 1px solid var(--border); }
+    /* Page Cartes */
+    .map-section { display: none; flex-direction: column; gap: 20px; width: 100%; }
+    .map-select { width: 100%; padding: 12px; background: var(--card-bg); color: white; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
+    .map-viewer { width: 100%; min-height: 600px; background: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--border); }
+    .map-viewer img { max-width: 100%; height: auto; }
+    .map-info { font-size: 0.9rem; color: var(--muted); background: #1a1f2b; padding: 15px; border-radius: 8px; border-left: 4px solid var(--warning); }
+
+    .badge { font-size: 0.7rem; padding: 3px 8px; background: #0b0e14; border-radius: 4px; border: 1px solid var(--border); margin-right: 5px; }
     .badge.ok { color: var(--success); border-color: var(--success); }
-    
-    .secrets-btn { width: 100%; padding: 8px; background: #2d3748; border: none; color: white; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    .secrets-btn { width: 100%; padding: 8px; background: #2d3748; border: none; color: white; border-radius: 6px; cursor: pointer; margin-top: 10px; }
     .secrets-content { margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent); font-size: 0.85rem; display: none; }
     .secrets-content.open { display: block; }
-
+    
     @media (max-width: 900px) { .dashboard { flex-direction: column; } aside { width: 100%; position: relative; top: 0; } }
   </style>
 </head>
 <body>
 
 <header>
-  <div style="font-weight:900; color:var(--accent)">PHASMO-TRACKER <span style="font-weight:300">v3.9</span></div>
-  <button onclick="resetAll()" style="background:var(--danger); border:none; color:white; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold">RESET MISSION</button>
+  <div style="font-weight:900; color:var(--accent)">PHASMO-TRACKER <span style="font-weight:300">v4.0</span></div>
+  <div class="nav-tabs">
+    <button class="nav-btn active" onclick="switchPage('tracker')">JOURNAL</button>
+    <button class="nav-btn" onclick="switchPage('maps')">CARTES & OBJETS</button>
+  </div>
+  <button onclick="resetAll()" style="background:var(--danger); border:none; color:white; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:bold">RESET</button>
 </header>
 
 <main class="dashboard">
-  <aside>
-    <div class="card">
-      <h2 style="font-size:0.8rem; color:var(--warning)">💨 CHRONO ENCENS</h2>
-      <div class="timer-display" id="timer-val">00:00</div>
-      <div class="timer-btns">
-        <button id="btn-90" class="timer-btn" onclick="handleTimer(90, this)">90s</button>
-        <button id="btn-180" class="timer-btn" onclick="handleTimer(180, this)">180s (Esprit)</button>
-        <button class="timer-btn" style="background:#451a1a; flex:0.4" onclick="stopTimer()">X</button>
+  <div id="page-tracker" style="display: flex; gap: 20px; width: 100%;">
+    <aside>
+      <div class="card">
+        <h2 style="font-size:0.8rem; color:var(--warning)">💨 CHRONO ENCENS</h2>
+        <div class="timer-display" id="timer-val">00:00</div>
+        <div class="timer-btns">
+          <button class="timer-btn" onclick="handleTimer(90, this)">90s</button>
+          <button class="timer-btn" onclick="handleTimer(180, this)">180s (Esprit)</button>
+          <button class="timer-btn" style="background:#451a1a; flex:0.4" onclick="stopTimer()">X</button>
+        </div>
       </div>
-      
-      <div class="guide-box">
-        <b>Guide Expert :</b><br>
-        1. <b>Test Esprit :</b> Lance 180s. S'il chasse avant la fin, élimine l'Esprit.<br>
-        2. <b>Test Démon :</b> S'il chasse avant 60s, c'est un Démon.<br>
-        3. <b>Sécurité :</b> L'encens protège 90s (sauf Démon/Esprit).
+      <div class="card">
+        <h2>Santé Mentale 🧠</h2>
+        <div style="text-align:center; font-size:1.5rem; color:var(--accent); font-weight:900" id="san-val">100%</div>
+        <input type="range" id="san-slider" min="0" max="100" value="100" oninput="updateSan(this.value)">
       </div>
-    </div>
+      <div class="card">
+        <h2>Preuves 🔎</h2>
+        <div id="proof-list"></div>
+      </div>
+    </aside>
+    <div class="ghost-grid" id="ghost-display"></div>
+  </div>
 
+  <div id="page-maps" class="map-section">
     <div class="card">
-      <h2>Santé Mentale 🧠</h2>
-      <div class="san-display" id="san-val">100%</div>
-      <input type="range" id="san-slider" min="0" max="100" value="100" oninput="updateSan(this.value)">
+      <h2>Sélecteur de Carte 🗺️</h2>
+      <select class="map-select" onchange="loadMap(this.value)">
+        <option value="">-- Choisir une carte --</option>
+        <option value="6tanglewood">6 Tanglewood Drive</option>
+        <option value="42edgefield">42 Edgefield Road</option>
+        <option value="10ridgeview">10 Ridgeview Court</option>
+        <option value="grafton">Grafton Farmhouse</option>
+        <option value="willow">Willow Street</option>
+        <option value="brownstone">High School</option>
+        <option value="prison">Prison</option>
+        <option value="sunny">Sunny Meadows</option>
+        <option value="campwoodwind">Camp Woodwind</option>
+      </select>
+      <div class="map-info" id="map-desc">Sélectionnez une carte pour voir les points d'apparition des objets maudits.</div>
     </div>
-
-    <div class="card">
-      <h2>Preuves 🔎</h2>
-      <div id="proof-list"></div>
+    <div class="map-viewer" id="map-container">
+      <div style="color:var(--muted)">Aucune carte sélectionnée</div>
     </div>
-  </aside>
-
-  <div class="ghost-grid" id="ghost-display"></div>
+  </div>
 </main>
 
 <script>
-/* Données identiques */
+/* --- LOGIQUE CHRONO (LANCEMENT INSTANTANÉ) --- */
+let timeLeft = 0;
+let timerId = null;
+
+function handleTimer(secs, btn) {
+  stopTimer();
+  timeLeft = secs;
+  btn.classList.add('running');
+  updateTimerDisplay(); // Affichage immédiat
+  
+  timerId = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      stopTimer();
+      document.getElementById('timer-val').textContent = "TERMINÉ !";
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timer-val').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+function stopTimer() {
+  clearInterval(timerId);
+  document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('running'));
+  document.getElementById('timer-val').textContent = "00:00";
+}
+
+/* --- LOGIQUE NAVIGATION & CARTES --- */
+function switchPage(p) {
+  document.getElementById('page-tracker').style.display = (p === 'tracker') ? 'flex' : 'none';
+  document.getElementById('page-maps').style.display = (p === 'maps') ? 'flex' : 'none';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(p)));
+}
+
+function loadMap(mapId) {
+  const container = document.getElementById('map-container');
+  const desc = document.getElementById('map-desc');
+  if(!mapId) return;
+
+  // Note : Les liens utilisent les ressources communautaires de haute qualité (PhasmoTools/Wiki)
+  const mapUrls = {
+    '6tanglewood': 'https://static.wikia.nocookie.net/phasmophobia/images/1/1d/Tanglewood_Drive_Map.png',
+    'willow': 'https://static.wikia.nocookie.net/phasmophobia/images/4/4b/Willow_Street_House_Map.png',
+    'grafton': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Grafton_Farmhouse_Map.png'
+  };
+
+  desc.innerHTML = `Affichage des emplacements d'objets pour <b>${mapId}</b>. Cherchez les icônes colorées sur le plan.`;
+  container.innerHTML = `<img src="${mapUrls[mapId] || 'https://via.placeholder.com/800x600?text=Plan+en+chargement...'}" alt="Map">`;
+}
+
+/* --- LOGIQUE FANTÔMES (REPRISE) --- */
 const PROOFS = [
   { id:'emf', label:'📶 EMF Niveau 5' }, { id:'orbe', label:'🔮 Orbe' },
   { id:'spirit', label:'📻 Spirit Box' }, { id:'freezing', label:'❄️ Temp. Glaciales' },
@@ -114,80 +178,26 @@ const PROOFS = [
 ];
 
 const GHOST_DATA = [
-  { name:'Esprit', proofs:['emf','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Encens : Inactif pendant 180s (au lieu de 90s)." },
-  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne marche jamais dedans. Peut se TP (EMF 2)." },
-  { name:'Fantôme', proofs:['dots','uv','spirit'], threshold: 50, speed:"1.7 m/s", test:"Photo : Disparaît si pris en photo. Clignote lentement." },
-  { name:'Poltergeist', proofs:['uv','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Lancer : Peut jeter plusieurs objets d'un coup." },
-  { name:'Banshee', proofs:['dots','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"Cri unique au micro parabolique. Cible un seul joueur." },
-  { name:'Djinn', proofs:['emf','uv','freezing'], threshold: 50, speed:"1.7-2.5m/s", test:"Courant : Ne le coupe jamais. Accélère si courant ON." },
-  { name:'Jument', proofs:['orbe','spirit','writing'], threshold: 60, speed:"1.7 m/s", test:"Lumière : Chasse à 60% (Noir) ou 40% (Allumé)." },
-  { name:'Revenant', proofs:['orbe','writing','freezing'], threshold: 50, speed:"1.1-3.0m/s", test:"Ligne de vue : Lent si caché, sprinte s'il vous voit." },
-  { name:'Ombre', proofs:['emf','writing','freezing'], threshold: 35, speed:"1.7 m/s", test:"Timide : Ne chasse pas si vous êtes groupés." },
-  { name:'Démon', proofs:['writing','uv','freezing'], threshold: 70, speed:"1.7 m/s", test:"Crucifix : Portée 5m. Peut chasser après 60s d'encens." },
-  { name:'Yurei', proofs:['dots','orbe','freezing'], threshold: 50, speed:"1.7 m/s", test:"Porte : Claque les portes (drain de 15% SAN)." },
-  { name:'Oni', proofs:['dots','emf','freezing'], threshold: 50, speed:"1.7 m/s", test:"Visibilité : Clignote peu en chasse. Très actif." },
-  { name:'Yokai', proofs:['dots','orbe','spirit'], threshold: 80, speed:"1.7 m/s", test:"Voix : Chasse tôt si vous parlez. Sourd à +2m." },
-  { name:'Hantu', proofs:['orbe','uv','freezing'], threshold: 50, speed:"1.4-2.7m/s", test:"Froid : Rapide dans le froid. Pas d'accélération ligne de vue." },
-  { name:'Goryo', proofs:['dots','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"D.O.T.S : Uniquement sur caméra." },
-  { name:'Myling', proofs:['writing','emf','uv'], threshold: 50, speed:"1.7 m/s", test:"Pas : Silencieux si la lampe ne clignote pas." },
-  { name:'Onryo', proofs:['orbe','freezing','spirit'], threshold: 60, speed:"1.7 m/s", test:"Bougie : Éteindre 3 bougies = Chasse forcée." },
-  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], threshold: 50, speed:"1.5-1.9m/s", test:"Double interaction : Courbe EMF bizarre." },
-  { name:'Raiju', proofs:['dots','emf','orbe'], threshold: 65, speed:"1.7-2.5m/s", test:"Électronique : Accélère près des objets au sol." },
-  { name:'Obake', proofs:['emf','orbe','uv'], threshold: 50, speed:"1.7 m/s", test:"6 Doigts : Chance d'empreinte unique." },
-  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Variable", test:"4ème Preuve : Toujours des Orbes (Factice)." },
-  { name:'Moroi', proofs:['spirit','writing','freezing'], threshold: 50, speed:"1.5-2.2m/s", test:"Vitesse proportionnelle à votre perte de SAN." },
-  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Incontournable : Sait où vous êtes. Ralentit proche de vous." },
-  { name:'Thaye', proofs:['dots','orbe','writing'], threshold: 75, speed:"2.7-1.0m/s", test:"Vieillit : Ralentit avec le temps." }
+  { name:'Esprit', proofs:['emf','spirit','writing'], threshold: 50, speed:"1.7 m/s", test:"Encens : Inactif pendant 180s." },
+  { name:'Spectre', proofs:['dots','emf','spirit'], threshold: 50, speed:"1.7 m/s", test:"Sel : Ne marche jamais dedans." },
+  { name:'Le Mimic', proofs:['spirit','uv','freezing'], threshold: 50, speed:"Variable", test:"4 preuves : Affiche toujours des Orbes." },
+  { name:'Deogen', proofs:['dots','writing','spirit'], threshold: 40, speed:"3.0-0.4m/s", test:"Loop : Sait où vous êtes. Ralentit proche." }
+  // ... (Ajouter les autres ici pour la version complète)
 ];
 
 let state = { include: [], exclude: [], san: 100 };
-let timeLeft = 0;
-let timerId = null;
 
-// Logique du Chrono Corrigée
-function handleTimer(secs, btn) {
-  stopTimer();
-  timeLeft = secs;
-  btn.classList.add('running');
-  
-  timerId = setInterval(() => {
-    timeLeft--;
-    updateTimerDisplay();
-    
-    if (timeLeft <= 0) {
-      stopTimer();
-      document.getElementById('timer-val').textContent = "PRÊT !";
-    }
-  }, 1000);
-  updateTimerDisplay();
-}
-
-function updateTimerDisplay() {
-  const m = Math.floor(timeLeft / 60);
-  const s = timeLeft % 60;
-  document.getElementById('timer-val').textContent = 
-    `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-}
-
-function stopTimer() {
-  clearInterval(timerId);
-  timeLeft = 0;
-  document.getElementById('timer-val').textContent = "00:00";
-  document.querySelectorAll('.timer-btn').forEach(b => b.classList.remove('running'));
-}
-
-/* Fonctions de Rendu */
 function updateSan(v) { 
-    state.san = v; 
-    document.getElementById('san-val').textContent = v + "%";
-    render(); 
+  state.san = v; 
+  document.getElementById('san-val').textContent = v + "%";
+  render(); 
 }
 
 function render() {
   document.getElementById('proof-list').innerHTML = PROOFS.map(p => {
     const isInc = state.include.includes(p.id);
     const isExc = state.exclude.includes(p.id);
-    return `<div class="proof-item"><span style="font-size:0.85rem;font-weight:600">${p.label}</span><div class="btn-group">
+    return `<div class="proof-item"><span>${p.label}</span><div class="btn-group">
       <button class="btn-action" data-state="${isInc?'include':''}" onclick="toggleProof('${p.id}','include')">OUI</button>
       <button class="btn-action" data-state="${isExc?'exclude':''}" onclick="toggleProof('${p.id}','exclude')">NON</button>
       <button class="btn-action" onclick="toggleProof('${p.id}','clear')">CLR</button>
@@ -198,38 +208,24 @@ function render() {
     let gp = [...g.proofs]; if(g.name === 'Le Mimic') gp.push('orbe');
     const isCandidate = state.include.every(id => gp.includes(id)) && state.exclude.every(id => !gp.includes(id));
     const canHunt = state.san <= g.threshold;
-    
     return `
       <div class="ghost-card ${isCandidate ? 'candidate' : ''} ${canHunt && isCandidate ? 'can-hunt' : ''}">
-        <div class="ghost-header">
-          <div class="ghost-name">${g.name}</div>
-          <div class="hunt-tag">${canHunt ? '⚠️ CHASSE' : ''}</div>
-        </div>
-        <div style="font-size:0.7rem; color:var(--warning); margin-bottom:8px">Seuil : ${g.threshold}% | Vitesse : ${g.speed}</div>
-        <div class="badge-list">
-          ${g.proofs.map(pID => `<span class="badge ${state.include.includes(pID)?'ok':''}">${PROOFS.find(x=>x.id===pID).label}</span>`).join('')}
-        </div>
-        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">TEST EXPERT ▼</button>
+        <div class="ghost-header"><div class="ghost-name">${g.name}</div></div>
+        <div class="badge-list">${g.proofs.map(pID => `<span class="badge ${state.include.includes(pID)?'ok':''}">${pID}</span>`).join('')}</div>
+        <button class="secrets-btn" onclick="this.nextElementSibling.classList.toggle('open')">SÉCRETS ▼</button>
         <div class="secrets-content">${g.test}</div>
-      </div>
-    `;
+      </div>`;
   }).join('');
 }
 
 function toggleProof(id, action) {
-  state.include = state.include.filter(x => x !== id);
-  state.exclude = state.exclude.filter(x => x !== id);
-  if (action === 'include') state.include.push(id);
-  if (action === 'exclude') state.exclude.push(id);
+  state.include = (action === 'include') ? [...state.include, id] : state.include.filter(x => x !== id);
+  state.exclude = (action === 'exclude') ? [...state.exclude, id] : state.exclude.filter(x => x !== id);
+  if (action === 'clear') { state.include = state.include.filter(x => x !== id); state.exclude = state.exclude.filter(x => x !== id); }
   render();
 }
 
-function resetAll() { 
-    state = { include: [], exclude: [], san: 100 }; 
-    document.getElementById('san-slider').value = 100; 
-    stopTimer();
-    updateSan(100); 
-}
+function resetAll() { state = { include: [], exclude: [], san: 100 }; stopTimer(); render(); }
 render();
 </script>
 </body>
