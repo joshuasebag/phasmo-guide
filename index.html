@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v6.4 (Wiki Guide)</title>
+  <title>PHASMO-TRACKER v6.5 (Timer Guide)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -63,6 +63,11 @@
     .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
+    
+    /* GUIDE TIMER (NOUVEAU) */
+    .timer-guide { margin-top: 12px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.4; }
+    .timer-guide b { color: var(--accent); }
+    .timer-guide span { display: block; margin-bottom: 4px; }
 
     /* PREUVES */
     .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #334155; }
@@ -104,7 +109,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v6.4</div>
+  <div class="brand">PHASMO-TRACKER v6.5</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -121,6 +126,10 @@
         <button class="btn-time" onclick="runTimer(90, this)">90s</button>
         <button class="btn-time" onclick="runTimer(180, this)">180s</button>
         <button class="btn-time" style="background:#450a0a" onclick="stopTimer()">X</button>
+      </div>
+      <div class="timer-guide">
+        <span><b>90s :</b> Temps standard. S'il chasse avant, c'est un Démon (60s).</span>
+        <span><b>180s :</b> Test Esprit. S'il chasse avant la fin, ce n'est <u>PAS</u> un Esprit.</span>
       </div>
     </div>
 
