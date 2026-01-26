@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v6.5 (Timer Guide)</title>
+  <title>PHASMO-TRACKER v7.0 (Vocal Guide)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -63,8 +63,6 @@
     .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
-    
-    /* GUIDE TIMER (NOUVEAU) */
     .timer-guide { margin-top: 12px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.4; }
     .timer-guide b { color: var(--accent); }
     .timer-guide span { display: block; margin-bottom: 4px; }
@@ -82,12 +80,10 @@
     .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
-    
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
-    
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
@@ -100,6 +96,15 @@
     .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
+    /* VUE GUIDE VOCAL */
+    #view-guide { display: none; }
+    .guide-section { margin-bottom: 25px; }
+    .guide-title { font-size: 1.1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; font-weight: bold; }
+    .guide-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .guide-table th { text-align: left; color: #94a3b8; padding: 8px; border-bottom: 1px solid #334155; }
+    .guide-table td { padding: 8px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
+    .cost { color: var(--danger); font-weight: bold; font-family: monospace; }
+
     @media(max-width: 768px){ 
       .container { grid-template-columns: 1fr; } 
       aside { position: relative; top: 0; width: 100%; }
@@ -109,10 +114,11 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v6.5</div>
+  <div class="brand">PHASMO-TRACKER v7.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
+    <button class="nav-item" onclick="setTab('guide', this)">GUIDE VOCAL</button>
   </div>
   <button class="btn-reset" onclick="resetAll()">RESET</button>
 </header>
@@ -167,6 +173,47 @@
       </div>
     </div>
 
+    <div id="tab-guide">
+      
+      <div class="card guide-section">
+        <div class="guide-title">🧩 OUIJA (Santé Mentale)</div>
+        <table class="guide-table">
+          <tr><th>Question</th><th>Coût SAN</th></tr>
+          <tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr>
+          <tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr>
+          <tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr>
+          <tr><td>Quel âge avez-vous ?</td><td class="cost">-5%</td></tr>
+          <tr><td>Combien de temps êtes-vous mort ?</td><td class="cost">-5%</td></tr>
+          <tr><td>Cache-cache ! (Déclenche chasse)</td><td class="cost">-25%</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">📻 SPIRIT BOX (Questions Fiables)</div>
+        <table class="guide-table">
+          <tr><th>Phrase</th><th>Utilité</th></tr>
+          <tr><td>Où êtes-vous ?</td><td>Localisation</td></tr>
+          <tr><td>Êtes-vous ici / proche ?</td><td>Localisation</td></tr>
+          <tr><td>Quel âge avez-vous ?</td><td>Info (Jeune/Vieux)</td></tr>
+          <tr><td>Êtes-vous fâché ?</td><td>Interaction</td></tr>
+          <tr><td>Que voulez-vous ?</td><td>Interaction</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">✋ PATTE DE SINGE (Vœux)</div>
+        <table class="guide-table">
+          <tr><th>Vœu</th><th>Effet</th></tr>
+          <tr><td>Je souhaite voir le fantôme</td><td>Event fantôme (Aveugle ensuite)</td></tr>
+          <tr><td>Je souhaite être en sécurité</td><td>Débloque une cachette</td></tr>
+          <tr><td>Je souhaite partir</td><td>Ouvre la porte (ralentit joueurs)</td></tr>
+          <tr><td>Je souhaite de la connaissance</td><td>Barre un fantôme (Sourd/Aveugle)</td></tr>
+          <tr><td>Je souhaite de l'activité</td><td>Double activité (Porte fermée)</td></tr>
+        </table>
+      </div>
+
+    </div>
+
   </div>
 </div>
 
@@ -182,7 +229,6 @@ const PROOFS = [
   { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
 ];
 
-// LISTE MISE À JOUR SELON LE WIKI FR
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
@@ -209,7 +255,7 @@ const GHOSTS = [
   { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. VOUS VOIT. Rapide loin, escargot proche.' },
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Demander âge Ouija. Rapide/Actif au début -> Lent/Calme à la fin.' },
   
-  // CUSTOM GHOSTS (Non officiels)
+  // CUSTOM
   { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'<b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
   { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
@@ -381,7 +427,7 @@ function setSan(val) {
   render();
 }
 
-/* ================= CARTES (TEXTE) ================= */
+/* ================= NAVIGATION ================= */
 function loadLocs(key) {
   const area = document.getElementById('loc-area');
   if (!key || !LOCATIONS[key]) {
@@ -404,8 +450,16 @@ function loadLocs(key) {
 }
 
 function setTab(tab, btn) {
-  document.getElementById('tab-tracker').style.display = tab === 'tracker' ? 'grid' : 'none';
-  document.getElementById('tab-maps').style.display = tab === 'maps' ? 'block' : 'none';
+  // Masquer tout
+  document.getElementById('tab-tracker').style.display = 'none';
+  document.getElementById('tab-maps').style.display = 'none';
+  document.getElementById('tab-guide').style.display = 'none';
+  
+  // Afficher le bon
+  if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid';
+  if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block';
+  if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block';
+
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
