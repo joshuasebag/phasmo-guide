@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER: TEXT GUIDE</title>
+  <title>PHASMO-TRACKER v6.1</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
       --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
 
     /* HEADER */
     header {
@@ -31,10 +31,18 @@
     .btn-reset { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
     /* LAYOUT */
-    .container { display: flex; gap: 20px; max-width: 1600px; margin: 20px auto; padding: 0 20px; flex-wrap: wrap; }
+    .container { display: flex; gap: 20px; max-width: 1600px; margin: 20px auto; padding: 0 20px; flex-wrap: wrap; flex: 1; }
     aside { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
     .main-content { flex-grow: 1; min-width: 0; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+
+    /* FOOTER (NOUVEAU) */
+    footer {
+      text-align: center; padding: 20px; margin-top: 20px;
+      border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem;
+      background: #0b1120;
+    }
+    .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
 
     /* TIMER */
     .timer-box { text-align: center; margin-bottom: 10px; }
@@ -66,7 +74,6 @@
     /* VUE EMPLACEMENTS (Tableau) */
     #view-maps { display: none; }
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
-    
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     .loc-card { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; }
     .loc-icon { font-size: 2rem; }
@@ -79,7 +86,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v6.0</div>
+  <div class="brand">PHASMO-TRACKER v6.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -136,6 +143,10 @@
   </div>
 </div>
 
+<footer>
+  Créé par <span class="creator">Joshua Sebag</span>
+</footer>
+
 <script>
 /* ================= DONNÉES ================= */
 const PROOFS = [
@@ -171,8 +182,6 @@ const GHOSTS = [
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' }
 ];
 
-/* --- DONNÉES DE LOCALISATION (TEXTE) --- */
-// Icônes: 🔮Miroir, 📦Boîte, 🧸Poupée, ⭕Cercle, 🃏Tarot, ✋Patte, 🧩Ouija
 const LOCATIONS = {
   'tanglewood': [
     { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre parentale)' },
