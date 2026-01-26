@@ -3,40 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Phasmophobia – Tracker Ultra</title>
-
+  <title>Phasmo-Tracker : Expert Edition</title>
   <style>
     :root {
       --bg: #0b0e14;
       --card-bg: #161b26;
-      --header-bg: rgba(22, 27, 38, 0.8);
-      --accent: #5eead4; /* Cyan néon */
+      --header-bg: rgba(22, 27, 38, 0.9);
+      --accent: #5eead4;
       --accent-glow: rgba(94, 234, 212, 0.2);
       --text: #e2e8f0;
       --muted: #94a3b8;
       --border: #2d3748;
       --danger: #f87171;
       --success: #34d399;
+      --warning: #fbbf24;
     }
 
     body {
       margin: 0;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.5;
     }
 
-    /* --- Header & Navigation --- */
     header {
       position: sticky;
       top: 0;
       background: var(--header-bg);
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 1rem;
       z-index: 100;
     }
+
     .nav-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -44,166 +43,73 @@
       justify-content: space-between;
       align-items: center;
     }
-    .logo {
-      font-weight: 800;
-      font-size: 1.2rem;
-      letter-spacing: 2px;
-      color: var(--accent);
-      text-transform: uppercase;
-    }
-    .tabs {
-      display: flex;
-      gap: 1.5rem;
-    }
-    .tab {
-      color: var(--muted);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 0.9rem;
-      transition: 0.3s;
-    }
-    .tab[data-active="true"] {
-      color: var(--accent);
-      text-shadow: 0 0 10px var(--accent-glow);
-    }
 
-    main {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
+    .logo { font-weight: 900; color: var(--accent); letter-spacing: 1px; }
 
-    /* --- Mise en page à deux colonnes --- */
-    .dashboard {
-      display: grid;
-      grid-template-columns: 350px 1fr;
-      gap: 2rem;
-    }
-    @media (max-width: 900px) {
-      .dashboard { grid-template-columns: 1fr; }
-    }
+    .tabs { display: flex; gap: 1.5rem; }
+    .tab { color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: 0.3s; }
+    .tab[data-active="true"] { color: var(--accent); text-shadow: 0 0 8px var(--accent-glow); }
 
-    /* --- Cartes --- */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    h2 { font-size: 1.1rem; margin-top: 0; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+    main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
 
-    /* --- Preuves UI --- */
-    .proof-item {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px solid #232a37;
-    }
-    .proof-item:last-child { border: none; }
-    .proof-label { font-weight: 600; font-size: 0.95rem; }
-    
-    .btn-group { display: flex; gap: 5px; }
+    .dashboard { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .dashboard { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+    h2 { font-size: 0.9rem; margin: 0 0 1rem 0; color: var(--accent); text-transform: uppercase; opacity: 0.8; }
+
+    /* Preuves */
+    .proof-item { padding: 10px 0; border-bottom: 1px solid #232a37; }
+    .proof-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+    .btn-group { display: flex; gap: 4px; }
     .btn-action {
-      flex: 1;
-      padding: 6px;
-      border: 1px solid var(--border);
-      background: #1e2533;
-      color: var(--muted);
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 11px;
-      transition: 0.2s;
+      flex: 1; border: 1px solid var(--border); background: #1e2533; color: var(--muted);
+      padding: 6px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold;
     }
     .btn-action[data-state="include"] { background: var(--success); color: #000; border-color: var(--success); }
     .btn-action[data-state="exclude"] { background: var(--danger); color: #fff; border-color: var(--danger); }
 
-    /* --- Grille des Fantômes --- */
-    .ghost-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-    .ghost-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 1.5rem;
-      transition: transform 0.2s, border-color 0.2s;
-      position: relative;
-    }
-    .ghost-card.candidate {
-      border-color: var(--accent);
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-    .ghost-name { font-size: 1.3rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-    .candidate-tag { font-size: 0.7rem; background: var(--accent); color: #000; padding: 2px 8px; border-radius: 4px; }
-
-    .badge-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 1rem; }
-    .badge {
-      font-size: 0.75rem;
-      padding: 4px 10px;
-      background: #1e2533;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
-    .badge.ok { color: var(--success); border-color: var(--success); }
-    .badge.no { color: var(--danger); border-color: var(--danger); text-decoration: line-through; opacity: 0.6; }
-
-    .btn-details {
-      width: 100%;
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    .btn-details:hover { background: var(--accent); color: #000; }
-
-    .details-box {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px dashed var(--border);
-      font-size: 0.85rem;
-      color: var(--muted);
-      display: none;
-    }
-    .details-box.open { display: block; }
+    /* Fantômes */
+    .ghost-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem; }
+    .ghost-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+    .ghost-card.candidate { border-color: var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
     
-    /* --- Search Bar --- */
-    .search-bar {
-      width: 100%;
-      background: #1e2533;
-      border: 1px solid var(--border);
-      padding: 12px;
-      border-radius: 10px;
-      color: white;
-      margin-bottom: 2rem;
-    }
+    .ghost-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .ghost-name { font-size: 1.2rem; font-weight: 800; }
+    .speed-tag { font-size: 0.7rem; background: #2d3748; padding: 2px 6px; border-radius: 4px; color: var(--warning); }
 
-    .reset-btn {
-      background: var(--danger);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
+    .badge-list { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+    .badge { font-size: 0.7rem; padding: 3px 8px; background: #0b0e14; border-radius: 4px; border: 1px solid var(--border); }
+    .badge.ok { color: var(--success); border-color: var(--success); }
+    .badge.no { color: var(--danger); border-color: var(--danger); text-decoration: line-through; opacity: 0.4; }
+
+    /* Secrets Section */
+    .secrets-btn {
+      width: 100%; padding: 8px; background: #2d3748; border: none; color: white;
+      border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600;
     }
+    .secrets-content {
+      margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+      font-size: 0.85rem; display: none;
+    }
+    .secrets-content.open { display: block; }
+    
+    .test-box {
+      background: rgba(0,0,0,0.2); border-left: 3px solid var(--accent);
+      padding: 8px; margin: 8px 0; border-radius: 0 4px 4px 0;
+    }
+    .test-title { color: var(--accent); font-weight: bold; font-size: 0.75rem; text-transform: uppercase; }
+
+    .reset-btn { background: var(--danger); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="nav-container">
-      <div class="logo">Phasmo-Tracker</div>
+      <div class="logo">PHASMO-TRACKER <span style="font-weight:300; font-size:0.8rem">v2.0</span></div>
       <nav class="tabs">
         <a class="tab" href="#journal" data-active="true">Journal</a>
-        <a class="tab" href="#fantomes">Fantômes</a>
         <a class="tab" href="#options">Options</a>
       </nav>
     </div>
@@ -213,77 +119,107 @@
     <div id="journal" class="dashboard-section">
       <div class="dashboard">
         <aside class="card">
-          <h2>Preuves trouvées</h2>
-          <div id="proof-chips"></div>
+          <h2>Preuves 🔎</h2>
+          <div id="proof-list"></div>
+          <div style="margin-top: 2rem">
+            <h2>Candidats</h2>
+            <div id="probables-mini" style="display:flex; flex-wrap:wrap; gap:5px"></div>
+          </div>
         </aside>
 
         <section>
-          <div class="card" style="margin-bottom: 2rem;">
-            <h2>Candidats Potentiels</h2>
-            <div id="probables-box" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
-          </div>
-          
-          <h2>Détails des Entités</h2>
-          <div class="ghost-grid" id="ghost-list"></div>
+          <div class="ghost-grid" id="ghost-display"></div>
         </section>
       </div>
     </div>
 
-    <div id="fantomes" class="dashboard-section" style="display:none">
-        <input type="search" id="ghost-search" class="search-bar" placeholder="Rechercher un fantôme ou une preuve...">
-        <div class="ghost-grid" id="ghost-full-list"></div>
-    </div>
-
     <div id="options" class="dashboard-section" style="display:none">
-        <div class="card">
-            <h2>Paramètres</h2>
-            <button class="reset-btn" id="reset-all">Réinitialiser la partie</button>
+        <div class="card" style="max-width:400px; margin: 0 auto;">
+            <h2>Menu Principal</h2>
+            <button class="reset-btn" id="reset-all">Nouvelle Chasse (Reset)</button>
         </div>
     </div>
   </main>
 
 <script>
-/* Les données GHOSTS et PROOFS restent identiques à ton code précédent */
 const PROOFS = [
-  { id:'emf', label:'EMF Niveau 5' },
-  { id:'orbe', label:'Orbe' },
-  { id:'spirit', label:'Spirit Box' },
-  { id:'freezing', label:'Glacial' },
-  { id:'uv', label:'Traces UV' },
-  { id:'dots', label:'D.O.T.S' },
-  { id:'writing', label:'Écriture' },
+  { id:'emf', label:'📶 EMF Niveau 5' },
+  { id:'orbe', label:'🔮 Orbe Fantomatique' },
+  { id:'spirit', label:'📻 Spirit Box' },
+  { id:'freezing', label:'❄️ Temp. Glaciales' },
+  { id:'uv', label:'👣 Traces UV' },
+  { id:'dots', label:'🟢 Projecteur D.O.T.S' },
+  { id:'writing', label:'📖 Écriture' },
 ];
 
-const GHOSTS = [
-  { name:'Esprit', proofs:['emf','spirit','writing'], desc: "Sensible à l'encens." },
-  { name:'Spectre', proofs:['dots','emf','spirit'], desc: "Ne marche jamais dans le sel." },
-  { name:'Fantôme', proofs:['dots','uv','spirit'], desc: "Baisse la santé mentale si regardé." },
-  { name:'Poltergeist', proofs:['uv','spirit','writing'], desc: "Lance plusieurs objets à la fois." },
-  { name:'Banshee', proofs:['dots','orbe','uv'], desc: "Cible un seul joueur." },
-  { name:'Djinn', proofs:['emf','uv','freezing'], desc: "Accélère si le courant est allumé." },
-  { name:'Jument', proofs:['orbe','spirit','writing'], desc: "Attaque plus souvent dans le noir." },
-  { name:'Revenant', proofs:['orbe','writing','freezing'], desc: "Extrêmement rapide s'il vous voit." },
-  { name:'Ombre', proofs:['emf','writing','freezing'], desc: "Très timide, n'attaque pas si groupés." },
-  { name:'Démon', proofs:['writing','uv','freezing'], desc: "Peut attaquer à tout moment." },
-  { name:'Yurei', proofs:['dots','orbe','freezing'], desc: "Ferme les portes pour drainer la santé." },
-  { name:'Oni', proofs:['dots','emf','freezing'], desc: "Très actif quand on est proche." },
-  { name:'Yokai', proofs:['dots','orbe','spirit'], desc: "Attiré par le bruit des voix." },
-  { name:'Hantu', proofs:['orbe','uv','freezing'], desc: "Rapide dans les zones froides." },
-  { name:'Goryo', proofs:['dots','emf','uv'], desc: "DOTS visible uniquement via caméra." },
-  { name:'Myling', proofs:['writing','emf','uv'], desc: "Bruit de pas très discret." },
-  { name:'Onryo', proofs:['orbe','freezing','spirit'], desc: "Peur des bougies et du feu." },
-  { name:'Les Jumeaux', proofs:['emf','freezing','spirit'], desc: "Interactions doubles simultanées." },
-  { name:'Raiju', proofs:['dots','emf','orbe'], desc: "S'excite près des appareils électroniques." },
-  { name:'Obake', proofs:['emf','orbe','uv'], desc: "Laisse des empreintes à 6 doigts." },
-  { name:'Le Mimic', proofs:['spirit','uv','freezing'], desc: "Affiche toujours des orbes (4e preuve)." }
+const GHOST_DATA = [
+  { 
+    name:'Onryo', 
+    proofs:['orbe','freezing','spirit'], 
+    speed: "1.7 m/s",
+    test: "Le Test de la Bougie : Il ne peut pas chasser à moins de 4m d'une flamme allumée. S'il éteint 3 bougies, il lancera obligatoirement une tentative de chasse peu importe la santé mentale."
+  },
+  { 
+    name:'Spectre', 
+    proofs:['dots','emf','spirit'], 
+    speed: "1.7 m/s",
+    test: "Le Test du Sel : C'est le seul fantôme qui ne marchera JAMAIS dans un tas de sel. S'il marche près du sel sans laisser de traces UV ou de bruit de pas dedans, c'est lui."
+  },
+  { 
+    name:'Deogen', 
+    proofs:['dots','writing','spirit'], 
+    speed: "3.0 m/s ➔ 0.4 m/s",
+    test: "Le Cri Spirit Box : Si vous êtes à moins d'un mètre, vous pouvez entendre un râle lourd unique. En chasse : Il sait toujours où vous êtes. Cachez-vous et il vous tuera, restez à découvert et loopez-le (il ralentit énormément proche de vous)."
+  },
+  { 
+    name:'Hantu', 
+    proofs:['orbe','uv','freezing'], 
+    speed: "1.4 m/s ➔ 2.7 m/s",
+    test: "Buée de Chasse : S'il chasse dans une pièce froide sans que le courant soit allumé, vous verrez de la buée sortir de sa bouche. Il ne peut pas accélérer en vous voyant (pas de ligne de vue)."
+  },
+  { 
+    name:'Obake', 
+    proofs:['emf','orbe','uv'], 
+    speed: "1.7 m/s",
+    test: "Le Test de la Main : Il a une chance de laisser des empreintes à 6 doigts. En chasse, il a 6.66% de chances de changer de forme visuelle (clignotement) à chaque cycle."
+  },
+  { 
+    name:'Revenant', 
+    proofs:['orbe','writing','freezing'], 
+    speed: "1.0 m/s ➔ 3.0 m/s",
+    test: "Le Test du Silence : S'il ne vous voit pas et n'entend rien, il est le plus lent du jeu. Dès qu'il a une ligne de vue, il devient un missile. Si vous entendez des pas très lents qui sprintent d'un coup, fuyez."
+  },
+  { 
+    name:'Démon', 
+    proofs:['writing','uv','freezing'], 
+    speed: "1.7 m/s",
+    test: "Le Test du Crucifix : La portée du crucifix est augmentée (5m au lieu de 3m). Il peut attaquer dès 100% de santé mentale. L'encens ne le bloque que 60s (contre 90s normalement)."
+  },
+  { 
+    name:'Le Mimic', 
+    proofs:['spirit','uv','freezing'], 
+    speed: "Variable",
+    test: "La 4ème Preuve : Il présente TOUJOURS des orbes fantomatiques, même si vous jouez en mode 'zéro preuve'. Si vous avez 4 preuves, c'est obligatoirement lui."
+  },
+  { 
+    name:'Thaye', 
+    proofs:['dots','orbe','writing'], 
+    speed: "2.7 m/s ➔ 1.0 m/s",
+    test: "Le Test de l'Âge : Utilisez le Ouija pour demander son âge. S'il vieillit au fur et à mesure de la partie, c'est un Thaye. Il devient de moins en moins actif et de plus en plus lent avec le temps."
+  },
+  { 
+    name:'Myling', 
+    proofs:['writing','emf','uv'], 
+    speed: "1.7 m/s",
+    test: "Le Test de la Lampe : En chasse, si vous entendez ses pas UNIQUEMENT quand votre lampe commence à clignoter, c'est un Myling (ses pas sont silencieux à longue distance)."
+  }
 ];
 
 let state = { include: [], exclude: [] };
 
-/* Fonctions de Rendu */
 function render() {
-  const proofContainer = document.getElementById('proof-chips');
-  proofContainer.innerHTML = PROOFS.map(p => {
+  // Liste des preuves
+  document.getElementById('proof-list').innerHTML = PROOFS.map(p => {
     const isInc = state.include.includes(p.id);
     const isExc = state.exclude.includes(p.id);
     return `
@@ -298,35 +234,40 @@ function render() {
     `;
   }).join('');
 
-  const candidates = GHOSTS.filter(g => {
-    const hasAll = state.include.every(id => g.proofs.includes(id));
-    const noneExcluded = state.exclude.every(id => !g.proofs.includes(id));
-    // Cas spécial Mimic : si on inclut l'orbe, il reste candidat car c'est sa preuve factice
-    if (g.name === 'Le Mimic' && state.include.includes('orbe')) {
-        const hasOthers = state.include.filter(id => id !== 'orbe').every(id => g.proofs.includes(id));
-        return hasOthers && noneExcluded;
-    }
+  // Logique de filtrage
+  const candidates = GHOST_DATA.filter(g => {
+    let ghostProofs = [...g.proofs];
+    if (g.name === 'Le Mimic') ghostProofs.push('orbe');
+
+    const hasAll = state.include.every(id => ghostProofs.includes(id));
+    const noneExcluded = state.exclude.every(id => !ghostProofs.includes(id));
     return hasAll && noneExcluded;
   });
 
-  const probBox = document.getElementById('probables-box');
-  probBox.innerHTML = candidates.map(g => `<span class="badge ok">${g.name}</span>`).join('');
-
-  const list = document.getElementById('ghost-list');
-  list.innerHTML = candidates.map(g => `
+  // Rendu des cartes fantômes
+  document.getElementById('probables-mini').innerHTML = candidates.map(g => `<span class="badge ok">${g.name}</span>`).join('');
+  
+  document.getElementById('ghost-display').innerHTML = candidates.map(g => `
     <div class="ghost-card candidate">
-      <div class="ghost-name">${g.name} <span class="candidate-tag">Identifié</span></div>
+      <div class="ghost-header">
+        <div class="ghost-name">${g.name}</div>
+        <div class="speed-tag">⚡ ${g.speed}</div>
+      </div>
       <div class="badge-list">
         ${g.proofs.map(pID => {
-          const pLabel = PROOFS.find(x => x.id === pID).label;
+          const p = PROOFS.find(x => x.id === pID);
           const cls = state.include.includes(pID) ? 'ok' : state.exclude.includes(pID) ? 'no' : '';
-          return `<span class="badge ${cls}">${pLabel}</span>`;
+          return `<span class="badge ${cls}">${p.label}</span>`;
         }).join('')}
+        ${g.name === 'Le Mimic' ? '<span class="badge" style="border-style:dashed">🔮 Orbe (Factice)</span>' : ''}
       </div>
-      <button class="btn-details" onclick="this.nextElementSibling.classList.toggle('open')">📜 Voir Secret</button>
-      <div class="details-box">
-        ${g.desc}<br><br>
-        <strong>Seuil de chasse :</strong> 50%
+      <button class="secrets-btn" onclick="toggleSecrets(this)">PRO-TESTS & SECRETS ▼</button>
+      <div class="secrets-content">
+        <div class="test-box">
+          <div class="test-title">Capacité Spéciale</div>
+          ${g.test || "Pas de test spécifique répertorié pour ce fantôme."}
+        </div>
+        <p style="font-size:0.75rem; margin-top:10px">💡 <i>Conseil : Utilisez l'encens pour confirmer si le test échoue.</i></p>
       </div>
     </div>
   `).join('');
@@ -340,19 +281,25 @@ function toggleProof(id, action) {
   render();
 }
 
+function toggleSecrets(btn) {
+  const content = btn.nextElementSibling;
+  content.classList.toggle('open');
+  btn.textContent = content.classList.contains('open') ? 'FERMER DÉTAILS ▲' : 'PRO-TESTS & SECRETS ▼';
+}
+
 document.getElementById('reset-all').onclick = () => {
     state = { include: [], exclude: [] };
     render();
+    alert("Journal réinitialisé pour la prochaine mission !");
 };
 
-/* Gestion de la Navigation Simple */
+// Nav
 document.querySelectorAll('.tab').forEach(tab => {
     tab.onclick = (e) => {
         e.preventDefault();
         document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
         document.querySelectorAll('.tab').forEach(t => t.dataset.active = "false");
-        const target = tab.getAttribute('href').substring(1);
-        document.getElementById(target).style.display = 'block';
+        document.getElementById(tab.getAttribute('href').substring(1)).style.display = 'block';
         tab.dataset.active = "true";
     }
 });
