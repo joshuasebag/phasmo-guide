@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER ULTIMATE v5.0</title>
+  <title>PHASMO-TRACKER: TEXT GUIDE</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -16,13 +16,12 @@
     header {
       position: sticky; top: 0; z-index: 999;
       background: rgba(15, 23, 42, 0.95);
-      border-bottom: 1px solid var(--border); padding: 12px 20px;
+      border-bottom: 1px solid var(--border); padding: 10px 20px;
       display: flex; justify-content: space-between; align-items: center;
       backdrop-filter: blur(8px);
     }
-    .brand { font-weight: 900; color: var(--accent); font-size: 1.1rem; letter-spacing: 1px; }
+    .brand { font-weight: 900; color: var(--accent); font-size: 1.1rem; }
     
-    /* NAV */
     .nav-pills { display: flex; gap: 5px; background: #020617; padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
     .nav-item {
       background: transparent; border: none; color: #94a3b8; 
@@ -54,30 +53,25 @@
     /* GRILLE FANTÔMES */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
-    
-    /* Etats visuels */
     .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
-
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
-    .g-info { font-size: 0.75rem; color: var(--warn); margin-bottom: 8px; }
-    
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
-
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUE CARTES */
+    /* VUE EMPLACEMENTS (Tableau) */
     #view-maps { display: none; }
-    .map-frame { 
-      width: 100%; min-height: 600px; background: #000; border: 1px solid var(--border); border-radius: 12px; 
-      display: flex; justify-content: center; align-items: flex-start; overflow: auto; padding: 20px;
-    }
-    .map-frame img { max-width: 100%; height: auto; box-shadow: 0 0 20px #000; border-radius: 4px; }
-    .map-select { width: 100%; padding: 12px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; margin-bottom: 15px; font-size: 1rem; cursor: pointer; }
+    .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
+    
+    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+    .loc-card { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; }
+    .loc-icon { font-size: 2rem; }
+    .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
+    .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
     @media(max-width:900px){ .container{flex-direction:column} aside{width:100%} }
   </style>
@@ -85,10 +79,10 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v5.0</div>
+  <div class="brand">PHASMO-TRACKER v6.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
-    <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
+    <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
   </div>
   <button class="btn-reset" onclick="resetAll()">RESET</button>
 </header>
@@ -97,9 +91,7 @@
   
   <aside>
     <div class="card">
-      <div class="timer-box">
-        <div class="timer-val" id="timer-disp">00:00</div>
-      </div>
+      <div class="timer-box"><div class="timer-val" id="timer-disp">00:00</div></div>
       <div class="timer-actions">
         <button class="btn-time" onclick="runTimer(90, this)">90s</button>
         <button class="btn-time" onclick="runTimer(180, this)">180s</button>
@@ -123,8 +115,8 @@
     <div id="tab-tracker" class="grid"></div>
 
     <div id="tab-maps">
-      <select class="map-select" onchange="loadMap(this.value)">
-        <option value="">-- SÉLECTIONNER UNE CARTE --</option>
+      <select class="map-select" onchange="loadLocs(this.value)">
+        <option value="">-- CHOISIR UNE CARTE --</option>
         <option value="tanglewood">6 Tanglewood Drive</option>
         <option value="willow">Willow Street</option>
         <option value="edgefield">42 Edgefield Road</option>
@@ -136,8 +128,8 @@
         <option value="sunny">Sunny Meadows</option>
       </select>
       
-      <div class="map-frame" id="map-area">
-        <p style="color:#64748b; margin-top:50px">Veuillez choisir une carte dans le menu.</p>
+      <div id="loc-area">
+        <div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir la liste des objets.</div>
       </div>
     </div>
 
@@ -152,7 +144,6 @@ const PROOFS = [
   { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
 ];
 
-// LISTE COMPLÈTE (24)
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Encens bloque 180s.' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche jamais dans le sel.' },
@@ -180,19 +171,90 @@ const GHOSTS = [
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' }
 ];
 
-// URLs GITHUB (Plus fiables que Wikia pour l'affichage externe)
-// Source: TyBayn Unofficial Cheat Sheet Assets (Public Repo)
-const MAP_URLS = {
-  'tanglewood': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/TanglewoodFirstFloor.png',
-  'willow': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/WillowStreet.png',
-  'edgefield': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/EdgefieldFirstFloor.png',
-  'ridgeview': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/RidgeviewFirstFloor.png',
-  'grafton': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/GraftonFirstFloor.png',
-  'bleasdale': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/BleasdaleFirstFloor.png',
-  'woodwind': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/CampWoodwind.png',
-  'prison': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/PrisonFirstFloor.png',
-  'sunny': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/SunnyMeadowsFirstFloor.png',
-  'camp': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/CampWoodwind.png'
+/* --- DONNÉES DE LOCALISATION (TEXTE) --- */
+// Icônes: 🔮Miroir, 📦Boîte, 🧸Poupée, ⭕Cercle, 🃏Tarot, ✋Patte, 🧩Ouija
+const LOCATIONS = {
+  'tanglewood': [
+    { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre parentale)' },
+    { i:'🧩', n:'Ouija', l:'Sous-sol (Fond à gauche)' },
+    { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' },
+    { i:'⭕', n:'Cercle', l:'Sous-sol' },
+    { i:'🃏', n:'Tarot', l:'Salon (Table basse)' },
+    { i:'📦', n:'Boîte', l:'Nursery (Chambre bébé)' },
+    { i:'✋', n:'Patte', l:'Salle à manger (Meuble vitré)' }
+  ],
+  'willow': [
+    { i:'🔮', n:'Miroir', l:'Couloir (Coin buanderie)' },
+    { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' },
+    { i:'🧸', n:'Poupée', l:'Chambre garçons (Armoire)' },
+    { i:'⭕', n:'Cercle', l:'Sous-sol' },
+    { i:'🃏', n:'Tarot', l:'Salon (Table basse)' },
+    { i:'📦', n:'Boîte', l:'Salon (Sur meuble TV)' },
+    { i:'✋', n:'Patte', l:'Couloir (Meuble)' }
+  ],
+  'edgefield': [
+    { i:'🔮', n:'Miroir', l:'1er étage (Bas escalier)' },
+    { i:'🧩', n:'Ouija', l:'Buanderie (Arrière cuisine)' },
+    { i:'🧸', n:'Poupée', l:'1er étage (Chambre ado grande)' },
+    { i:'⭕', n:'Cercle', l:'Sous-sol' },
+    { i:'🃏', n:'Tarot', l:'Entrée (Table derrière porte)' },
+    { i:'📦', n:'Boîte', l:'Salon' },
+    { i:'✋', n:'Patte', l:'Cuisine (Table)' }
+  ],
+  'ridgeview': [
+    { i:'🔮', n:'Miroir', l:'Rez-de-chaussée (Escaliers)' },
+    { i:'🧩', n:'Ouija', l:'Buanderie' },
+    { i:'🧸', n:'Poupée', l:'Couloir RDC (En face)' },
+    { i:'⭕', n:'Cercle', l:'Sous-sol' },
+    { i:'🃏', n:'Tarot', l:'Entrée (Commode)' },
+    { i:'📦', n:'Boîte', l:'Chambre Fille (2e étage)' },
+    { i:'✋', n:'Patte', l:'Chambre Garçon (2e étage)' }
+  ],
+  'grafton': [
+    { i:'🔮', n:'Miroir', l:'Salon (Coin cheminée)' },
+    { i:'🧩', n:'Ouija', l:'Chambre Master (Placard)' },
+    { i:'🧸', n:'Poupée', l:'Nursery (Étage)' },
+    { i:'⭕', n:'Cercle', l:'Entrepôt' },
+    { i:'🃏', n:'Tarot', l:'Salle à manger' },
+    { i:'📦', n:'Boîte', l:'Entrée' },
+    { i:'✋', n:'Patte', l:'Chambre Jumelle (Étage)' }
+  ],
+  'woodwind': [
+    { i:'🔮', n:'Miroir', l:'Tente départ (Arbre)' },
+    { i:'🧩', n:'Ouija', l:'Zone Jeux' },
+    { i:'🧸', n:'Poupée', l:'Tente rouge (Nourriture)' },
+    { i:'⭕', n:'Cercle', l:'Tente Nourriture' },
+    { i:'🃏', n:'Tarot', l:'Entrée (Sur table)' },
+    { i:'📦', n:'Boîte', l:'Tente Jaune' },
+    { i:'✋', n:'Patte', l:'Zone Feu de camp' }
+  ],
+  'bleasdale': [
+    { i:'🔮', n:'Miroir', l:'Bureau (RDC)' },
+    { i:'🧩', n:'Ouija', l:'Atelier' },
+    { i:'🧸', n:'Poupée', l:'Couloir (2e étage)' },
+    { i:'⭕', n:'Cercle', l:'Grenier' },
+    { i:'🃏', n:'Tarot', l:'Bureau (RDC)' },
+    { i:'📦', n:'Boîte', l:'Salon' },
+    { i:'✋', n:'Patte', l:'Chambre Master' }
+  ],
+  'prison': [
+    { i:'🔮', n:'Miroir', l:'Entrée (Chaises)' },
+    { i:'🧩', n:'Ouija', l:'Arrière cellules A' },
+    { i:'🧸', n:'Poupée', l:'Accueil (Bureau)' },
+    { i:'⭕', n:'Cercle', l:'Cafétéria' },
+    { i:'🃏', n:'Tarot', l:'Entrée (Détecteurs)' },
+    { i:'📦', n:'Boîte', l:'Entrée (Casiers)' },
+    { i:'✋', n:'Patte', l:'Visiteurs' }
+  ],
+  'sunny': [
+    { i:'🔮', n:'Miroir', l:'Chapelle' },
+    { i:'🧩', n:'Ouija', l:'Chapelle' },
+    { i:'🧸', n:'Poupée', l:'Chapelle' },
+    { i:'⭕', n:'Cercle', l:'Chapelle' },
+    { i:'🃏', n:'Tarot', l:'Chapelle' },
+    { i:'📦', n:'Boîte', l:'Chapelle' },
+    { i:'✋', n:'Patte', l:'Chapelle' }
+  ]
 };
 
 /* ================= LOGIQUE ================= */
@@ -200,7 +262,6 @@ let state = { inc: [], exc: [], san: 100 };
 let tInterval = null;
 
 function init() {
-  // Rendu boutons
   document.getElementById('proofs-list').innerHTML = PROOFS.map(p => `
     <div class="proof-row">
       <span class="proof-label">${p.label}</span>
@@ -223,7 +284,7 @@ function toggle(pid, type) {
 }
 
 function render() {
-  // Update boutons visuels
+  // Boutons
   PROOFS.forEach(p => {
     const bInc = document.getElementById(`btn-inc-${p.id}`);
     const bExc = document.getElementById(`btn-exc-${p.id}`);
@@ -233,34 +294,28 @@ function render() {
     if (state.exc.includes(p.id)) bExc.setAttribute('data-status', 'no');
   });
 
-  // Filtrage
+  // Fantômes
   document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
-    // Logique Mimic
-    let gProofs = [...g.p];
-    if (g.n === 'Mimic') gProofs.push('orb');
+    let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
 
-    // Vérif
-    const allInc = state.inc.every(id => gProofs.includes(id));
+    const allInc = state.inc.every(id => gp.includes(id));
     const noneExc = state.exc.every(id => {
-       // Si c'est mimic et qu'on a exclu Orbe, c'est ok car mimic A des orbes
        if (g.n === 'Mimic' && id === 'orb') return false; 
-       return !gProofs.includes(id);
+       return !gp.includes(id);
     });
 
     const isMatch = allInc && noneExc;
     const canHunt = state.san <= g.th;
     
-    // Classes
     let cls = 'ghost';
-    if (!isMatch) cls += ' excluded';
-    else cls += ' candidate';
+    if (!isMatch) cls += ' excluded'; else cls += ' candidate';
     if (isMatch && canHunt) cls += ' danger';
 
     return `
       <div class="${cls}">
         <div class="g-head">
           <span class="g-name">${g.n}</span>
-          ${isMatch && canHunt ? '<span style="color:var(--danger)">⚠️ CHASSE</span>' : ''}
+          ${isMatch && canHunt ? '<span style="color:var(--danger)">⚠️</span>' : ''}
         </div>
         <div class="g-info">Seuil: ${g.th}% | Vitesse: ${g.sp}m/s</div>
         <div style="margin-bottom:5px">
@@ -269,9 +324,9 @@ function render() {
             const match = state.inc.includes(pid) ? 'match' : '';
             return `<span class="badge ${match}">${lbl}</span>`;
           }).join('')}
-          ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Orbe (Fake)</span>' : ''}
+          ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Fake Orbe</span>' : ''}
         </div>
-        <button class="btn-secret" onclick="this.nextElementSibling.style.display='block'">VOIR TEST</button>
+        <button class="btn-secret" onclick="this.nextElementSibling.style.display='block'">TEST</button>
         <div class="secret-txt">${g.t}</div>
       </div>
     `;
@@ -284,24 +339,31 @@ function setSan(val) {
   render();
 }
 
-/* ================= CARTES ================= */
-function loadMap(key) {
-  const area = document.getElementById('map-area');
-  // Correction BUG majuscules : on s'assure que la clé existe
-  if (!key || !MAP_URLS[key]) {
-    area.innerHTML = '<p style="color:#64748b; margin-top:50px">Veuillez choisir une carte.</p>';
+/* ================= CARTES (TEXTE) ================= */
+function loadLocs(key) {
+  const area = document.getElementById('loc-area');
+  if (!key || !LOCATIONS[key]) {
+    area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>';
     return;
   }
-  area.innerHTML = `<img src="${MAP_URLS[key]}" alt="Carte">`;
+  
+  const items = LOCATIONS[key];
+  area.innerHTML = `<div class="loc-grid">
+    ${items.map(item => `
+      <div class="loc-card">
+        <div class="loc-icon">${item.i}</div>
+        <div class="loc-info">
+          <h4>${item.n}</h4>
+          <p>${item.l}</p>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
 }
 
 function setTab(tab, btn) {
   document.getElementById('tab-tracker').style.display = tab === 'tracker' ? 'grid' : 'none';
   document.getElementById('tab-maps').style.display = tab === 'maps' ? 'block' : 'none';
-  
-  // Sidebar logic (optionnel : cacher la sidebar en mode carte pour avoir plus de place)
-  // document.querySelector('aside').style.display = tab === 'maps' ? 'none' : 'flex';
-  
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
@@ -311,21 +373,18 @@ function runTimer(sec, btn) {
   clearInterval(tInterval);
   document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  
   let t = sec;
   const tick = () => {
     let m = Math.floor(t/60).toString().padStart(2,'0');
     let s = (t%60).toString().padStart(2,'0');
     document.getElementById('timer-disp').innerText = `${m}:${s}`;
   };
-  
-  tick(); // Immédiat
+  tick();
   tInterval = setInterval(() => {
     t--; tick();
     if(t<=0) {
       clearInterval(tInterval);
       document.getElementById('timer-disp').innerText = "PRET";
-      // Petit bip
       const ctx = new (window.AudioContext||window.webkitAudioContext)();
       const o = ctx.createOscillator(); o.connect(ctx.destination);
       o.start(); o.stop(ctx.currentTime+0.2);
@@ -347,7 +406,6 @@ function resetAll() {
   render();
 }
 
-// Start
 init();
 </script>
 </body>
