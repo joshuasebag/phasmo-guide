@@ -3,162 +3,141 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER ULTIMATE</title>
+  <title>PHASMO-TRACKER ULTIMATE v5.0</title>
   <style>
     :root {
-      --bg: #0b0e14;
-      --panel: #161b26;
-      --accent: #5eead4;
-      --text: #e2e8f0;
-      --border: #2d3748;
-      --danger: #ef4444;
-      --success: #10b981;
-      --warn: #f59e0b;
+      --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
+      --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b;
     }
-    
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); padding-bottom: 50px; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 50px; }
 
-    /* HEADER FIXE */
+    /* HEADER */
     header {
-      position: sticky; top: 0; z-index: 1000;
-      background: rgba(11, 14, 20, 0.95);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 20px;
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid var(--border); padding: 12px 20px;
       display: flex; justify-content: space-between; align-items: center;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(8px);
     }
-    .title { font-weight: 900; color: var(--accent); font-size: 1.2rem; margin-right: 20px; }
+    .brand { font-weight: 900; color: var(--accent); font-size: 1.1rem; letter-spacing: 1px; }
     
-    /* BOUTONS DE NAVIGATION */
-    .nav-group { display: flex; gap: 10px; background: #000; padding: 5px; border-radius: 8px; border: 1px solid var(--border); }
-    .nav-btn {
-      background: transparent; border: none; color: #888; 
-      padding: 8px 16px; cursor: pointer; font-weight: bold; border-radius: 5px;
+    /* NAV */
+    .nav-pills { display: flex; gap: 5px; background: #020617; padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
+    .nav-item {
+      background: transparent; border: none; color: #94a3b8; 
+      padding: 6px 14px; cursor: pointer; font-weight: 600; border-radius: 6px; transition: 0.2s;
     }
-    .nav-btn.active { background: var(--accent); color: #000; }
-    .reset-btn { background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .nav-item.active { background: var(--accent); color: #0f172a; }
+    .btn-reset { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* LAYOUT PRINCIPAL */
-    .container {
-      display: flex; gap: 20px; max-width: 1600px; margin: 20px auto; padding: 0 20px;
-      flex-wrap: wrap; /* Important pour mobile */
-    }
+    /* LAYOUT */
+    .container { display: flex; gap: 20px; max-width: 1600px; margin: 20px auto; padding: 0 20px; flex-wrap: wrap; }
+    aside { width: 300px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px; }
+    .main-content { flex-grow: 1; min-width: 0; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
 
-    /* BARRE LATÉRALE (Preuves, Timer) */
-    .sidebar {
-      width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 15px;
-    }
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
-    
     /* TIMER */
-    .timer-screen { font-family: monospace; font-size: 2rem; text-align: center; color: var(--warn); background: #000; padding: 10px; border-radius: 5px; margin-bottom: 10px; border: 1px solid var(--border); }
-    .timer-controls { display: flex; gap: 5px; }
-    .t-btn { flex: 1; padding: 10px; border: 1px solid var(--border); background: #1f2937; color: #fff; cursor: pointer; border-radius: 5px; font-weight: bold; }
-    .t-btn.active { background: var(--warn); color: #000; }
+    .timer-box { text-align: center; margin-bottom: 10px; }
+    .timer-val { font-family: monospace; font-size: 2.5rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
+    .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
+    .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
 
     /* PREUVES */
-    .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #232a37; }
-    .proof-row span { font-size: 0.9rem; font-weight: 600; }
-    .p-btn { border: 1px solid var(--border); background: #1f2937; color: #888; padding: 4px 8px; cursor: pointer; border-radius: 4px; font-size: 0.8rem; margin-left: 2px; }
-    .p-btn[data-active="inc"] { background: var(--success); color: #000; }
-    .p-btn[data-active="exc"] { background: var(--danger); color: white; }
+    .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #334155; }
+    .proof-label { font-size: 0.9rem; font-weight: 600; }
+    .btn-proof { padding: 4px 8px; border: 1px solid var(--border); background: #0f172a; color: #64748b; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; margin-left: 3px; }
+    .btn-proof[data-status="yes"] { background: var(--success); color: #020617; border-color: var(--success); }
+    .btn-proof[data-status="no"] { background: var(--danger); color: white; border-color: var(--danger); }
 
     /* GRILLE FANTÔMES */
-    .content-area { flex-grow: 1; min-width: 0; }
-    .ghost-grid {
-      display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-      gap: 15px;
-    }
-    .ghost-card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 15px;
-      transition: 0.2s; position: relative;
-    }
-    /* États des fantômes */
-    .ghost-card.rejected { opacity: 0.25; filter: grayscale(1); order: 10; } /* Rejetés à la fin */
-    .ghost-card.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 10px rgba(94, 234, 212, 0.1); order: 1; }
-    .ghost-card.hunting { border-left: 5px solid var(--danger); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+    .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
+    
+    /* Etats visuels */
+    .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
+    .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
+    .ghost.danger { border-left: 4px solid var(--danger); }
 
-    .g-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 5px; display: flex; justify-content: space-between; }
-    .g-meta { font-size: 0.75rem; color: var(--warn); margin-bottom: 10px; }
-    .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #000; border: 1px solid #333; border-radius: 4px; margin: 0 4px 4px 0; color: #aaa; }
+    .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .g-name { font-size: 1.2rem; font-weight: 800; }
+    .g-info { font-size: 0.75rem; color: var(--warn); margin-bottom: 8px; }
+    
+    .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
 
-    .secret-box { margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-left: 2px solid var(--accent); font-size: 0.85rem; display: none; }
-    .toggle-secret { width: 100%; background: #2d3748; border: none; color: white; padding: 5px; cursor: pointer; margin-top: 5px; border-radius: 4px; }
+    .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
+    .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
     /* VUE CARTES */
-    #view-maps { display: none; width: 100%; }
-    .map-controls { margin-bottom: 15px; }
-    .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1rem; }
-    .map-display { 
-      width: 100%; min-height: 600px; background: #000; border: 1px solid var(--border); border-radius: 10px;
-      display: flex; justify-content: center; align-items: start; padding: 20px; overflow: auto;
+    #view-maps { display: none; }
+    .map-frame { 
+      width: 100%; min-height: 600px; background: #000; border: 1px solid var(--border); border-radius: 12px; 
+      display: flex; justify-content: center; align-items: flex-start; overflow: auto; padding: 20px;
     }
-    .map-display img { max-width: 100%; height: auto; box-shadow: 0 0 20px #000; }
+    .map-frame img { max-width: 100%; height: auto; box-shadow: 0 0 20px #000; border-radius: 4px; }
+    .map-select { width: 100%; padding: 12px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; margin-bottom: 15px; font-size: 1rem; cursor: pointer; }
 
-    /* Utilitaires */
-    .hidden { display: none !important; }
+    @media(max-width:900px){ .container{flex-direction:column} aside{width:100%} }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="title">PHASMO-TRACKER</div>
-  <div class="nav-group">
-    <button class="nav-btn active" onclick="setView('tracker')">JOURNAL</button>
-    <button class="nav-btn" onclick="setView('maps')">CARTES</button>
+  <div class="brand">PHASMO-TRACKER v5.0</div>
+  <div class="nav-pills">
+    <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
+    <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
   </div>
-  <button class="reset-btn" onclick="resetAll()">RESET</button>
+  <button class="btn-reset" onclick="resetAll()">RESET</button>
 </header>
 
 <div class="container">
   
-  <aside class="sidebar" id="sidebar">
+  <aside>
     <div class="card">
-      <div class="timer-screen" id="timer-display">00:00</div>
-      <div class="timer-controls">
-        <button class="t-btn" onclick="startTimer(90, this)">90s</button>
-        <button class="t-btn" onclick="startTimer(180, this)">180s</button>
-        <button class="t-btn" style="background:#451a1a" onclick="stopTimer()">STOP</button>
+      <div class="timer-box">
+        <div class="timer-val" id="timer-disp">00:00</div>
+      </div>
+      <div class="timer-actions">
+        <button class="btn-time" onclick="runTimer(90, this)">90s</button>
+        <button class="btn-time" onclick="runTimer(180, this)">180s</button>
+        <button class="btn-time" style="background:#450a0a" onclick="stopTimer()">X</button>
       </div>
     </div>
 
     <div class="card">
       <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-        <span>Santé Mentale</span>
-        <strong style="color:var(--accent)" id="san-text">100%</strong>
+        <span style="font-size:0.9rem; font-weight:bold">Santé Mentale</span>
+        <span style="color:var(--accent); font-weight:bold" id="san-disp">100%</span>
       </div>
-      <input type="range" min="0" max="100" value="100" style="width:100%" oninput="updateSan(this.value)">
+      <input type="range" min="0" max="100" value="100" style="width:100%" oninput="setSan(this.value)">
     </div>
 
-    <div class="card" id="proofs-container">
-      </div>
+    <div class="card" id="proofs-list"></div>
   </aside>
 
-  <div class="content-area">
+  <div class="main-content">
     
-    <div id="view-tracker" class="ghost-grid">
-      </div>
+    <div id="tab-tracker" class="grid"></div>
 
-    <div id="view-maps">
-      <div class="map-controls">
-        <select class="map-select" onchange="showMap(this.value)">
-          <option value="">-- CHOISIR UNE CARTE --</option>
-          <option value="tanglewood">6 Tanglewood Drive</option>
-          <option value="willow">Willow Street</option>
-          <option value="edgefield">42 Edgefield Road</option>
-          <option value="ridgeview">10 Ridgeview Court</option>
-          <option value="grafton">Grafton Farmhouse</option>
-          <option value="bleasdale">Bleasdale Farmhouse</option>
-          <option value="camp">Camp Woodwind</option>
-          <option value="prison">Prison</option>
-          <option value="sunny">Sunny Meadows</option>
-        </select>
-      </div>
-      <div class="map-display" id="map-frame">
-        <p style="color:#666; margin-top:50px">Sélectionnez une carte ci-dessus.</p>
+    <div id="tab-maps">
+      <select class="map-select" onchange="loadMap(this.value)">
+        <option value="">-- SÉLECTIONNER UNE CARTE --</option>
+        <option value="tanglewood">6 Tanglewood Drive</option>
+        <option value="willow">Willow Street</option>
+        <option value="edgefield">42 Edgefield Road</option>
+        <option value="ridgeview">10 Ridgeview Court</option>
+        <option value="grafton">Grafton Farmhouse</option>
+        <option value="bleasdale">Bleasdale Farmhouse</option>
+        <option value="woodwind">Camp Woodwind</option>
+        <option value="prison">Prison</option>
+        <option value="sunny">Sunny Meadows</option>
+      </select>
+      
+      <div class="map-frame" id="map-area">
+        <p style="color:#64748b; margin-top:50px">Veuillez choisir une carte dans le menu.</p>
       </div>
     </div>
 
@@ -166,28 +145,28 @@
 </div>
 
 <script>
-// --- DONNÉES ---
+/* ================= DONNÉES ================= */
 const PROOFS = [
-  { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' },
+  { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' },
   { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' },
-  { id:'uv', label:'UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
+  { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
 ];
 
-// LISTE COMPLÈTE 24 FANTÔMES
+// LISTE COMPLÈTE (24)
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Encens bloque 180s.' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche jamais dans le sel.' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparaît en photo. Clignote lent.' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette plein d\'objets.' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparaît en photo.' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Lance plusieurs objets.' },
   { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible un seul joueur.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'1.7+', t:'Rapide si courant ON.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide si courant ON.' },
   { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Attaque dans le noir.' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Rapide si vu, lent si caché.' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Rapide si vu (3m/s).' },
   { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide si groupés.' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Attaque très souvent.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Claque les portes.' },
   { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Très visible en chasse.' },
-  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Entend mal en chasse.' },
+  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Entend mal (2m).' },
   { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Rapide au froid.' },
   { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS vidéo seulement.' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Pas silencieux.' },
@@ -196,171 +175,176 @@ const GHOSTS = [
   { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Boosté par électronique.' },
   { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Empreinte 6 doigts.' },
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'A toujours des orbes (4e).' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Vitesse selon santé mentale.' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Vitesse selon SAN.' },
   { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Sait où vous êtes.' },
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' }
 ];
 
-// URLs DIRECTES (Avec Referrer Policy Fix)
-const MAPS = {
-  'tanglewood': 'https://static.wikia.nocookie.net/phasmophobia/images/1/1d/Tanglewood_Drive_Map.png',
-  'willow': 'https://static.wikia.nocookie.net/phasmophobia/images/4/4b/Willow_Street_House_Map.png',
-  'edgefield': 'https://static.wikia.nocookie.net/phasmophobia/images/0/01/42_Edgefield_Road_Map.png',
-  'ridgeview': 'https://static.wikia.nocookie.net/phasmophobia/images/7/77/10_Ridgeview_Court_Map.png',
-  'grafton': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Grafton_Farmhouse_Map.png',
-  'bleasdale': 'https://static.wikia.nocookie.net/phasmophobia/images/0/00/Bleasdale_Farmhouse_Map.png',
-  'camp': 'https://static.wikia.nocookie.net/phasmophobia/images/d/df/Camp_Woodwind_Map.png',
-  'prison': 'https://static.wikia.nocookie.net/phasmophobia/images/d/d4/Prison_Map.png',
-  'sunny': 'https://static.wikia.nocookie.net/phasmophobia/images/e/e0/Sunny_Meadows_Mental_Institution_Map.png'
+// URLs GITHUB (Plus fiables que Wikia pour l'affichage externe)
+// Source: TyBayn Unofficial Cheat Sheet Assets (Public Repo)
+const MAP_URLS = {
+  'tanglewood': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/TanglewoodFirstFloor.png',
+  'willow': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/WillowStreet.png',
+  'edgefield': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/EdgefieldFirstFloor.png',
+  'ridgeview': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/RidgeviewFirstFloor.png',
+  'grafton': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/GraftonFirstFloor.png',
+  'bleasdale': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/BleasdaleFirstFloor.png',
+  'woodwind': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/CampWoodwind.png',
+  'prison': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/PrisonFirstFloor.png',
+  'sunny': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/SunnyMeadowsFirstFloor.png',
+  'camp': 'https://raw.githubusercontent.com/TyBayn/phasmo-cheat-sheet/master/assets/images/maps/CampWoodwind.png'
 };
 
-// --- ETAT GLOBAL ---
+/* ================= LOGIQUE ================= */
 let state = { inc: [], exc: [], san: 100 };
-let timerInterval = null;
+let tInterval = null;
 
-// --- INITIALISATION ---
 function init() {
-  // Générer boutons preuves
-  const pCont = document.getElementById('proofs-container');
-  pCont.innerHTML = PROOFS.map(p => `
+  // Rendu boutons
+  document.getElementById('proofs-list').innerHTML = PROOFS.map(p => `
     <div class="proof-row">
-      <span>${p.label}</span>
+      <span class="proof-label">${p.label}</span>
       <div>
-        <button class="p-btn" id="btn-inc-${p.id}" onclick="setProof('${p.id}', 'inc')">OUI</button>
-        <button class="p-btn" id="btn-exc-${p.id}" onclick="setProof('${p.id}', 'exc')">NON</button>
+        <button id="btn-inc-${p.id}" class="btn-proof" onclick="toggle('${p.id}','inc')">OUI</button>
+        <button id="btn-exc-${p.id}" class="btn-proof" onclick="toggle('${p.id}','exc')">NON</button>
+        <button class="btn-proof" onclick="toggle('${p.id}','clr')">CLR</button>
       </div>
     </div>
   `).join('');
-  
-  updateView();
+  render();
 }
 
-// --- LOGIQUE FANTÔMES ---
-function setProof(id, type) {
-  // Toggle logic
-  if (type === 'inc') {
-    if (state.inc.includes(id)) state.inc = state.inc.filter(x => x !== id);
-    else { state.inc.push(id); state.exc = state.exc.filter(x => x !== id); }
-  } else {
-    if (state.exc.includes(id)) state.exc = state.exc.filter(x => x !== id);
-    else { state.exc.push(id); state.inc = state.inc.filter(x => x !== id); }
-  }
-  updateView();
+function toggle(pid, type) {
+  state.inc = state.inc.filter(x => x !== pid);
+  state.exc = state.exc.filter(x => x !== pid);
+  if (type === 'inc') state.inc.push(pid);
+  if (type === 'exc') state.exc.push(pid);
+  render();
 }
 
-function updateView() {
-  // Update boutons
+function render() {
+  // Update boutons visuels
   PROOFS.forEach(p => {
-    document.getElementById(`btn-inc-${p.id}`).removeAttribute('data-active');
-    document.getElementById(`btn-exc-${p.id}`).removeAttribute('data-active');
-    if (state.inc.includes(p.id)) document.getElementById(`btn-inc-${p.id}`).setAttribute('data-active', 'inc');
-    if (state.exc.includes(p.id)) document.getElementById(`btn-exc-${p.id}`).setAttribute('data-active', 'exc');
+    const bInc = document.getElementById(`btn-inc-${p.id}`);
+    const bExc = document.getElementById(`btn-exc-${p.id}`);
+    bInc.removeAttribute('data-status');
+    bExc.removeAttribute('data-status');
+    if (state.inc.includes(p.id)) bInc.setAttribute('data-status', 'yes');
+    if (state.exc.includes(p.id)) bExc.setAttribute('data-status', 'no');
   });
 
-  // Calcul fantômes
-  const grid = document.getElementById('view-tracker');
-  grid.innerHTML = GHOSTS.map(g => {
-    // Logique Mimic (Orbe est une fausse preuve, donc si Orbe est cochée, Mimic reste possible)
+  // Filtrage
+  document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
+    // Logique Mimic
     let gProofs = [...g.p];
     if (g.n === 'Mimic') gProofs.push('orb');
 
-    const isExcluded = state.exc.some(id => gProofs.includes(id) && !(g.n === 'Mimic' && id === 'orb' && state.inc.includes('orb') === false)); 
-    // ^ Logique simplifiée : Si une preuve requise est exclue, c'est mort.
-    
-    // Vérification Inclusion
-    const hasAllInc = state.inc.every(id => gProofs.includes(id));
-    const hasNoExc = state.exc.every(id => !gProofs.includes(id));
-    
-    // Mimic Special : Si on coche Orbe (inc), le Mimic est valide. Si on coche NON Orbe (exc), le Mimic est invalide.
-    let isCandidate = hasAllInc && hasNoExc;
-    
+    // Vérif
+    const allInc = state.inc.every(id => gProofs.includes(id));
+    const noneExc = state.exc.every(id => {
+       // Si c'est mimic et qu'on a exclu Orbe, c'est ok car mimic A des orbes
+       if (g.n === 'Mimic' && id === 'orb') return false; 
+       return !gProofs.includes(id);
+    });
+
+    const isMatch = allInc && noneExc;
     const canHunt = state.san <= g.th;
-    const statusClass = isCandidate ? 'candidate' : 'rejected';
-    const huntClass = (canHunt && isCandidate) ? 'hunting' : '';
+    
+    // Classes
+    let cls = 'ghost';
+    if (!isMatch) cls += ' excluded';
+    else cls += ' candidate';
+    if (isMatch && canHunt) cls += ' danger';
 
     return `
-      <div class="ghost-card ${statusClass} ${huntClass}">
-        <div class="g-name">
-          ${g.n} 
-          ${canHunt && isCandidate ? '<span style="color:var(--danger);font-size:0.8rem">⚠️</span>' : ''}
+      <div class="${cls}">
+        <div class="g-head">
+          <span class="g-name">${g.n}</span>
+          ${isMatch && canHunt ? '<span style="color:var(--danger)">⚠️ CHASSE</span>' : ''}
         </div>
-        <div class="g-meta">Seuil: ${g.th}% | Vitesse: ${g.sp} m/s</div>
-        <div>
+        <div class="g-info">Seuil: ${g.th}% | Vitesse: ${g.sp}m/s</div>
+        <div style="margin-bottom:5px">
           ${g.p.map(pid => {
-            const label = PROOFS.find(x=>x.id===pid).label;
+            const lbl = PROOFS.find(x=>x.id===pid).label;
             const match = state.inc.includes(pid) ? 'match' : '';
-            return `<span class="badge ${match}">${label}</span>`;
+            return `<span class="badge ${match}">${lbl}</span>`;
           }).join('')}
-          ${g.n==='Mimic' ? '<span class="badge" style="border-style:dashed">Orbe (Fake)</span>' : ''}
+          ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Orbe (Fake)</span>' : ''}
         </div>
-        <button class="toggle-secret" onclick="this.nextElementSibling.style.display='block'">TEST & SECRET</button>
-        <div class="secret-box">${g.t}</div>
+        <button class="btn-secret" onclick="this.nextElementSibling.style.display='block'">VOIR TEST</button>
+        <div class="secret-txt">${g.t}</div>
       </div>
     `;
   }).join('');
 }
 
-function updateSan(val) {
+function setSan(val) {
   state.san = val;
-  document.getElementById('san-text').innerText = val + "%";
-  updateView();
+  document.getElementById('san-disp').innerText = val + "%";
+  render();
 }
 
-// --- LOGIQUE CARTES (HOTLINK FIX) ---
-function showMap(key) {
-  const frame = document.getElementById('map-frame');
-  if (!key) {
-    frame.innerHTML = '<p style="color:#666">Sélectionnez une carte.</p>';
+/* ================= CARTES ================= */
+function loadMap(key) {
+  const area = document.getElementById('map-area');
+  // Correction BUG majuscules : on s'assure que la clé existe
+  if (!key || !MAP_URLS[key]) {
+    area.innerHTML = '<p style="color:#64748b; margin-top:50px">Veuillez choisir une carte.</p>';
     return;
   }
-  // L'attribut referrerpolicy="no-referrer" est LA CLÉ pour que les images Wiki s'affichent
-  frame.innerHTML = `<img src="${MAPS[key]}" referrerpolicy="no-referrer" alt="Map">`;
+  area.innerHTML = `<img src="${MAP_URLS[key]}" alt="Carte">`;
 }
 
-// --- LOGIQUE TIMER ---
-function startTimer(sec, btn) {
-  stopTimer();
+function setTab(tab, btn) {
+  document.getElementById('tab-tracker').style.display = tab === 'tracker' ? 'grid' : 'none';
+  document.getElementById('tab-maps').style.display = tab === 'maps' ? 'block' : 'none';
+  
+  // Sidebar logic (optionnel : cacher la sidebar en mode carte pour avoir plus de place)
+  // document.querySelector('aside').style.display = tab === 'maps' ? 'none' : 'flex';
+  
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+}
+
+/* ================= TIMER ================= */
+function runTimer(sec, btn) {
+  clearInterval(tInterval);
+  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
   let t = sec;
   const tick = () => {
     let m = Math.floor(t/60).toString().padStart(2,'0');
     let s = (t%60).toString().padStart(2,'0');
-    document.getElementById('timer-display').innerText = `${m}:${s}`;
+    document.getElementById('timer-disp').innerText = `${m}:${s}`;
   };
-  tick();
-  timerInterval = setInterval(() => {
+  
+  tick(); // Immédiat
+  tInterval = setInterval(() => {
     t--; tick();
-    if (t<=0) { 
-      stopTimer(); 
-      document.getElementById('timer-display').innerText = "FINI !";
-      document.getElementById('timer-display').style.color = "var(--danger)";
+    if(t<=0) {
+      clearInterval(tInterval);
+      document.getElementById('timer-disp').innerText = "PRET";
+      // Petit bip
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator(); o.connect(ctx.destination);
+      o.start(); o.stop(ctx.currentTime+0.2);
     }
   }, 1000);
 }
 
 function stopTimer() {
-  clearInterval(timerInterval);
-  document.getElementById('timer-display').innerText = "00:00";
-  document.getElementById('timer-display').style.color = "var(--warn)";
-  document.querySelectorAll('.t-btn').forEach(b => b.classList.remove('active'));
-}
-
-// --- NAVIGATION ---
-function setView(v) {
-  document.getElementById('view-tracker').classList.toggle('hidden', v !== 'tracker');
-  document.getElementById('sidebar').classList.toggle('hidden', v !== 'tracker');
-  document.getElementById('view-maps').style.display = (v === 'maps' ? 'block' : 'none');
-  
-  // Navigation active state
-  document.querySelectorAll('.nav-btn')[0].classList.toggle('active', v === 'tracker');
-  document.querySelectorAll('.nav-btn')[1].classList.toggle('active', v === 'maps');
+  clearInterval(tInterval);
+  document.getElementById('timer-disp').innerText = "00:00";
+  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
 }
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100 };
   document.querySelector('input[type="range"]').value = 100;
-  updateSan(100);
+  setSan(100);
   stopTimer();
+  render();
 }
 
 // Start
