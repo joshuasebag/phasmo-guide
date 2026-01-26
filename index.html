@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v7.1 (Revive Update)</title>
+  <title>PHASMO-TRACKER v8.0 (Speed Filter)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -30,7 +30,7 @@
     .nav-item.active { background: var(--accent); color: #0f172a; }
     .btn-reset { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* LAYOUT HORIZONTAL */
+    /* LAYOUT */
     .container {
       display: grid;
       grid-template-columns: 320px 1fr;
@@ -66,6 +66,11 @@
     .timer-guide { margin-top: 12px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.4; }
     .timer-guide b { color: var(--accent); }
     .timer-guide span { display: block; margin-bottom: 4px; }
+
+    /* FILTRE VITESSE (NOUVEAU) */
+    .speed-opts { display:flex; gap:5px; margin-top:10px; }
+    .btn-speed { flex:1; padding:6px; background:#0f172a; border:1px solid #334155; color:#94a3b8; border-radius:4px; cursor:pointer; font-size:0.7rem; font-weight:bold; }
+    .btn-speed.active { background:var(--accent); color:#020617; border-color:var(--accent); }
 
     /* PREUVES */
     .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #334155; }
@@ -116,7 +121,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v7.1</div>
+  <div class="brand">PHASMO-TRACKER v8.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -147,6 +152,15 @@
         <span style="color:var(--accent); font-weight:bold" id="san-disp">100%</span>
       </div>
       <input type="range" min="0" max="100" value="100" style="width:100%" oninput="setSan(this.value)">
+      
+      <div style="margin-top:15px; border-top:1px solid #334155; padding-top:10px;">
+        <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:5px;">FILTRE VITESSE DE CHASSE :</span>
+        <div class="speed-opts">
+          <button class="btn-speed active" onclick="setSpeed('all', this)">TOUT</button>
+          <button class="btn-speed" onclick="setSpeed('normal', this)">NORMAL</button>
+          <button class="btn-speed" onclick="setSpeed('fast', this)">ATYPIQUE</button>
+        </div>
+      </div>
     </div>
 
     <div class="card" id="proofs-list"></div>
@@ -349,7 +363,7 @@ const LOCATIONS = {
 };
 
 /* ================= LOGIQUE ================= */
-let state = { inc: [], exc: [], san: 100 };
+let state = { inc: [], exc: [], san: 100, speed: 'all' };
 let tInterval = null;
 
 function init() {
@@ -374,8 +388,15 @@ function toggle(pid, type) {
   render();
 }
 
+function setSpeed(mode, btn) {
+  state.speed = mode;
+  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
 function render() {
-  // Boutons
+  // Update Preuves Btn
   PROOFS.forEach(p => {
     const bInc = document.getElementById(`btn-inc-${p.id}`);
     const bExc = document.getElementById(`btn-exc-${p.id}`);
@@ -385,17 +406,24 @@ function render() {
     if (state.exc.includes(p.id)) bExc.setAttribute('data-status', 'no');
   });
 
-  // Fantômes
+  // Filtrage Fantômes
   document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
 
+    // 1. Check Preuves
     const allInc = state.inc.every(id => gp.includes(id));
     const noneExc = state.exc.every(id => {
        if (g.n === 'Mimic' && id === 'orb') return false; 
        return !gp.includes(id);
     });
 
-    const isMatch = allInc && noneExc;
+    // 2. Check Vitesse
+    let speedMatch = true;
+    if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
+    if (state.speed === 'fast' && g.sp === '1.7') speedMatch = false;
+
+    // Résultat
+    const isMatch = allInc && noneExc && speedMatch;
     const canHunt = state.san <= g.th;
     
     let cls = 'ghost';
@@ -453,12 +481,10 @@ function loadLocs(key) {
 }
 
 function setTab(tab, btn) {
-  // Masquer tout
   document.getElementById('tab-tracker').style.display = 'none';
   document.getElementById('tab-maps').style.display = 'none';
   document.getElementById('tab-guide').style.display = 'none';
   
-  // Afficher le bon
   if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid';
   if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block';
   if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block';
@@ -498,10 +524,13 @@ function stopTimer() {
 }
 
 function resetAll() {
-  state = { inc: [], exc: [], san: 100 };
+  state = { inc: [], exc: [], san: 100, speed: 'all' };
   document.querySelector('input[type="range"]').value = 100;
   setSan(100);
   stopTimer();
+  // Reset speed btns
+  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
+  document.querySelector('.btn-speed').classList.add('active'); // First one
   render();
 }
 
