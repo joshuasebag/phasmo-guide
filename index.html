@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v7.0 (Vocal Guide)</title>
+  <title>PHASMO-TRACKER v7.1 (Revive Update)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -80,10 +80,12 @@
     .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
+    
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
+    
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
@@ -114,7 +116,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v7.0</div>
+  <div class="brand">PHASMO-TRACKER v7.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -189,6 +191,19 @@
       </div>
 
       <div class="card guide-section">
+        <div class="guide-title">✋ PATTE DE SINGE (Vœux)</div>
+        <table class="guide-table">
+          <tr><th>Vœu</th><th>Effet</th></tr>
+          <tr><td style="color:#2dd4bf; font-weight:bold">Je souhaite la vie</td><td class="cost">Ressuscite un ami (50% de mourir)</td></tr>
+          <tr><td>Je souhaite voir le fantôme</td><td>Event fantôme (Aveugle ensuite)</td></tr>
+          <tr><td>Je souhaite être en sécurité</td><td>Débloque une cachette</td></tr>
+          <tr><td>Je souhaite partir</td><td>Ouvre la porte (ralentit joueurs)</td></tr>
+          <tr><td>Je souhaite de la connaissance</td><td>Barre un fantôme (Sourd/Aveugle)</td></tr>
+          <tr><td>Je souhaite de l'activité</td><td>Double activité (Porte fermée)</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
         <div class="guide-title">📻 SPIRIT BOX (Questions Fiables)</div>
         <table class="guide-table">
           <tr><th>Phrase</th><th>Utilité</th></tr>
@@ -197,18 +212,6 @@
           <tr><td>Quel âge avez-vous ?</td><td>Info (Jeune/Vieux)</td></tr>
           <tr><td>Êtes-vous fâché ?</td><td>Interaction</td></tr>
           <tr><td>Que voulez-vous ?</td><td>Interaction</td></tr>
-        </table>
-      </div>
-
-      <div class="card guide-section">
-        <div class="guide-title">✋ PATTE DE SINGE (Vœux)</div>
-        <table class="guide-table">
-          <tr><th>Vœu</th><th>Effet</th></tr>
-          <tr><td>Je souhaite voir le fantôme</td><td>Event fantôme (Aveugle ensuite)</td></tr>
-          <tr><td>Je souhaite être en sécurité</td><td>Débloque une cachette</td></tr>
-          <tr><td>Je souhaite partir</td><td>Ouvre la porte (ralentit joueurs)</td></tr>
-          <tr><td>Je souhaite de la connaissance</td><td>Barre un fantôme (Sourd/Aveugle)</td></tr>
-          <tr><td>Je souhaite de l'activité</td><td>Double activité (Porte fermée)</td></tr>
         </table>
       </div>
 
