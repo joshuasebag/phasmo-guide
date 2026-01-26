@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v6.3 (Custom)</title>
+  <title>PHASMO-TRACKER v6.4 (Wiki Guide)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -77,10 +77,12 @@
     .ghost.excluded { opacity: 0.3; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
+    
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #334155; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
+    
     .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
@@ -102,7 +104,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v6.3</div>
+  <div class="brand">PHASMO-TRACKER v6.4</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">OBJETS</button>
@@ -171,37 +173,37 @@ const PROOFS = [
   { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' }
 ];
 
-// LISTE INCLUANT DAYAN, GALLU, OBAMBO
+// LISTE MISE À JOUR SELON LE WIKI FR
 const GHOSTS = [
-  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Encens bloque 180s.' },
-  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche jamais dans le sel.' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparaît en photo.' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Lance plusieurs objets.' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible un seul joueur.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide si courant ON.' },
-  { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Attaque dans le noir.' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Rapide si vu (3m/s).' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide si groupés.' },
-  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Attaque très souvent.' },
-  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Claque les portes.' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Très visible en chasse.' },
-  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Entend mal (2m).' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Rapide au froid.' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS vidéo seulement.' },
-  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Pas silencieux.' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Peur du feu.' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double interactions.' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Boosté par électronique.' },
-  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Empreinte 6 doigts.' },
-  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'A toujours des orbes (4e).' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Vitesse selon SAN.' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Sait où vous êtes.' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit et ralentit.' },
+  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
+  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo (pas de glitch visuel). En chasse, clignote lentement (invisible longtemps).' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets pour tester l\'explosion.' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique. Chant en chasse.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le disjoncteur. Rapide de loin si courant ON.' },
+  { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Lumière:</b> Éteint la lumière direct. Attaque à 60% dans le noir, 40% si allumé.' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit. Le plus dangereux.' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce. Events ombre/nuage.' },
+  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s. Rayon crucifix 5m.' },
+  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée" (sifflement).' },
+  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'<b style="color:#2dd4bf">Test Froid:</b> Très rapide au froid, lent au chaud. Buée buccale si courant OFF.' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra (jamais à l\'œil nu) et si personne dans la pièce.' },
+  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles. Si vous entendez ses pas, votre lampe clignote déjà.' },
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Si elle s\'éteint 3 fois => CHASSE forcée.' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse de chasse varie (lent ou rapide).' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets électroniques actifs. Brouille de loin.' },
+  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse (clignote).' },
+  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les pouvoirs des autres.' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Plus votre Sanité est basse, plus il est rapide.' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. VOUS VOIT. Rapide loin, escargot proche.' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Demander âge Ouija. Rapide/Actif au début -> Lent/Calme à la fin.' },
   
-  // ENTITÉS CUSTOM / MODS
-  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'Vite si joueur bouge.' },
-  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'Enragé par objets défensifs.' },
-  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'Alterne Calme/Agressif.' }
+  // CUSTOM GHOSTS (Non officiels)
+  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'<b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
+  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
+  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
 const LOCATIONS = {
