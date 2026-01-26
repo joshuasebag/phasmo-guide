@@ -7,59 +7,66 @@
   <title>Journal Phasmophobia – Preuves & Fantômes</title>
 
   <style>
-    body{margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:#0e1016; color:#e6e9ef}
-    header{position:sticky; top:0; background:#121420; padding:12px 14px; border-bottom:1px solid #20283a}
+    /* --- Base --- */
+    :root{
+      --border:#20283a; --ink:#e6e9ef; --muted:#9aa3b2;
+    }
+    body{margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:#0e1016; color:var(--ink)}
+    header{position:sticky; top:0; background:#121420; padding:12px 14px; border-bottom:1px solid var(--border)}
     .wrap{max-width:1000px; margin:0 auto; padding:0 14px}
     .tabs{display:flex; gap:8px}
-    .tab{padding:8px 12px; border:1px solid #20283a; border-bottom:none; border-radius:10px 10px 0 0; background:#0d1120; color:#cfd6e6; text-decoration:none}
+    .tab{padding:8px 12px; border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0; background:#0d1120; color:#cfd6e6; text-decoration:none}
     .tab[data-active="true"]{background:#151a2a; color:#fff}
 
     main{padding:14px}
-    .book{display:grid; grid-template-columns:1fr; gap:18px; background:#121420; border:1px solid #20283a; border-radius:14px; padding:18px}
+    .book{display:grid; grid-template-columns:1fr; gap:18px; background:#121420; border:1px solid var(--border); border-radius:14px; padding:18px}
 
+    /* --- Preuves (chips) --- */
     .chips{display:flex; flex-wrap:wrap; gap:8px}
-    .chip{display:flex; align-items:center; gap:8px; padding:8px 10px; background:#1b2131; border:1px solid #20283a; border-radius:999px}
+    .chip{display:flex; align-items:center; gap:8px; padding:8px 10px; background:#1b2131; border:1px solid var(--border); border-radius:999px}
     .chip .name{font-weight:600}
-    .chip button{appearance:none; border:1px solid #20283a; background:#0e1322; color:#cfd6e6; padding:3px 7px; border-radius:7px; cursor:pointer; font-size:12px}
+    .chip button{appearance:none; border:1px solid var(--border); background:#0e1322; color:#cfd6e6; padding:3px 7px; border-radius:7px; cursor:pointer; font-size:12px}
     .chip button[data-state="include"]{border-color:#1e3a2f; background:#0c1713; color:#a7f3d0}
     .chip button[data-state="exclude"]{border-color:#3a1e1e; background:#170c0c; color:#fecaca}
 
     section[hidden]{display:none !important}
-    .count{color:#9aa3b2}
+    .count{color:var(--muted)}
 
-    /* HR */
+    /* --- HR --- */
     .hr{height:1px; background:linear-gradient(90deg,transparent,#1a2235,transparent); margin:10px 0}
 
-    /* ---- CARD PROBABLES ---- */
-    .card{border:1px solid #20283a; background:#0d1120; border-radius:12px; padding:12px}
+    /* --- Carte Probables --- */
+    .card{border:1px solid var(--border); background:#0d1120; border-radius:12px; padding:12px}
     .card-title{font-weight:700; margin-bottom:8px}
     .mini-list{display:flex; flex-wrap:wrap; gap:8px}
     .mini-ghost{
-      padding:6px 10px; border-radius:999px; background:#11162a; border:1px solid #20283a;
+      padding:6px 10px; border-radius:999px; background:#11162a; border:1px solid var(--border);
       font-size:12px; color:#cfe3ff
     }
 
-    /* ---- ONGLET FANTOMES ---- */
+    /* --- Onglet Fantômes --- */
     .toolbar{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px}
     .search{flex:1; min-width:220px}
     .search input{
-      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #20283a;
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border);
       background:#0d1120; color:#e6e9ef
     }
 
     .ghosts{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px}
     .ghost{
-      border:1px solid #20283a; background:#0d1120; border-radius:12px; padding:12px;
+      border:1px solid var(--border); background:#0d1120; border-radius:12px; padding:12px;
       display:flex; flex-direction:column; gap:8px
     }
+    .ghost.candidate{ outline:1px solid #1c3b2f; box-shadow:0 0 0 2px rgba(34,197,94,.15) inset }
     .name{font-weight:700}
     .badges{display:flex; flex-wrap:wrap; gap:6px}
     .badge{
-      padding:2px 8px; border-radius:999px; border:1px solid #20283a;
+      padding:2px 8px; border-radius:999px; border:1px solid var(--border);
       background:#11162a; font-size:12px; color:#cfe3ff
     }
     .badge.ok{background:#0e1e17; color:#befae2; border-color:#1c3b2f}
     .badge.no{background:#1e0f0f; color:#fecaca; border-color:#3a1e1e}
+    .badge.mimic{background:#241a0b; color:#f7e3b3; border-color:#6b4e1e}
   </style>
 </head>
 
@@ -67,10 +74,10 @@
 
   <header>
     <div class="wrap">
-      <nav class="tabs">
-        <a class="tab" href="#journal" id="tab-journal">Journal</a>
+      <nav class="tabs" role="tablist" aria-label="Sections du journal">
+        <a class="tab" href="#journal"  id="tab-journal">Journal</a>
         <a class="tab" href="#fantomes" id="tab-fantomes">Fantômes</a>
-        <a class="tab" href="#options" id="tab-options">Options</a>
+        <a class="tab" href="#options"  id="tab-options">Options</a>
       </nav>
     </div>
   </header>
@@ -81,7 +88,7 @@
       <!-- JOURNAL -->
       <section id="journal">
         <h2>Preuves</h2>
-        <p class="count" id="state-summary"></p>
+        <p class="count" id="state-summary" aria-live="polite"></p>
         <div class="chips" id="proof-chips"></div>
 
         <!-- Encadré FANTÔMES PROBABLES -->
@@ -96,7 +103,7 @@
       <section id="fantomes" hidden>
         <div class="toolbar">
           <div class="search">
-            <input type="search" id="ghost-search" placeholder="Rechercher un fantôme (nom, preuve)…">
+            <input type="search" id="ghost-search" placeholder="Rechercher un fantôme (nom, preuve)…" aria-label="Rechercher un fantôme">
           </div>
           <div class="count" id="ghost-count"></div>
         </div>
@@ -115,226 +122,26 @@
   </main>
 
 <script>
-
-///////////////////////////
-/// DONNÉES DES PREUVES
-///////////////////////////
-
+/* =========================
+   DONNÉES DES PREUVES
+========================= */
 const PROOFS = [
-  { id:'emf', label:'EMF Niveau 5' },
-  { id:'orbe', label:'Orbe' },
-  { id:'spirit', label:'Spirit Box' },
+  { id:'emf',      label:'EMF Niveau 5' },
+  { id:'orbe',     label:'Orbe' },
+  { id:'spirit',   label:'Spirit Box' },
   { id:'freezing', label:'Températures glaciales' },
-  { id:'uv', label:'Traces UV' },
-  { id:'dots', label:'D.O.T.S' },
-  { id:'writing', label:'Écriture fantomatique' },
+  { id:'uv',       label:'Traces UV' },
+  { id:'dots',     label:'D.O.T.S' },
+  { id:'writing',  label:'Écriture fantomatique' },
 ];
 
-///////////////////////////
-/// DONNÉES DES FANTÔMES
-///////////////////////////
-
+/* =========================
+   DONNÉES DES FANTÔMES (27)
+   v0.15.x + Dayan/Gallu/Obambo
+========================= */
 const GHOSTS = [
-  { name:'Esprit',        proofs:['emf','spirit','writing'] },
-  { name:'Spectre',       proofs:['emf','uv','dots'] },
-  { name:'Ombre',         proofs:['emf','writing','freezing'] },
-  { name:'Poltergeist',   proofs:['spirit','uv','writing'] },
-  { name:'Banshee',       proofs:['orbe','uv','dots'] },
-  { name:'Jinn',          proofs:['emf','uv','freezing'] },
-  { name:'Mare',          proofs:['spirit','orbe','writing'] },
-  { name:'Revenant',      proofs:['orbe','writing','freezing'] },
-  { name:'Oni',           proofs:['emf','freezing','dots'] },
-  { name:'Yurei',         proofs:['orbe','freezing','dots'] },
-  { name:'Hantu',         proofs:['orbe','uv','freezing'] },
-  { name:'Goryo',         proofs:['emf','uv','dots'] },
-  { name:'Myling',        proofs:['emf','uv','writing'] },
-  { name:'Onryo',         proofs:['spirit','orbe','freezing'] },
-  { name:'The Twins',     proofs:['emf','spirit','freezing'] },
-  { name:'Raiju',         proofs:['emf','orbe','dots'] },
-  { name:'Obake',         proofs:['orbe','uv','emf'] },
-  { name:'Mimic',         proofs:['spirit','uv','freezing'] },
-  { name:'Moroi',         proofs:['spirit','writing','freezing'] },
-  { name:'Deogen',        proofs:['spirit','writing','dots'] },
-  { name:'Thaye',         proofs:['orbe','writing','dots'] },
-];
-
-///////////////////////////
-/// ÉTAT SAUVEGARDÉ
-///////////////////////////
-
-const STORAGE_KEY = 'phasmo_journal_min_v1';
-function loadState(){
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? { include:[], exclude:[], tab:'#journal' }; }
-  catch { return { include:[], exclude:[], tab:'#journal' }; }
-}
-function saveState(s){ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
-
-let state = loadState();
-
-
-///////////////////////////
-/// ONGLET ACTIF
-///////////////////////////
-
-const tabs = [...document.querySelectorAll('.tab')];
-const sections = {
-  '#journal': document.getElementById('journal'),
-  '#fantomes': document.getElementById('fantomes'),
-  '#options': document.getElementById('options'),
-};
-
-function setActiveTab(hash){
-  const h = sections[hash] ? hash : '#journal';
-  Object.entries(sections).forEach(([k,el]) => el.hidden = (k !== h));
-  tabs.forEach(a => a.dataset.active = (a.getAttribute('href') === h));
-  state.tab = h; saveState(state);
-  if (location.hash !== h) history.replaceState(null,'',h);
-}
-
-window.addEventListener('hashchange', () => setActiveTab(location.hash));
-setActiveTab(state.tab || location.hash || '#journal');
-
-
-///////////////////////////
-/// AFFICHAGE DES PREUVES
-///////////////////////////
-
-const chipsRoot = document.getElementById('proof-chips');
-const summaryEl = document.getElementById('state-summary');
-
-function renderChips(){
-  chipsRoot.innerHTML = '';
-  PROOFS.forEach(p => {
-    const wrap = document.createElement('div');
-    wrap.className = 'chip';
-    wrap.innerHTML = `
-      <span class="name">${p.label}</span>
-      <span>
-        <button type="button" data-action="include" data-proof="${p.id}">Inclure</button>
-        <button type="button" data-action="exclude" data-proof="${p.id}">Exclure</button>
-        <button type="button" data-action="clear"   data-proof="${p.id}">Effacer</button>
-      </span>
-    `;
-    const [bInc, bExc] = wrap.querySelectorAll('button');
-    if (state.include.includes(p.id)) bInc.setAttribute('data-state','include');
-    if (state.exclude.includes(p.id)) bExc.setAttribute('data-state','exclude');
-    chipsRoot.appendChild(wrap);
-  });
-  updateSummary();
-}
-
-function updateSummary(){
-  const inc = state.include.map(id => PROOFS.find(p=>p.id===id)?.label).filter(Boolean);
-  const exc = state.exclude.map(id => PROOFS.find(p=>p.id===id)?.label).filter(Boolean);
-  summaryEl.textContent = `Inclus: ${inc.length?inc.join(', '):'—'} | Exclus: ${exc.length?exc.join(', '):'—'}`;
-}
-
-chipsRoot.addEventListener('click', e => {
-  const btn = e.target.closest('button'); if(!btn) return;
-  const id = btn.dataset.proof, action = btn.dataset.action;
-
-  state.include = state.include.filter(x=>x!==id);
-  state.exclude = state.exclude.filter(x=>x!==id);
-
-  if (action === 'include') state.include.push(id);
-  if (action === 'exclude') state.exclude.push(id);
-
-  saveState(state);
-  renderChips();
-  renderProbables();
-  renderGhostsAll();
-});
-
-
-document.getElementById('reset-all').addEventListener('click', () => {
-  state.include = [];
-  state.exclude = [];
-  saveState(state);
-  renderChips();
-  renderProbables();
-  renderGhostsAll();
-});
-
-
-///////////////////////////
-/// LOGIQUE : FILTRES
-///////////////////////////
-
-function ghostAllowed(ghost){
-  const allIncluded = state.include.every(id => ghost.proofs.includes(id));
-  const noneExcluded = state.exclude.every(id => !ghost.proofs.includes(id));
-  return allIncluded && noneExcluded;
-}
-
-
-///////////////////////////
-/// JOURNAL : PROBABLES
-///////////////////////////
-
-function renderProbables(){
-  const box = document.getElementById('probables-box');
-  const title = document.querySelector('#probables-card .card-title');
-
-  const candidates = GHOSTS
-    .filter(ghostAllowed)
-    .sort((a,b)=>a.name.localeCompare(b.name,'fr'));
-
-  if (title) title.textContent = `Fantômes probables (${candidates.length})`;
-
-  box.innerHTML = candidates.length
-    ? candidates.map(g => `<span class="mini-ghost">${g.name}</span>`).join('')
-    : `<span class="count">Aucun fantôme ne correspond.</span>`;
-}
-
-
-///////////////////////////
-/// FANTOMES : AFFICHER TOUT
-///////////////////////////
-
-function renderGhostsAll(){
-  const list = document.getElementById('ghost-list');
-  const count = document.getElementById('ghost-count');
-  const q = (document.getElementById('ghost-search')?.value || '').trim().toLowerCase();
-
-  const ghosts = GHOSTS
-    .slice()
-    .sort((a,b)=>a.name.localeCompare(b.name,'fr'))
-    .filter(g => {
-      if (!q) return true;
-      const labels = g.proofs.map(id => (PROOFS.find(p=>p.id===id)?.label || '').toLowerCase());
-      return g.name.toLowerCase().includes(q) || labels.some(l=>l.includes(q));
-    });
-
-  list.innerHTML = ghosts.map(g => {
-    const badges = g.proofs.map(id => {
-      const inInc = state.include.includes(id);
-      const inExc = state.exclude.includes(id);
-      const label = PROOFS.find(p=>p.id===id)?.label;
-      const cls = inInc ? 'badge ok' : inExc ? 'badge no' : 'badge';
-      return `<span class="${cls}">${label}</span>`;
-    }).join('');
-    return `
-      <div class="ghost">
-        <div class="name">${g.name}</div>
-        <div class="badges">${badges}</div>
-      </div>`;
-  }).join('');
-
-  if (count) count.textContent = `${ghosts.length} fantôme${ghosts.length>1?'s':''}`;
-}
-
-document.getElementById('ghost-search')?.addEventListener('input', renderGhostsAll);
-
-
-///////////////////////////
-/// RENDER INITIAL
-///////////////////////////
-
-renderChips();
-renderProbables();
-renderGhostsAll();
-
-</script>
-
-</body>
-</html>
+  { name:'Esprit',        proofs:['emf','spirit','writing'] },                  // Spirit
+  { name:'Spectre',       proofs:['dots','emf','spirit'] },                     // Wraith
+  { name:'Fantôme',       proofs:['dots','uv','spirit'] },                      // Phantom
+  { name:'Poltergeist',   proofs:['uv','spirit','writing'] },
+  { name:'Banshee',       proofs:['dots','orbe','uv'] },
