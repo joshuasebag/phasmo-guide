@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v17.3 (Oni Update)</title>
+  <title>PHASMO-TRACKER v18.0 (Ultimate DB)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -135,7 +135,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v17.3</div>
+  <div class="brand">PHASMO-TRACKER v18.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -255,33 +255,34 @@ const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { 
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> La photo intitulée "Fantôme" est <b>VIDE</b> (pas de glitch/perso). Clignote lent en chasse.' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets.' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'♀️ <b>FEMME uniquement.</b> <b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> couper le disjoncteur (car il en a besoin). Rapide de loin.' },
-  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Coupe très souvent le disjoncteur et les lumières (veut le noir). Ne peut pas allumer.' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Photo intitulée "Fantôme" est <b>VIDE</b>. En chasse : Clignote lent (Inv 1-2s / Vis 0.5s).' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets. "Multi-throw" baisse la santé de 2% par objet.' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'♀️ <b>FEMME uniquement.</b> Ne tue que sa cible. Cri unique au micro parabolique. Chante souvent.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> couper le disjoncteur. Pouvoir: Baisse Sanité de 25% si proche.' },
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Coupe très souvent lumières/disjoncteur (veut le noir). Ne peut pas allumer.' },
   { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> <b>1.0 m/s</b> (Lent) s\'il ne vous voit pas. <b>3.0 m/s</b> (TGV) dès qu\'il vous voit.' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce. Events très rares.' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'❌ Ne fait <b>JAMAIS</b> l\'event "Boule de fumée" (le souffle). Clignote très peu en chasse.' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'❌ Pas de "Boule de fumée". <b style="color:#2dd4bf">Chasse:</b> Très visible, clignote très peu. Facile à prendre en photo.' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer. <b style="color:#2dd4bf">Unique:</b> Crache de la buée visible pendant la chasse (si froid).' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et si personne dans la pièce.' },
-  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles (pas de bruit de pas). Si vous entendez ses pas, votre lampe clignote déjà.' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE.' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse varie.' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets électroniques actifs.' },
-  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse.' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer. <b style="color:#2dd4bf">Unique:</b> Buée visible en chasse (si froid).' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et personne dans la pièce. Ne change <b>JAMAIS</b> de pièce favorite.' },
+  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles. Si lampe clignote mais <b>PAS</b> de bruit de pas = Myling.' },
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE (même à 100% San).' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Double:</b> Interactions à deux endroits. Vitesse chasse alterne (Lent/Rapide).' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'<b style="color:#2dd4bf">Test Elec:</b> Accélère près des objets élec. Brouille lampe à <b>15m</b> (vs 10m).' },
+  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts (Main) ou 2 (Inter). 25% de ne pas laisser de trace. Change de forme en chasse.' },
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les autres.' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Vitesse augmente si Sanité basse.' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine santé. Vitesse augmente si Sanité basse. Aveuglé 12s par encens.' },
   { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> <b>3.0 m/s</b> quand il est loin. <b>0.4 m/s</b> (Escargot) tout près. On ne peut pas se cacher !' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Rapide au début -> Lent à la fin.' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Rapide au début -> Lent à la fin. Ne pas traîner.' },
   { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'♀️ <b>FEMME uniquement.</b> <b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
   { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
+/* (RESTE DU CODE JS INCHANGÉ) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
@@ -367,10 +368,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v17', JSON.stringify(state));
+  localStorage.setItem('phasmo_v18', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v17');
+  const saved = localStorage.getItem('phasmo_v18');
   if (saved) { try { state = JSON.parse(saved); if(!state.manual) state.manual=[]; } catch(e){} }
 }
 
@@ -465,7 +466,7 @@ function loadLocs(key) { state.map = key; saveState(); const area = document.get
 function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
-function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v17'); location.reload(); }
+function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v18'); location.reload(); }
 
 init();
 </script>
