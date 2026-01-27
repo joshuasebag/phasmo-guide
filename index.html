@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v19.4 (Design Match)</title>
+  <title>PHASMO-TRACKER v19.6 (Twin Buttons)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -55,49 +55,60 @@
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
     
-    /* === SPEED CHEAT SHEET (Style Image) === */
+    /* SPEED CHEAT SHEET */
     .speed-cheat { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.85rem; }
     .sc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .sc-label { font-weight: 800; display: flex; align-items: center; gap: 6px; min-width: 70px; }
     .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
 
-    /* === BOUTON TAPOTER (Style Image) === */
+    /* BPM Area */
     .bpm-area { margin-top: 15px; }
     .bpm-btn { 
-      width: 100%; 
-      padding: 14px; 
-      background: rgba(15, 23, 42, 0.4); 
-      border: 2px dashed #475569; 
-      color: #cbd5e1; 
-      font-weight: 800; 
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      cursor: pointer; 
-      border-radius: 8px; 
-      transition: 0.1s; 
-      margin-bottom: 5px;
+      width: 100%; padding: 14px; background: rgba(15, 23, 42, 0.4); 
+      border: 2px dashed #475569; color: #cbd5e1; font-weight: 800; 
+      text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; 
+      border-radius: 8px; transition: 0.1s; margin-bottom: 5px;
       display: flex; justify-content: center; align-items: center; gap: 8px;
     }
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); border-style: solid; border-color: var(--accent); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.3rem; color: #f1f5f9; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
 
-    /* METRONOME */
-    .metro-label { font-size: 0.75rem; color: #94a3b8; margin-top: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-    .metro-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .metro-btn { padding: 10px; background: #1e293b; border: 1px solid var(--border); color: #cbd5e1; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .metro-btn:hover { background: #334155; }
-    .metro-btn.playing { background: var(--accent); color: black; border-color: var(--accent); box-shadow: 0 0 10px rgba(45, 212, 191, 0.4); }
+    /* --- STYLE UNIFIÉ POUR MÉTRONOME ET FILTRE --- */
+    .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    
+    .btn-unified { 
+      padding: 10px; 
+      background: #1e293b; 
+      border: 1px solid var(--border); 
+      color: #cbd5e1; 
+      border-radius: 6px; 
+      font-size: 0.75rem; 
+      cursor: pointer; 
+      font-weight: bold; 
+      transition: 0.2s;
+      display: flex; justify-content: center; align-items: center; gap:5px;
+    }
+    .btn-unified:hover { background: #334155; }
+    
+    /* Active State (Green/Teal) */
+    .btn-unified.active, .btn-unified.playing { 
+      background: var(--accent); 
+      color: #020617; 
+      border-color: var(--accent); 
+      box-shadow: 0 0 10px rgba(45, 212, 191, 0.3); 
+    }
+    
+    /* Stop/Reset Style (Red) */
+    .btn-stop { background: #450a0a; border-color: #7f1d1d; color: #fecaca; }
+    .btn-stop:hover { background: #7f1d1d; }
+    .btn-stop.active { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
 
     /* CHECKLIST */
     .check-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
     .check-row:last-child { border-bottom: none; }
     .check-label { font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
     .check-input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-
-    /* FILTRE VITESSE */
-    .speed-opts { display:flex; gap:5px; margin-top:5px; }
-    .btn-speed { flex:1; padding:8px; background:#0f172a; border:1px solid #334155; color:#94a3b8; border-radius:6px; cursor:pointer; font-size:0.7rem; font-weight:bold; }
-    .btn-speed.active { background:var(--accent); color:#020617; border-color:var(--accent); }
 
     /* PREUVES */
     .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #334155; }
@@ -158,7 +169,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v19.4</div>
+  <div class="brand">PHASMO-TRACKER v19.6</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -209,22 +220,21 @@
         <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
         <div class="bpm-display" id="bpm-val">-- m/s</div>
         
-        <div class="metro-label">MÉTRONOME :</div>
-        <div class="metro-controls">
-          <button class="metro-btn" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
-          <button class="metro-btn" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
-          <button class="metro-btn" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
-          <button class="metro-btn" style="background:#450a0a; border-color:#7f1d1d" onclick="stopMetronome()">STOP</button>
+        <div class="section-label">MÉTRONOME :</div>
+        <div class="btn-grid-4">
+          <button class="btn-unified" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
+          <button class="btn-unified" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
+          <button class="btn-unified" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
+          <button class="btn-unified btn-stop" onclick="stopMetronome()">STOP</button>
         </div>
       </div>
 
-      <div style="margin-top:15px; border-top:1px solid #334155; padding-top:10px;">
-        <span style="font-size:0.8rem; color:#94a3b8; display:block; margin-bottom:5px;">FILTRE VITESSE :</span>
-        <div class="speed-opts">
-          <button class="btn-speed active" id="sp-all" onclick="setSpeed('all', this)">TOUT</button>
-          <button class="btn-speed" id="sp-normal" onclick="setSpeed('normal', this)">NORMAL</button>
-          <button class="btn-speed" id="sp-fast" onclick="setSpeed('fast', this)">LENT / RAPIDE</button>
-        </div>
+      <div class="section-label">FILTRE VITESSE :</div>
+      <div class="btn-grid-4">
+        <button class="btn-unified" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
+        <button class="btn-unified" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
+        <button class="btn-unified" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
+        <button class="btn-unified btn-stop active" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
       </div>
     </div>
 
@@ -407,9 +417,9 @@ function startMetronome(speed, btn) {
   const context = new (window.AudioContext || window.webkitAudioContext)();
   
   let delay = 600; 
-  if(speed === 1.0) delay = 1200; // Très lent (Rev caché)
-  else if(speed === 1.7) delay = 650; // Normal
-  else if(speed === 2.5) delay = 380; // Rapide
+  if(speed === 1.0) delay = 1200; 
+  else if(speed === 1.7) delay = 650; 
+  else if(speed === 2.5) delay = 380; 
 
   metroId = setInterval(() => {
     const osc = context.createOscillator();
@@ -496,9 +506,13 @@ function render() {
        if (g.n === 'Mimic' && id === 'orb') return false; 
        return !gp.includes(id);
     });
+    
+    // NOUVELLE LOGIQUE DE FILTRE SPLITTÉ
     let speedMatch = true;
     if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
-    if (state.speed === 'fast' && g.sp === '1.7') speedMatch = false;
+    if (state.speed === 'fast' && !['2.5','2.7','3.0','Var'].includes(g.sp)) speedMatch = false;
+    if (state.speed === 'slow' && !['2.7','3.0','Var'].includes(g.sp)) speedMatch = false; // Exclut Djinn/Raiju
+
     let searchMatch = true;
     if (state.search) {
       const txt = normalize(g.n + ' ' + g.t);
@@ -543,7 +557,7 @@ function render() {
 }
 
 function setSan(val) { state.san = val; document.getElementById('san-disp').innerText = val + "%"; saveState(); render(); }
-function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
+function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-unified').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
 function loadLocs(key) { state.map = key; saveState(); const area = document.getElementById('loc-area'); if (!key || !LOCATIONS[key]) { area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>'; return; } const items = LOCATIONS[key]; area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`; }
 function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; document.getElementById('tab-speed').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; if (tab === 'speed') document.getElementById('tab-speed').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
