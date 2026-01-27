@@ -188,7 +188,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v20.5</div>
+  <div class="brand">PHASMO-TRACKER v20.6</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -392,6 +392,12 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
+// === AUDIO CONTEXT GLOBAL (Fix Mobile v20.6) ===
+// On crée le contexte une seule fois, en dehors des fonctions.
+// Il sera probablement en état "suspended" sur mobile au début.
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+
 /* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
@@ -439,57 +445,52 @@ function toggleManual(name) {
 
 // === CARD METRONOME FUNCTION (v20.2) ===
 function toggleGhostMetro(speed, btn) {
-  // 1. Si on clique sur le bouton déjà actif : STOP
   if (btn.classList.contains('playing')) {
     stopMetronome();
     return;
   }
-  
-  // 2. Si on clique sur un autre : STOP tout d'abord
   stopMetronome();
-
-  // 3. Gérer la vitesse 'Var' (Variable)
-  // Si c'est 'Var', on joue 1.7 (Normal) par sécurité, ou on parse si c'est numérique
   let speedVal = parseFloat(speed);
   if (isNaN(speedVal)) speedVal = 1.7; // Fallback pour 'Var'
-
-  // 4. Lancer le son
   startMetronome(speedVal, btn);
 }
 
 function startMetronome(speed, btn) {
-  // On ne stop pas ici, car toggleGhostMetro l'a déjà fait si besoin
-  // Sauf si c'est appelé par les boutons globaux (sidebar)
+  // === MOBILE FIX v20.6 : DÉVERROUILLAGE AUDIO ===
+  // Si le contexte est suspendu (bloqué par le navigateur), on le réveille.
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  // ===============================================
+
   if(btn && !btn.classList.contains('btn-metro-small')) {
       stopMetronome(); 
   }
   
   if(btn) btn.classList.add('playing');
   
-  const context = new (window.AudioContext || window.webkitAudioContext)();
-  
   let delay = 600; 
   if(speed === 1.0) delay = 1200; 
   else if(speed === 1.7) delay = 650; 
   else if(speed === 2.5) delay = 380;
-  else if(speed > 0) delay = 1000 / (speed / 1.7 * 1.5); // Formule approx pour vitesses custom
+  else if(speed > 0) delay = 1000 / (speed / 1.7 * 1.5); 
 
   metroId = setInterval(() => {
-    const osc = context.createOscillator();
-    const gain = context.createGain();
+    // Utilisation du contexte global 'audioCtx'
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
     osc.connect(gain);
-    gain.connect(context.destination);
+    gain.connect(audioCtx.destination);
     osc.frequency.value = 800;
     gain.gain.value = 0.1;
     osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.1);
-    osc.stop(context.currentTime + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+    osc.stop(audioCtx.currentTime + 0.1);
   }, delay);
 }
 
 function stopMetronome() {
   clearInterval(metroId);
-  // Enlève la classe 'playing' de TOUS les boutons (Sidebar + Cartes)
   document.querySelectorAll('.metro-btn, .btn-metro-small').forEach(b => b.classList.remove('playing'));
 }
 
@@ -650,7 +651,33 @@ function setTab(tab, btn) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); 
   if(btn) btn.classList.add('active'); 
 }
-function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
+function runTimer(sec, btn) { 
+  // FIX AUDIO TIMER MOBILE
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  clearInterval(tInterval); 
+  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); 
+  btn.classList.add('active'); 
+  let t = sec; 
+  const tick = () => { 
+    let m = Math.floor(t/60).toString().padStart(2,'0'); 
+    let s = (t%60).toString().padStart(2,'0'); 
+    document.getElementById('timer-disp').innerText = `${m}:${s}`; 
+  }; 
+  tick(); 
+  tInterval = setInterval(() => { 
+    t--; 
+    tick(); 
+    if(t<=0) { 
+      clearInterval(tInterval); 
+      document.getElementById('timer-disp').innerText = "PRET"; 
+      const o = audioCtx.createOscillator(); 
+      o.connect(audioCtx.destination); 
+      o.start(); 
+      o.stop(audioCtx.currentTime+0.2); 
+    } 
+  }, 1000); 
+}
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
 function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v19'); location.reload(); }
 
