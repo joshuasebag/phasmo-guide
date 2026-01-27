@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v20.1 (Obambo Fix)</title>
+  <title>PHASMO-TRACKER v20.2 (Card Metro)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -73,11 +73,11 @@
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); border-style: solid; border-color: var(--accent); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.3rem; color: #f1f5f9; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
 
-    /* UNIFIED BUTTONS */
+    /* METRONOME */
     .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
     .btn-grid-metronome { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
-    /* GRILLE 5 BOUTONS */
+    /* FILTRES */
     .btn-grid-5 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     .btn-unified { 
@@ -126,10 +126,18 @@
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #333; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
     
-    .g-actions { display: flex; gap: 5px; margin-top: 8px; }
-    .btn-secret { flex: 1; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; }
-    .btn-kill { width: 40px; background: #0f172a; border: 1px solid var(--danger); color: var(--danger); border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .btn-kill.active { background: var(--danger); color: white; border-color: var(--danger); width: auto; flex:1; }
+    .g-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 5px; margin-top: 8px; }
+    .btn-secret { background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+    .btn-kill { background: #0f172a; border: 1px solid var(--danger); color: var(--danger); border-radius: 6px; cursor: pointer; font-weight: bold; width: 40px; }
+    .btn-kill.active { background: var(--danger); color: white; border-color: var(--danger); width: auto; }
+    
+    /* Bouton Métronome Carte */
+    .btn-metro-small { 
+      background: #0f172a; border: 1px solid var(--accent); color: var(--accent); 
+      border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; 
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-metro-small.playing { background: var(--accent); color: #000; animation: pulse 1s infinite; }
 
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
@@ -165,7 +173,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v20.1</div>
+  <div class="brand">PHASMO-TRACKER v20.2</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -194,22 +202,10 @@
       </div>
       
       <div class="speed-cheat">
-        <div class="sc-row">
-          <div class="sc-label" style="color:var(--purple)">🐢 LENT</div>
-          <div class="sc-names">Rev (Sans Vue), Deo (Tout près)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#f1f5f9">🚶 NORM</div>
-          <div class="sc-names">La majorité (1.7 m/s)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#fbbf24">🐇 VITE</div>
-          <div class="sc-names">Hantu, Raiju, Jumeaux (Vite)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#ef4444">🔥 T.VITE</div>
-          <div class="sc-names">Rev (Si Vu), Deo (Loin)</div>
-        </div>
+        <div class="sc-row"><div class="sc-label" style="color:var(--purple)">🐢 LENT</div><div class="sc-names">Rev (Sans Vue), Deo (Tout près)</div></div>
+        <div class="sc-row"><div class="sc-label" style="color:#f1f5f9">🚶 NORM</div><div class="sc-names">La majorité (1.7 m/s)</div></div>
+        <div class="sc-row"><div class="sc-label" style="color:#fbbf24">🐇 VITE</div><div class="sc-names">Hantu, Raiju, Jumeaux (Vite)</div></div>
+        <div class="sc-row"><div class="sc-label" style="color:#ef4444">🔥 T.VITE</div><div class="sc-names">Rev (Si Vu), Deo (Loin)</div></div>
       </div>
 
       <div class="bpm-area">
@@ -218,22 +214,21 @@
         
         <div class="section-label">MÉTRONOME :</div>
         <div class="btn-grid-metronome">
-          <button class="btn-unified" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
-          <button class="btn-unified" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
-          <button class="btn-unified" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
-          <button class="btn-unified btn-stop" onclick="stopMetronome()">STOP</button>
+          <button class="btn-unified metro-btn" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
+          <button class="btn-unified metro-btn" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
+          <button class="btn-unified metro-btn" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
+          <button class="btn-unified btn-stop metro-btn" onclick="stopMetronome()">STOP</button>
         </div>
       </div>
 
       <div class="section-label">FILTRE VITESSE :</div>
       <div class="btn-grid-5">
-        <button class="btn-unified" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
-        <button class="btn-unified" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
-        <button class="btn-unified" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
-        
-        <button class="btn-unified" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
-        <button class="btn-unified" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
-        <button class="btn-unified btn-stop active" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
+        <button class="btn-unified btn-filter" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
+        <button class="btn-unified btn-filter" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
+        <button class="btn-unified btn-filter" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
+        <button class="btn-unified btn-filter" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
+        <button class="btn-unified btn-filter" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
+        <button class="btn-unified btn-stop active btn-filter" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
       </div>
     </div>
 
@@ -400,7 +395,7 @@ function init() {
   });
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
   
-  // FIX V20.0 : Force le tab 'tracker' au démarrage pour corriger le display:block
+  // FIX V20.0 : Force le tab 'tracker' au démarrage
   setTab('tracker', document.querySelector('.nav-item.active'));
 }
 
@@ -414,15 +409,42 @@ function toggleManual(name) {
   render();
 }
 
-function startMetronome(speed, btn) {
+// === CARD METRONOME FUNCTION (v20.2) ===
+function toggleGhostMetro(speed, btn) {
+  // 1. Si on clique sur le bouton déjà actif : STOP
+  if (btn.classList.contains('playing')) {
+    stopMetronome();
+    return;
+  }
+  
+  // 2. Si on clique sur un autre : STOP tout d'abord
   stopMetronome();
-  btn.classList.add('playing');
+
+  // 3. Gérer la vitesse 'Var' (Variable)
+  // Si c'est 'Var', on joue 1.7 (Normal) par sécurité, ou on parse si c'est numérique
+  let speedVal = parseFloat(speed);
+  if (isNaN(speedVal)) speedVal = 1.7; // Fallback pour 'Var'
+
+  // 4. Lancer le son
+  startMetronome(speedVal, btn);
+}
+
+function startMetronome(speed, btn) {
+  // On ne stop pas ici, car toggleGhostMetro l'a déjà fait si besoin
+  // Sauf si c'est appelé par les boutons globaux (sidebar)
+  if(btn && !btn.classList.contains('btn-metro-small')) {
+      stopMetronome(); 
+  }
+  
+  if(btn) btn.classList.add('playing');
+  
   const context = new (window.AudioContext || window.webkitAudioContext)();
   
   let delay = 600; 
   if(speed === 1.0) delay = 1200; 
   else if(speed === 1.7) delay = 650; 
-  else if(speed === 2.5) delay = 380; 
+  else if(speed === 2.5) delay = 380;
+  else if(speed > 0) delay = 1000 / (speed / 1.7 * 1.5); // Formule approx pour vitesses custom
 
   metroId = setInterval(() => {
     const osc = context.createOscillator();
@@ -436,10 +458,13 @@ function startMetronome(speed, btn) {
     osc.stop(context.currentTime + 0.1);
   }, delay);
 }
+
 function stopMetronome() {
   clearInterval(metroId);
-  document.querySelectorAll('.metro-btn').forEach(b => b.classList.remove('playing'));
+  // Enlève la classe 'playing' de TOUS les boutons (Sidebar + Cartes)
+  document.querySelectorAll('.metro-btn, .btn-metro-small').forEach(b => b.classList.remove('playing'));
 }
+
 function tapBpm() {
   const now = Date.now();
   if (lastTap) {
@@ -558,12 +583,19 @@ function render() {
           }).join('')}
           ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Fake Orbe</span>' : ''}
         </div>
+        
         <div class="g-actions">
           <button class="btn-secret" onclick="this.parentElement.nextElementSibling.style.display='block'">TEST</button>
+          
+          <button class="btn-metro-small" onclick="toggleGhostMetro('${g.sp}', this)">
+            🔊 ${g.sp} m/s
+          </button>
+
           <button class="btn-kill ${isManualExcluded ? 'active' : ''}" onclick="toggleManual('${g.n}')">
-            ${isManualExcluded ? '↺ RÉTABLIR' : '❌'}
+            ${isManualExcluded ? '↺' : '❌'}
           </button>
         </div>
+        
         <div class="secret-txt">${g.t}</div>
       </div>
     `;
