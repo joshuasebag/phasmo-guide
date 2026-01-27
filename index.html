@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v17.0 (Manual Kill)</title>
+  <title>PHASMO-TRACKER v17.1 (Monkey Paw Knowledge)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -90,10 +90,8 @@
     /* GRILLE FANTÔMES */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
-    
-    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 3; } /* Preuves */
-    .ghost.manual-excluded { opacity: 0.15; filter: grayscale(1); order: 4; border: 1px dashed var(--danger); } /* Manuel */
-    
+    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 3; }
+    .ghost.manual-excluded { opacity: 0.15; filter: grayscale(1); order: 4; border: 1px dashed var(--danger); }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
     
@@ -113,7 +111,6 @@
     #view-maps { display: none; }
     #view-guide { display: none; column-count: 2; column-gap: 20px; }
     
-    /* ... (Styles identiques v16) ... */
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     .loc-card { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; }
@@ -138,7 +135,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v17.0</div>
+  <div class="brand">PHASMO-TRACKER v17.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -243,7 +240,9 @@
       </div>
       <div class="card guide-section"><div class="guide-title">🧩 OUIJA</div><table class="guide-table"><tr><th>Question</th><th>Coût SAN</th></tr><tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr><tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr><tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr><tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🃏 TAROT (10 Cartes)</div><table class="guide-table"><tr><th>Carte</th><th>Effet</th></tr><tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr><tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr><tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr><tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr><tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr><tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr><tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr></table></div>
-      <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
+      <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr>
+      <tr><td class="rare">De la connaissance</td><td>Barre 1 preuve + <b style="color:#ef4444">CHASSE</b> + Vision/Ouïe réduites (Définitif)</td></tr>
+      <tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🔮 MIROIR / 🎶 BOÎTE / 🧸 VAUDOU</div><table class="guide-table"><tr><th>Objet</th><th>Risque</th></tr><tr><td>Miroir</td><td>Chasse si 0% Sanité (-7.5%/s)</td></tr><tr><td>Boîte</td><td>Chasse si fantôme touche joueur</td></tr><tr><td>Vaudou</td><td>Aiguille cœur = Chasse (-10%)</td></tr></table></div>
     </div>
   </div>
