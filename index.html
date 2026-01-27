@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <title>PHASMO-TRACKER Ultimate (Journal & Vitesse)</title>
+  
+  <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
+
   <meta name="description" content="Le meilleur tracker interactif pour Phasmophobia. Journal de preuves intelligent, test de vitesse (BPM/Métronome) pour identifier les fantômes (Revenant, Deogen, etc.) et guides complets." />
   <meta name="keywords" content="Phasmophobia, Tracker, Journal, Guide, Vitesse Fantôme, Ghost Speed, Preuves, Outil, Aide, Joshua Sebag, Maélann Logeais" />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
@@ -174,6 +177,7 @@
 
     footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
     .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
+    .sponsor { color: #f472b6; font-style: italic; font-weight: bold; margin-left: 8px; font-size: 0.85rem; }
 
     @media(max-width: 1200px){ #tab-guide, #tab-speed { column-count: 1; } }
     @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
@@ -182,7 +186,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v20.3</div>
+  <div class="brand">PHASMO-TRACKER v20.4</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -417,7 +421,7 @@ function init() {
   });
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
   
-  // FIX V20.0 : Force le tab 'tracker' au démarrage pour corriger le display:block
+  // FIX V20.0 : Force le tab 'tracker' au démarrage
   setTab('tracker', document.querySelector('.nav-item.active'));
 }
 
