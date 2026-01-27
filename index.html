@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v14.0 (Metronome)</title>
+  <title>PHASMO-TRACKER v15.0 (Speed Cheat Sheet)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -55,7 +55,12 @@
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
     
-    .bpm-area { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
+    /* SPEED CHEAT SHEET (NOUVEAU) */
+    .speed-cheat { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.8rem; }
+    .sc-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #1e293b; padding-bottom: 2px; }
+    .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .bpm-area { margin-top: 10px; }
     .bpm-btn { width: 100%; padding: 12px; background: #0f172a; border: 2px dashed #475569; color: #94a3b8; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.1s; margin-bottom: 5px; }
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 10px; }
@@ -126,7 +131,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v14.0</div>
+  <div class="brand">PHASMO-TRACKER v15.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -153,6 +158,13 @@
         <button class="btn-time" style="background:#450a0a" onclick="stopTimer()">X</button>
       </div>
       
+      <div class="speed-cheat">
+        <div class="sc-row"><span style="color:var(--purple); font-weight:bold;">🐢 LENT</span> <span class="sc-names">Rev (Caché), Deo (Loin), Hantu (Chaud)</span></div>
+        <div class="sc-row"><span style="color:#cbd5e1; font-weight:bold;">🚶 NORM</span> <span class="sc-names">La majorité (1.7 m/s)</span></div>
+        <div class="sc-row"><span style="color:var(--warn); font-weight:bold;">🐇 VITE</span> <span class="sc-names">Hantu, Raiju, Jumeaux (Vite)</span></div>
+        <div class="sc-row"><span style="color:var(--danger); font-weight:bold;">🔥 T.VITE</span> <span class="sc-names">Moroi, Thaye, Deogen (Proche)</span></div>
+      </div>
+
       <div class="bpm-area">
         <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
         <div class="bpm-display" id="bpm-val">-- m/s</div>
@@ -305,17 +317,14 @@ function startMetronome(speed, btn) {
   stopMetronome();
   btn.classList.add('playing');
   const context = new (window.AudioContext || window.webkitAudioContext)();
-  
-  // Vitesse fantôme Phasmo : ~1.6 pas/sec pour 1.7m/s | ~2.3 pas/sec pour 2.5m/s
-  const interval = (speed === 1.7) ? 600 : 400; // ms
-  
+  const interval = (speed === 1.7) ? 600 : 400; 
   metroId = setInterval(() => {
     const osc = context.createOscillator();
     const gain = context.createGain();
     osc.connect(gain);
     gain.connect(context.destination);
-    osc.frequency.value = 800; // Tone
-    gain.gain.value = 0.1; // Volume faible
+    osc.frequency.value = 800;
+    gain.gain.value = 0.1;
     osc.start();
     gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.1);
     osc.stop(context.currentTime + 0.1);
@@ -361,10 +370,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v14', JSON.stringify(state));
+  localStorage.setItem('phasmo_v15', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v14');
+  const saved = localStorage.getItem('phasmo_v15');
   if (saved) { try { state = JSON.parse(saved); } catch(e){} }
 }
 
@@ -517,7 +526,7 @@ function stopTimer() {
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v14');
+  localStorage.removeItem('phasmo_v15');
   location.reload();
 }
 
