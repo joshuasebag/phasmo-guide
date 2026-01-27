@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v16.0 (Speed Logic)</title>
+  <title>PHASMO-TRACKER v17.0 (Manual Kill)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -48,14 +48,13 @@
     }
     .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--accent); }
 
-    /* TIMER & BPM & METRONOME */
+    /* TIMER & BPM */
     .timer-box { text-align: center; margin-bottom: 10px; }
     .timer-val { font-family: monospace; font-size: 2.2rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
     .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
     
-    /* SPEED CHEAT SHEET */
     .speed-cheat { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.8rem; }
     .sc-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #1e293b; padding-bottom: 2px; }
     .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -68,7 +67,6 @@
     .metro-controls { display: flex; gap: 5px; margin-top: 5px; }
     .metro-btn { flex: 1; padding: 6px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
     .metro-btn.playing { background: var(--accent); color: black; border-color: var(--accent); animation: pulse 1s infinite; }
-    
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
     /* CHECKLIST */
@@ -92,27 +90,36 @@
     /* GRILLE FANTÔMES */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
-    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 2; }
+    
+    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 3; } /* Preuves */
+    .ghost.manual-excluded { opacity: 0.15; filter: grayscale(1); order: 4; border: 1px dashed var(--danger); } /* Manuel */
+    
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
+    
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
     .g-name { font-size: 1.2rem; font-weight: 800; }
     .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #333; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
     .badge.match { color: var(--success); border-color: var(--success); }
-    .btn-secret { width: 100%; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; margin-top: 8px; }
+    
+    .g-actions { display: flex; gap: 5px; margin-top: 8px; }
+    .btn-secret { flex: 1; background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.8rem; }
+    .btn-kill { width: 40px; background: #0f172a; border: 1px solid var(--danger); color: var(--danger); border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-kill.active { background: var(--danger); color: white; border-color: var(--danger); width: auto; flex:1; }
+
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUE EMPLACEMENTS */
+    /* VUE EMPLACEMENTS & GUIDES */
     #view-maps { display: none; }
+    #view-guide { display: none; column-count: 2; column-gap: 20px; }
+    
+    /* ... (Styles identiques v16) ... */
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     .loc-card { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; }
     .loc-icon { font-size: 2rem; }
     .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
-
-    /* VUE GUIDES */
-    #view-guide { display: none; column-count: 2; column-gap: 20px; }
     .guide-section { margin-bottom: 20px; break-inside: avoid; }
     .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
     .guide-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -131,7 +138,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v16.0</div>
+  <div class="brand">PHASMO-TRACKER v17.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -146,7 +153,7 @@
     <div class="card" style="padding: 10px;">
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Rech. comportement (ex: Courant, Pas...)" oninput="setSearch(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="Rech. comportement (ex: Courant...)" oninput="setSearch(this.value)">
       </div>
     </div>
 
@@ -168,11 +175,10 @@
       <div class="bpm-area">
         <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
         <div class="bpm-display" id="bpm-val">-- m/s</div>
-        
-        <div style="font-size:0.75rem; color:#94a3b8; margin-top:10px; font-weight:bold;">MÉTRONOME (SIMULATEUR) :</div>
+        <div style="font-size:0.75rem; color:#94a3b8; margin-top:10px; font-weight:bold;">MÉTRONOME :</div>
         <div class="metro-controls">
-          <button class="metro-btn" onclick="startMetronome(1.7, this)">NORMAL (1.7)</button>
-          <button class="metro-btn" onclick="startMetronome(2.5, this)">RAPIDE (2.5)</button>
+          <button class="metro-btn" onclick="startMetronome(1.7, this)">NORM (1.7)</button>
+          <button class="metro-btn" onclick="startMetronome(2.5, this)">VITE (2.5)</button>
           <button class="metro-btn" style="background:#450a0a" onclick="stopMetronome()">STOP</button>
         </div>
       </div>
@@ -235,7 +241,6 @@
           <tr><td>Cauchemar</td><td>50s</td><td>60s</td><td>60s+</td></tr>
         </table>
       </div>
-
       <div class="card guide-section"><div class="guide-title">🧩 OUIJA</div><table class="guide-table"><tr><th>Question</th><th>Coût SAN</th></tr><tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr><tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr><tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr><tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🃏 TAROT (10 Cartes)</div><table class="guide-table"><tr><th>Carte</th><th>Effet</th></tr><tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr><tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr><tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr><tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr><tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr><tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr><tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
@@ -253,7 +258,7 @@ const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { 
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo. Clignote lent en chasse.' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> La photo intitulée "Fantôme" est <b>VIDE</b> (pas de glitch/perso). Clignote lent en chasse.' },
   { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets.' },
   { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
   { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> couper le disjoncteur (car il en a besoin). Rapide de loin.' },
@@ -293,7 +298,7 @@ const LOCATIONS = {
 };
 
 /* === STATE === */
-let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
+let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} };
 let tInterval = null;
 let lastTap = 0;
 let metroId = null;
@@ -312,7 +317,18 @@ function init() {
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
 }
 
-/* === METRONOME === */
+/* === ACTIONS === */
+function toggleManual(name) {
+  if (state.manual.includes(name)) {
+    state.manual = state.manual.filter(x => x !== name);
+  } else {
+    state.manual.push(name);
+  }
+  saveState();
+  render();
+}
+
+/* === METRO & BPM === */
 function startMetronome(speed, btn) {
   stopMetronome();
   btn.classList.add('playing');
@@ -330,13 +346,10 @@ function startMetronome(speed, btn) {
     osc.stop(context.currentTime + 0.1);
   }, interval);
 }
-
 function stopMetronome() {
   clearInterval(metroId);
   document.querySelectorAll('.metro-btn').forEach(b => b.classList.remove('playing'));
 }
-
-/* === BPM LOGIC === */
 function tapBpm() {
   const now = Date.now();
   if (lastTap) {
@@ -348,33 +361,25 @@ function tapBpm() {
     else if(estim > 1.9) { label = "RAPIDE"; color = "var(--warn)"; }
     else if(estim < 1.4) { label = "LENT"; color = "var(--purple)"; }
     document.getElementById('bpm-val').innerHTML = `${estim.toFixed(1)} m/s <br><span style="color:${color};font-size:0.8rem">${label}</span>`;
-  } else {
-    document.getElementById('bpm-val').innerText = "Tapez encore...";
-  }
+  } else { document.getElementById('bpm-val').innerText = "Tapez encore..."; }
   lastTap = now;
   setTimeout(() => { if(Date.now() - lastTap >= 2000) lastTap = 0; }, 2000);
 }
 
 /* === SEARCH === */
-function setSearch(val) {
-  state.search = normalize(val);
-  saveState();
-  render();
-}
-function normalize(str) {
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
+function setSearch(val) { state.search = normalize(val); saveState(); render(); }
+function normalize(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
 
 /* === CORE === */
 function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v16', JSON.stringify(state));
+  localStorage.setItem('phasmo_v17', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v16');
-  if (saved) { try { state = JSON.parse(saved); } catch(e){} }
+  const saved = localStorage.getItem('phasmo_v17');
+  if (saved) { try { state = JSON.parse(saved); if(!state.manual) state.manual=[]; } catch(e){} }
 }
 
 function renderProofs() {
@@ -411,17 +416,14 @@ function render() {
 
   document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
-    
     const allInc = state.inc.every(id => gp.includes(id));
     const noneExc = state.exc.every(id => {
        if (g.n === 'Mimic' && id === 'orb') return false; 
        return !gp.includes(id);
     });
-
     let speedMatch = true;
     if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
     if (state.speed === 'fast' && g.sp === '1.7') speedMatch = false;
-
     let searchMatch = true;
     if (state.search) {
       const txt = normalize(g.n + ' ' + g.t);
@@ -430,16 +432,19 @@ function render() {
 
     const isMatch = allInc && noneExc && speedMatch && searchMatch;
     const canHunt = state.san <= g.th;
+    const isManualExcluded = state.manual && state.manual.includes(g.n);
     
     let cls = 'ghost';
-    if (!isMatch) cls += ' excluded'; else cls += ' candidate';
-    if (isMatch && canHunt) cls += ' danger';
+    if (isManualExcluded) cls += ' manual-excluded';
+    else if (!isMatch) cls += ' excluded'; 
+    else cls += ' candidate';
+    if (isMatch && canHunt && !isManualExcluded) cls += ' danger';
 
     return `
       <div class="${cls}">
         <div class="g-head">
           <span class="g-name">${g.n}</span>
-          ${isMatch && canHunt ? '<span style="color:var(--danger)">⚠️</span>' : ''}
+          ${isMatch && canHunt && !isManualExcluded ? '<span style="color:var(--danger)">⚠️</span>' : ''}
         </div>
         <div class="g-info">Seuil: ${g.th}% | Vitesse: ${g.sp}m/s</div>
         <div style="margin-bottom:5px">
@@ -450,85 +455,25 @@ function render() {
           }).join('')}
           ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Fake Orbe</span>' : ''}
         </div>
-        <button class="btn-secret" onclick="this.nextElementSibling.style.display='block'">TEST</button>
+        <div class="g-actions">
+          <button class="btn-secret" onclick="this.parentElement.nextElementSibling.style.display='block'">TEST</button>
+          <button class="btn-kill ${isManualExcluded ? 'active' : ''}" onclick="toggleManual('${g.n}')">
+            ${isManualExcluded ? '↺ RÉTABLIR' : '❌'}
+          </button>
+        </div>
         <div class="secret-txt">${g.t}</div>
       </div>
     `;
   }).join('');
 }
 
-function setSan(val) {
-  state.san = val;
-  document.getElementById('san-disp').innerText = val + "%";
-  saveState();
-  render();
-}
-
-function setSpeed(mode, btn) {
-  state.speed = mode;
-  document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  saveState();
-  render();
-}
-
-function loadLocs(key) {
-  state.map = key;
-  saveState();
-  const area = document.getElementById('loc-area');
-  if (!key || !LOCATIONS[key]) {
-    area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>';
-    return;
-  }
-  const items = LOCATIONS[key];
-  area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`;
-}
-
-function setTab(tab, btn) {
-  document.getElementById('tab-tracker').style.display = 'none';
-  document.getElementById('tab-maps').style.display = 'none';
-  document.getElementById('tab-guide').style.display = 'none';
-  if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid';
-  if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block';
-  if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block';
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function runTimer(sec, btn) {
-  clearInterval(tInterval);
-  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  let t = sec;
-  const tick = () => {
-    let m = Math.floor(t/60).toString().padStart(2,'0');
-    let s = (t%60).toString().padStart(2,'0');
-    document.getElementById('timer-disp').innerText = `${m}:${s}`;
-  };
-  tick();
-  tInterval = setInterval(() => {
-    t--; tick();
-    if(t<=0) {
-      clearInterval(tInterval);
-      document.getElementById('timer-disp').innerText = "PRET";
-      const ctx = new (window.AudioContext||window.webkitAudioContext)();
-      const o = ctx.createOscillator(); o.connect(ctx.destination);
-      o.start(); o.stop(ctx.currentTime+0.2);
-    }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(tInterval);
-  document.getElementById('timer-disp').innerText = "00:00";
-  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active'));
-}
-
-function resetAll() {
-  state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v16');
-  location.reload();
-}
+function setSan(val) { state.san = val; document.getElementById('san-disp').innerText = val + "%"; saveState(); render(); }
+function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
+function loadLocs(key) { state.map = key; saveState(); const area = document.getElementById('loc-area'); if (!key || !LOCATIONS[key]) { area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>'; return; } const items = LOCATIONS[key]; area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`; }
+function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
+function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
+function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v17'); location.reload(); }
 
 init();
 </script>
