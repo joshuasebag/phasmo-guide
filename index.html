@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v11.0 (Smart Search)</title>
+  <title>PHASMO-TRACKER v12.1 (Cauchemar)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -39,7 +39,7 @@
     .main-content { min-width: 0; }
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
 
-    /* RECHERCHE (NOUVEAU) */
+    /* RECHERCHE */
     .search-container { position: relative; }
     .search-input { 
       width: 100%; padding: 10px 10px 10px 35px; 
@@ -79,7 +79,7 @@
     /* GRILLE FANTÔMES */
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
-    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 2; } /* Plus transparent pour mieux voir le tri */
+    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 2; }
     .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
     .ghost.danger { border-left: 4px solid var(--danger); }
     .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
@@ -118,7 +118,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v11.0</div>
+  <div class="brand">PHASMO-TRACKER v12.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -133,7 +133,7 @@
     <div class="card" style="padding: 10px;">
       <div class="search-container">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Recherche (ex: Courant, Pas, Lumière...)" oninput="setSearch(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="Rech. comportement (ex: Courant, Pas...)" oninput="setSearch(this.value)">
       </div>
     </div>
 
@@ -211,21 +211,22 @@
 /* === DATA === */
 const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' }, { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' } ];
 
+// GHOSTS UPDATE V12.1
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
   { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Photo:</b> Disparaît de la photo. Clignote lent en chasse.' },
   { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Objets:</b> Jette plein d\'objets très fort. Faire une pile d\'objets.' },
   { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'<b style="color:#2dd4bf">Test Courant:</b> Ne coupe jamais le disjoncteur. Rapide de loin si courant ON.' },
-  { n:'Jument', p:['orb','box','wrt'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Lumière:</b> Éteint la lumière direct. Attaque à 60% dans le noir.' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> couper le disjoncteur (car il en a besoin). Rapide de loin.' },
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Coupe très souvent le disjoncteur et les lumières (veut le noir). Ne peut pas allumer.' },
   { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit.' },
   { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
   { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée".' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'<b style="color:#2dd4bf">Test Froid:</b> Très rapide au froid (buée), lent au chaud. Courant.' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer le disjoncteur (veut le froid). Rapide au froid.' },
   { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et si personne dans la pièce.' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles (pas de bruit de pas). Si vous entendez ses pas, votre lampe clignote déjà.' },
   { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE.' },
@@ -242,10 +243,10 @@ const GHOSTS = [
 ];
 
 const LOCATIONS = {
-  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Sous-sol' }, { i:'🧸', n:'Poupée', l:'Garage' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
-  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir' }, { i:'🧩', n:'Ouija', l:'Garage' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
-  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
-  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
+  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
+  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
+  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
+  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
   'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
   'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
   'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
@@ -271,7 +272,7 @@ function init() {
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
 }
 
-/* === LOGIQUE SEARCH === */
+/* === SEARCH === */
 function setSearch(val) {
   state.search = normalize(val);
   saveState();
@@ -281,15 +282,15 @@ function normalize(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-/* === LOGIQUE === */
+/* === CORE === */
 function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v11', JSON.stringify(state));
+  localStorage.setItem('phasmo_v12', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v11');
+  const saved = localStorage.getItem('phasmo_v12');
   if (saved) { try { state = JSON.parse(saved); } catch(e){} }
 }
 
@@ -328,19 +329,16 @@ function render() {
   document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
     
-    // Filtre Preuves
     const allInc = state.inc.every(id => gp.includes(id));
     const noneExc = state.exc.every(id => {
        if (g.n === 'Mimic' && id === 'orb') return false; 
        return !gp.includes(id);
     });
 
-    // Filtre Vitesse
     let speedMatch = true;
     if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
     if (state.speed === 'fast' && g.sp === '1.7') speedMatch = false;
 
-    // Filtre Recherche
     let searchMatch = true;
     if (state.search) {
       const txt = normalize(g.n + ' ' + g.t);
@@ -445,7 +443,7 @@ function stopTimer() {
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v11');
+  localStorage.removeItem('phasmo_v12');
   location.reload();
 }
 
