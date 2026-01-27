@@ -3,7 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v20.2 (Card Metro)</title>
+  
+  <title>PHASMO-TRACKER Ultimate (Journal & Vitesse)</title>
+  <meta name="description" content="Le meilleur tracker interactif pour Phasmophobia. Journal de preuves intelligent, test de vitesse (BPM/Métronome) pour identifier les fantômes (Revenant, Deogen, etc.) et guides complets." />
+  <meta name="keywords" content="Phasmophobia, Tracker, Journal, Guide, Vitesse Fantôme, Ghost Speed, Preuves, Outil, Aide, Joshua Sebag, Maélann Logeais" />
+  <meta name="author" content="Sebag Joshua & Logeais Maélann" />
+  <meta name="robots" content="index, follow" />
+
+  <meta property="og:title" content="Phasmo-Tracker Ultimate" />
+  <meta property="og:description" content="Tracker avancé avec test de vitesse (BPM), filtres de preuves et métronome intégré. Créé par Joshua & Maélann." />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="fr_FR" />
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -73,11 +83,11 @@
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); border-style: solid; border-color: var(--accent); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.3rem; color: #f1f5f9; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
 
-    /* METRONOME */
+    /* UNIFIED BUTTONS */
     .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
     .btn-grid-metronome { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
-    /* FILTRES */
+    /* GRILLE 5 BOUTONS */
     .btn-grid-5 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     .btn-unified { 
@@ -164,7 +174,6 @@
 
     footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
     .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
-    .sponsor { color: #f472b6; font-style: italic; font-weight: bold; margin-left: 8px; font-size: 0.85rem; }
 
     @media(max-width: 1200px){ #tab-guide, #tab-speed { column-count: 1; } }
     @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
@@ -173,7 +182,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v20.2</div>
+  <div class="brand">PHASMO-TRACKER v20.3</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -202,10 +211,22 @@
       </div>
       
       <div class="speed-cheat">
-        <div class="sc-row"><div class="sc-label" style="color:var(--purple)">🐢 LENT</div><div class="sc-names">Rev (Sans Vue), Deo (Tout près)</div></div>
-        <div class="sc-row"><div class="sc-label" style="color:#f1f5f9">🚶 NORM</div><div class="sc-names">La majorité (1.7 m/s)</div></div>
-        <div class="sc-row"><div class="sc-label" style="color:#fbbf24">🐇 VITE</div><div class="sc-names">Hantu, Raiju, Jumeaux (Vite)</div></div>
-        <div class="sc-row"><div class="sc-label" style="color:#ef4444">🔥 T.VITE</div><div class="sc-names">Rev (Si Vu), Deo (Loin)</div></div>
+        <div class="sc-row">
+          <div class="sc-label" style="color:var(--purple)">🐢 LENT</div>
+          <div class="sc-names">Rev (Sans Vue), Deo (Tout près)</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-label" style="color:#f1f5f9">🚶 NORM</div>
+          <div class="sc-names">La majorité (1.7 m/s)</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-label" style="color:#fbbf24">🐇 VITE</div>
+          <div class="sc-names">Hantu, Raiju, Jumeaux (Vite)</div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-label" style="color:#ef4444">🔥 T.VITE</div>
+          <div class="sc-names">Rev (Si Vu), Deo (Loin)</div>
+        </div>
       </div>
 
       <div class="bpm-area">
@@ -214,21 +235,22 @@
         
         <div class="section-label">MÉTRONOME :</div>
         <div class="btn-grid-metronome">
-          <button class="btn-unified metro-btn" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
-          <button class="btn-unified metro-btn" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
-          <button class="btn-unified metro-btn" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
-          <button class="btn-unified btn-stop metro-btn" onclick="stopMetronome()">STOP</button>
+          <button class="btn-unified" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
+          <button class="btn-unified" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
+          <button class="btn-unified" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
+          <button class="btn-unified btn-stop" onclick="stopMetronome()">STOP</button>
         </div>
       </div>
 
       <div class="section-label">FILTRE VITESSE :</div>
       <div class="btn-grid-5">
-        <button class="btn-unified btn-filter" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
-        <button class="btn-unified btn-filter" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
-        <button class="btn-unified btn-filter" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
-        <button class="btn-unified btn-filter" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
-        <button class="btn-unified btn-filter" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
-        <button class="btn-unified btn-stop active btn-filter" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
+        <button class="btn-unified" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
+        <button class="btn-unified" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
+        <button class="btn-unified" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
+        
+        <button class="btn-unified" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
+        <button class="btn-unified" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
+        <button class="btn-unified btn-stop active" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
       </div>
     </div>
 
@@ -395,7 +417,7 @@ function init() {
   });
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
   
-  // FIX V20.0 : Force le tab 'tracker' au démarrage
+  // FIX V20.0 : Force le tab 'tracker' au démarrage pour corriger le display:block
   setTab('tracker', document.querySelector('.nav-item.active'));
 }
 
