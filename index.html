@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v20.0 (Bug Fix)</title>
+  <title>PHASMO-TRACKER v20.1 (Obambo Fix)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -133,8 +133,7 @@
 
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUES (CORRECTIFS CSS) */
-    /* On cache tout sauf le tracker par défaut */
+    /* VUES */
     #tab-maps, #tab-guide, #tab-speed { display: none; }
     #tab-guide, #tab-speed { column-count: 2; column-gap: 20px; }
     
@@ -166,7 +165,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v20.0</div>
+  <div class="brand">PHASMO-TRACKER v20.1</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -292,6 +291,7 @@
           <span class="badge">Yurei</span><span class="badge">Oni</span><span class="badge">Yokai</span>
           <span class="badge">Goryo</span><span class="badge">Myling</span><span class="badge">Onryo</span>
           <span class="badge">Obake</span><span class="badge">Mimic</span><span class="badge">Gallu</span>
+          <span class="badge">Obambo</span><span class="badge">Dayan</span>
         </div>
       </div>
     </div>
