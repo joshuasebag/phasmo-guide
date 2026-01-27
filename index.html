@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v15.0 (Speed Cheat Sheet)</title>
+  <title>PHASMO-TRACKER v16.0 (Speed Logic)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -55,7 +55,7 @@
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
     
-    /* SPEED CHEAT SHEET (NOUVEAU) */
+    /* SPEED CHEAT SHEET */
     .speed-cheat { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.8rem; }
     .sc-row { display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #1e293b; padding-bottom: 2px; }
     .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; max-width: 65%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -131,7 +131,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v15.0</div>
+  <div class="brand">PHASMO-TRACKER v16.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -159,10 +159,10 @@
       </div>
       
       <div class="speed-cheat">
-        <div class="sc-row"><span style="color:var(--purple); font-weight:bold;">🐢 LENT</span> <span class="sc-names">Rev (Caché), Deo (Loin), Hantu (Chaud)</span></div>
+        <div class="sc-row"><span style="color:var(--purple); font-weight:bold;">🐢 LENT</span> <span class="sc-names">Rev (Sans Vue), Deo (Tout près)</span></div>
         <div class="sc-row"><span style="color:#cbd5e1; font-weight:bold;">🚶 NORM</span> <span class="sc-names">La majorité (1.7 m/s)</span></div>
         <div class="sc-row"><span style="color:var(--warn); font-weight:bold;">🐇 VITE</span> <span class="sc-names">Hantu, Raiju, Jumeaux (Vite)</span></div>
-        <div class="sc-row"><span style="color:var(--danger); font-weight:bold;">🔥 T.VITE</span> <span class="sc-names">Moroi, Thaye, Deogen (Proche)</span></div>
+        <div class="sc-row"><span style="color:var(--danger); font-weight:bold;">🔥 T.VITE</span> <span class="sc-names">Rev (Si Vu), Deo (Loin)</span></div>
       </div>
 
       <div class="bpm-area">
@@ -258,7 +258,7 @@ const GHOSTS = [
   { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Cible:</b> Ne tue que sa cible. Cri unique au micro parabolique.' },
   { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> couper le disjoncteur (car il en a besoin). Rapide de loin.' },
   { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Coupe très souvent le disjoncteur et les lumières (veut le noir). Ne peut pas allumer.' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> Très lent si caché. Fuse (3m/s) s\'il vous voit.' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> <b>1.0 m/s</b> (Lent) s\'il ne vous voit pas. <b>3.0 m/s</b> (TGV) dès qu\'il vous voit.' },
   { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
@@ -273,7 +273,7 @@ const GHOSTS = [
   { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test UV:</b> Empreinte à 6 doigts. Change de forme 1 fois par chasse.' },
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Orbe:</b> A toujours des orbes (4e preuve). Copie les autres.' },
   { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'<b style="color:#2dd4bf">Test Maudit:</b> Spirit Box draine la santé. Vitesse augmente si Sanité basse.' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Box:</b> Respiration lourde à la Box. VOUS VOIT. Rapide loin, escargot proche.' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'<b style="color:#2dd4bf">Test Vitesse:</b> <b>3.0 m/s</b> quand il est loin. <b>0.4 m/s</b> (Escargot) tout près. On ne peut pas se cacher !' },
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'<b style="color:#2dd4bf">Test Age:</b> Rapide au début -> Lent à la fin.' },
   { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'<b style="color:#warn">Custom:</b> Vitesse change si joueur bouge.' },
   { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'<b style="color:#warn">Custom:</b> Enragé par objets défensifs.' },
@@ -370,10 +370,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v15', JSON.stringify(state));
+  localStorage.setItem('phasmo_v16', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v15');
+  const saved = localStorage.getItem('phasmo_v16');
   if (saved) { try { state = JSON.parse(saved); } catch(e){} }
 }
 
@@ -526,7 +526,7 @@ function stopTimer() {
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v15');
+  localStorage.removeItem('phasmo_v16');
   location.reload();
 }
 
