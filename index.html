@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v19.8 (Logic Fix)</title>
+  <title>PHASMO-TRACKER v19.9 (Credits Update)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -77,7 +77,7 @@
     .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
     .btn-grid-metronome { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
-    /* GRILLE 5 BOUTONS (3 haut, 2 bas + tout) */
+    /* GRILLE 5 BOUTONS */
     .btn-grid-5 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
 
     .btn-unified { 
@@ -156,7 +156,6 @@
 
     footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
     .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
-    .sponsor { color: #f472b6; font-style: italic; font-weight: bold; margin-left: 8px; font-size: 0.85rem; }
 
     @media(max-width: 1200px){ #view-guide, #view-speed { column-count: 1; } }
     @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
@@ -165,7 +164,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v19.8</div>
+  <div class="brand">PHASMO-TRACKER v19.9</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -331,8 +330,7 @@
 </div>
 
 <footer>
-  Créé par <span class="creator">Joshua Sebag</span>
-  <span class="sponsor"> | Sponsorisé par Alice Délice 🧁</span>
+  Développeur Web et Data Scientist <span class="creator">Sebag Joshua</span> et Data Scientist <span class="creator">Logeais Maélann</span>
 </footer>
 
 <script>
