@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v12.2 (Hantu Breath)</title>
+  <title>PHASMO-TRACKER v13.0 (BPM Tool)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -48,15 +48,17 @@
     }
     .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--accent); }
 
-    /* TIMER */
+    /* TIMER & BPM */
     .timer-box { text-align: center; margin-bottom: 10px; }
-    .timer-val { font-family: monospace; font-size: 2.5rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
+    .timer-val { font-family: monospace; font-size: 2.2rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
     .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
     .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
-    .timer-guide { margin-top: 12px; font-size: 0.8rem; color: #94a3b8; border-top: 1px solid var(--border); padding-top: 10px; line-height: 1.4; }
-    .timer-guide b { color: var(--accent); }
-    .timer-guide span { display: block; margin-bottom: 4px; }
+    
+    .bpm-area { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
+    .bpm-btn { width: 100%; padding: 15px; background: #0f172a; border: 2px dashed var(--accent); color: var(--accent); font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.1s; }
+    .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); }
+    .bpm-display { text-align: center; margin-top: 5px; font-family: monospace; font-size: 1.1rem; color: #cbd5e1; }
 
     /* CHECKLIST */
     .check-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
@@ -118,7 +120,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v12.2</div>
+  <div class="brand">PHASMO-TRACKER v13.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -144,9 +146,11 @@
         <button class="btn-time" onclick="runTimer(180, this)">180s</button>
         <button class="btn-time" style="background:#450a0a" onclick="stopTimer()">X</button>
       </div>
-      <div class="timer-guide">
-        <span><b>90s :</b> Temps standard. S'il chasse avant, c'est un Démon (60s).</span>
-        <span><b>180s :</b> Test Esprit. S'il chasse avant, ce n'est <u>PAS</u> un Esprit.</span>
+      
+      <div class="bpm-area">
+        <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
+        <div class="bpm-display" id="bpm-val">-- m/s</div>
+        <div style="font-size:0.75rem; text-align:center; color:#64748b; margin-top:3px">Normal: ~1.7 | Rapide: >2.5</div>
       </div>
     </div>
 
@@ -211,7 +215,6 @@
 /* === DATA === */
 const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' }, { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' } ];
 
-// GHOSTS UPDATE V12.2
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
@@ -257,6 +260,7 @@ const LOCATIONS = {
 /* === STATE === */
 let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
 let tInterval = null;
+let lastTap = 0;
 
 function init() {
   loadState();
@@ -270,6 +274,36 @@ function init() {
     document.getElementById(id).checked = state.checks[id] || false;
   });
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
+}
+
+/* === BPM LOGIC === */
+function tapBpm() {
+  const now = Date.now();
+  if (lastTap) {
+    const diff = (now - lastTap) / 1000; // Secondes
+    let speed = 0;
+    
+    // Formule approximative pour Phasmo : Le fantôme fait environ 1.5 à 1.7 pas par mètre parcouru
+    // Si délai entre pas est 0.6s -> Vitesse ~1.7 m/s
+    // Si délai 0.3s -> Vitesse ~3.0 m/s
+    
+    // Estimation simplifiée : Vitesse = 1 / délai
+    let estim = (1 / diff) * 1.1; // Ajustement facteur
+    
+    let label = "Normal";
+    let color = "#cbd5e1";
+    
+    if(estim > 2.3) { label = "T. RAPIDE (Rev/Thaye/Moroi)"; color = "var(--danger)"; }
+    else if(estim > 1.9) { label = "RAPIDE (Hantu/Deo)"; color = "var(--warn)"; }
+    else if(estim < 1.4) { label = "LENT (Rev caché/Deo proche)"; color = "var(--purple)"; }
+    
+    document.getElementById('bpm-val').innerHTML = `${estim.toFixed(1)} m/s <br><span style="color:${color};font-size:0.8rem">${label}</span>`;
+  } else {
+    document.getElementById('bpm-val').innerText = "Tapez encore...";
+  }
+  lastTap = now;
+  // Reset après 2s sans tap
+  setTimeout(() => { if(Date.now() - lastTap >= 2000) lastTap = 0; }, 2000);
 }
 
 /* === SEARCH === */
@@ -287,10 +321,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v12', JSON.stringify(state));
+  localStorage.setItem('phasmo_v13', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v12');
+  const saved = localStorage.getItem('phasmo_v13');
   if (saved) { try { state = JSON.parse(saved); } catch(e){} }
 }
 
@@ -443,7 +477,7 @@ function stopTimer() {
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v12');
+  localStorage.removeItem('phasmo_v13');
   location.reload();
 }
 
