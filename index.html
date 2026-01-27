@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v12.1 (Cauchemar)</title>
+  <title>PHASMO-TRACKER v12.2 (Hantu Breath)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -118,7 +118,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v12.1</div>
+  <div class="brand">PHASMO-TRACKER v12.2</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -211,7 +211,7 @@
 /* === DATA === */
 const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' }, { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' } ];
 
-// GHOSTS UPDATE V12.1
+// GHOSTS UPDATE V12.2
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Sel:</b> Ne marche <b>JAMAIS</b> dans le sel. Se TP sur un joueur (EMF 2/5).' },
@@ -226,7 +226,7 @@ const GHOSTS = [
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
   { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée".' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer le disjoncteur (veut le froid). Rapide au froid.' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer. <b style="color:#2dd4bf">Unique:</b> Crache de la buée visible pendant la chasse (si froid).' },
   { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et si personne dans la pièce.' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Son:</b> Pas inaudibles (pas de bruit de pas). Si vous entendez ses pas, votre lampe clignote déjà.' },
   { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'<b style="color:#2dd4bf">Test Feu:</b> La bougie agit comme crucifix. Éteinte 3 fois => CHASSE.' },
