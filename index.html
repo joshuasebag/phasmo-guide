@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v19.9 (Credits Update)</title>
+  <title>PHASMO-TRACKER v20.0 (Bug Fix)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -133,9 +133,10 @@
 
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUES */
-    #view-maps, #view-guide, #view-speed { display: none; }
-    #view-guide, #view-speed { column-count: 2; column-gap: 20px; }
+    /* VUES (CORRECTIFS CSS) */
+    /* On cache tout sauf le tracker par défaut */
+    #tab-maps, #tab-guide, #tab-speed { display: none; }
+    #tab-guide, #tab-speed { column-count: 2; column-gap: 20px; }
     
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -156,15 +157,16 @@
 
     footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
     .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
+    .sponsor { color: #f472b6; font-style: italic; font-weight: bold; margin-left: 8px; font-size: 0.85rem; }
 
-    @media(max-width: 1200px){ #view-guide, #view-speed { column-count: 1; } }
+    @media(max-width: 1200px){ #tab-guide, #tab-speed { column-count: 1; } }
     @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v19.9</div>
+  <div class="brand">PHASMO-TRACKER v20.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -397,6 +399,9 @@ function init() {
     document.getElementById(id).checked = state.checks[id] || false;
   });
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
+  
+  // FIX V20.0 : Force le tab 'tracker' au démarrage pour corriger le display:block
+  setTab('tracker', document.querySelector('.nav-item.active'));
 }
 
 function toggleManual(name) {
@@ -568,7 +573,23 @@ function render() {
 function setSan(val) { state.san = val; document.getElementById('san-disp').innerText = val + "%"; saveState(); render(); }
 function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-unified').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
 function loadLocs(key) { state.map = key; saveState(); const area = document.getElementById('loc-area'); if (!key || !LOCATIONS[key]) { area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>'; return; } const items = LOCATIONS[key]; area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`; }
-function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; document.getElementById('tab-speed').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; if (tab === 'speed') document.getElementById('tab-speed').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function setTab(tab, btn) { 
+  // Cache tout
+  document.getElementById('tab-tracker').style.display = 'none'; 
+  document.getElementById('tab-maps').style.display = 'none'; 
+  document.getElementById('tab-guide').style.display = 'none'; 
+  document.getElementById('tab-speed').style.display = 'none'; 
+  
+  // Affiche le bon
+  if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; 
+  if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; 
+  if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; 
+  if (tab === 'speed') document.getElementById('tab-speed').style.display = 'block'; 
+  
+  // Gère les boutons
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); 
+  if(btn) btn.classList.add('active'); 
+}
 function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
 function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v19'); location.reload(); }
