@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v19.2 (Alice Délice Edition)</title>
+  <title>PHASMO-TRACKER v19.3 (Alice Délice Edition)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -64,8 +64,8 @@
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 10px; }
 
-    .metro-controls { display: flex; gap: 5px; margin-top: 5px; }
-    .metro-btn { flex: 1; padding: 6px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+    .metro-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
+    .metro-btn { padding: 8px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 0.7rem; cursor: pointer; font-weight: bold; }
     .metro-btn.playing { background: var(--accent); color: black; border-color: var(--accent); animation: pulse 1s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
@@ -139,7 +139,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v19.2</div>
+  <div class="brand">PHASMO-TRACKER v19.3</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -177,10 +177,12 @@
       <div class="bpm-area">
         <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
         <div class="bpm-display" id="bpm-val">-- m/s</div>
+        
         <div style="font-size:0.75rem; color:#94a3b8; margin-top:10px; font-weight:bold;">MÉTRONOME :</div>
         <div class="metro-controls">
-          <button class="metro-btn" onclick="startMetronome(1.7, this)">NORM (1.7)</button>
-          <button class="metro-btn" onclick="startMetronome(2.5, this)">VITE (2.5)</button>
+          <button class="metro-btn" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
+          <button class="metro-btn" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
+          <button class="metro-btn" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
           <button class="metro-btn" style="background:#450a0a" onclick="stopMetronome()">STOP</button>
         </div>
       </div>
@@ -190,7 +192,7 @@
         <div class="speed-opts">
           <button class="btn-speed active" id="sp-all" onclick="setSpeed('all', this)">TOUT</button>
           <button class="btn-speed" id="sp-normal" onclick="setSpeed('normal', this)">NORMAL</button>
-          <button class="btn-speed" id="sp-fast" onclick="setSpeed('fast', this)">ATYPIQUE</button>
+          <button class="btn-speed" id="sp-fast" onclick="setSpeed('fast', this)">LENT / RAPIDE</button>
         </div>
       </div>
     </div>
@@ -327,6 +329,7 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
+/* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
@@ -372,18 +375,29 @@ function startMetronome(speed, btn) {
   stopMetronome();
   btn.classList.add('playing');
   const context = new (window.AudioContext || window.webkitAudioContext)();
-  const interval = (speed === 1.7) ? 600 : 400; 
+  const interval = (speed === 1.7) ? 600 : (1000 / speed); // Calcul simplifié pour le rythme
+  // Ajustement pour être plus précis :
+  // 1.7m/s approx 1.7 pas/sec (un peu rapide, Phasmophobia a des pas lourds)
+  // On va calibrer à l'oreille :
+  // 1.0 m/s = 1000ms
+  // 1.7 m/s = 588ms
+  // 2.5 m/s = 400ms
+  let delay = 600;
+  if(speed === 1.0) delay = 1200;
+  else if(speed === 1.7) delay = 650;
+  else if(speed === 2.5) delay = 400;
+
   metroId = setInterval(() => {
     const osc = context.createOscillator();
     const gain = context.createGain();
     osc.connect(gain);
     gain.connect(context.destination);
-    osc.frequency.value = 800;
+    osc.frequency.value = 800; // Son de pas (approximatif, 'clac')
     gain.gain.value = 0.1;
     osc.start();
     gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.1);
     osc.stop(context.currentTime + 0.1);
-  }, interval);
+  }, delay);
 }
 function stopMetronome() {
   clearInterval(metroId);
