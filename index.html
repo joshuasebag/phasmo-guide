@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v17.2 (Gender Update)</title>
+  <title>PHASMO-TRACKER v17.3 (Oni Update)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -135,7 +135,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v17.2</div>
+  <div class="brand">PHASMO-TRACKER v17.3</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -240,7 +240,7 @@
       </div>
       <div class="card guide-section"><div class="guide-title">🧩 OUIJA</div><table class="guide-table"><tr><th>Question</th><th>Coût SAN</th></tr><tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr><tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr><tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr><tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🃏 TAROT (10 Cartes)</div><table class="guide-table"><tr><th>Carte</th><th>Effet</th></tr><tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr><tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr><tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr><tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr><tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr><tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr><tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr></table></div>
-      <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><tr><td class="rare">De la connaissance</td><td>Barre 1 preuve + <b style="color:#ef4444">CHASSE</b> + Vision/Ouïe réduites (Définitif)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
+      <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><td class="rare">De la connaissance</td><td>Barre 1 preuve + <b style="color:#ef4444">CHASSE</b> + Vision/Ouïe réduites (Définitif)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🔮 MIROIR / 🎶 BOÎTE / 🧸 VAUDOU</div><table class="guide-table"><tr><th>Objet</th><th>Risque</th></tr><tr><td>Miroir</td><td>Chasse si 0% Sanité (-7.5%/s)</td></tr><tr><td>Boîte</td><td>Chasse si fantôme touche joueur</td></tr><tr><td>Vaudou</td><td>Aiguille cœur = Chasse (-10%)</td></tr></table></div>
     </div>
   </div>
@@ -264,7 +264,7 @@ const GHOSTS = [
   { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'<b style="color:#2dd4bf">Test Timide:</b> Ne chasse pas si plusieurs joueurs dans la pièce.' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'<b style="color:#2dd4bf">Test Aggro:</b> Chasse toutes les 20s. Encens ne dure que 60s.' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Porte:</b> Claque la porte d\'entrée (-15% San). Coincé dans sa pièce par encens.' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Visible:</b> Clignote très peu en chasse. Pas de "boule de fumée".' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'❌ Ne fait <b>JAMAIS</b> l\'event "Boule de fumée" (le souffle). Clignote très peu en chasse.' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'<b style="color:#2dd4bf">Test Voix:</b> Chasse à 80% si on parle. Sourd (ne vous entend pas à +2m).' },
   { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'⚡ <b style="color:#2dd4bf">Courant:</b> Ne peut <b>JAMAIS</b> allumer. <b style="color:#2dd4bf">Unique:</b> Crache de la buée visible pendant la chasse (si froid).' },
   { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test DOTS:</b> Visible <b>QUE</b> via caméra et si personne dans la pièce.' },
@@ -282,7 +282,6 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
-/* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
