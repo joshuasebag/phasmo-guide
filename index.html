@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v13.0 (BPM Tool)</title>
+  <title>PHASMO-TRACKER v14.0 (Metronome)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -48,7 +48,7 @@
     }
     .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--accent); }
 
-    /* TIMER & BPM */
+    /* TIMER & BPM & METRONOME */
     .timer-box { text-align: center; margin-bottom: 10px; }
     .timer-val { font-family: monospace; font-size: 2.2rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
     .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
@@ -56,9 +56,15 @@
     .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
     
     .bpm-area { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; }
-    .bpm-btn { width: 100%; padding: 15px; background: #0f172a; border: 2px dashed var(--accent); color: var(--accent); font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.1s; }
+    .bpm-btn { width: 100%; padding: 12px; background: #0f172a; border: 2px dashed #475569; color: #94a3b8; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.1s; margin-bottom: 5px; }
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); }
-    .bpm-display { text-align: center; margin-top: 5px; font-family: monospace; font-size: 1.1rem; color: #cbd5e1; }
+    .bpm-display { text-align: center; font-family: monospace; font-size: 1.1rem; color: #cbd5e1; margin-bottom: 10px; }
+
+    .metro-controls { display: flex; gap: 5px; margin-top: 5px; }
+    .metro-btn { flex: 1; padding: 6px; background: #1e293b; border: 1px solid var(--border); color: white; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+    .metro-btn.playing { background: var(--accent); color: black; border-color: var(--accent); animation: pulse 1s infinite; }
+    
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
     /* CHECKLIST */
     .check-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
@@ -120,7 +126,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v13.0</div>
+  <div class="brand">PHASMO-TRACKER v14.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
@@ -150,7 +156,13 @@
       <div class="bpm-area">
         <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
         <div class="bpm-display" id="bpm-val">-- m/s</div>
-        <div style="font-size:0.75rem; text-align:center; color:#64748b; margin-top:3px">Normal: ~1.7 | Rapide: >2.5</div>
+        
+        <div style="font-size:0.75rem; color:#94a3b8; margin-top:10px; font-weight:bold;">MÉTRONOME (SIMULATEUR) :</div>
+        <div class="metro-controls">
+          <button class="metro-btn" onclick="startMetronome(1.7, this)">NORMAL (1.7)</button>
+          <button class="metro-btn" onclick="startMetronome(2.5, this)">RAPIDE (2.5)</button>
+          <button class="metro-btn" style="background:#450a0a" onclick="stopMetronome()">STOP</button>
+        </div>
       </div>
     </div>
 
@@ -201,6 +213,17 @@
     </div>
 
     <div id="tab-guide">
+      <div class="card guide-section">
+        <div class="guide-title">💀 DURÉES DE CHASSE</div>
+        <table class="guide-table">
+          <tr><th>Difficulté</th><th>Petite Map</th><th>Moyenne</th><th>Grande</th></tr>
+          <tr><td>Amateur</td><td>20s</td><td>30s</td><td>40s</td></tr>
+          <tr><td>Interméd.</td><td>30s</td><td>40s</td><td>50s</td></tr>
+          <tr><td>Pro</td><td>40s</td><td>50s</td><td>60s</td></tr>
+          <tr><td>Cauchemar</td><td>50s</td><td>60s</td><td>60s+</td></tr>
+        </table>
+      </div>
+
       <div class="card guide-section"><div class="guide-title">🧩 OUIJA</div><table class="guide-table"><tr><th>Question</th><th>Coût SAN</th></tr><tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr><tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr><tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr><tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">🃏 TAROT (10 Cartes)</div><table class="guide-table"><tr><th>Carte</th><th>Effet</th></tr><tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr><tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr><tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr><tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr><tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr><tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr><tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr></table></div>
       <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
@@ -261,6 +284,7 @@ const LOCATIONS = {
 let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
 let tInterval = null;
 let lastTap = 0;
+let metroId = null;
 
 function init() {
   loadState();
@@ -276,33 +300,49 @@ function init() {
   setSpeed(state.speed, document.getElementById('sp-' + state.speed));
 }
 
+/* === METRONOME === */
+function startMetronome(speed, btn) {
+  stopMetronome();
+  btn.classList.add('playing');
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  
+  // Vitesse fantôme Phasmo : ~1.6 pas/sec pour 1.7m/s | ~2.3 pas/sec pour 2.5m/s
+  const interval = (speed === 1.7) ? 600 : 400; // ms
+  
+  metroId = setInterval(() => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+    osc.connect(gain);
+    gain.connect(context.destination);
+    osc.frequency.value = 800; // Tone
+    gain.gain.value = 0.1; // Volume faible
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.1);
+    osc.stop(context.currentTime + 0.1);
+  }, interval);
+}
+
+function stopMetronome() {
+  clearInterval(metroId);
+  document.querySelectorAll('.metro-btn').forEach(b => b.classList.remove('playing'));
+}
+
 /* === BPM LOGIC === */
 function tapBpm() {
   const now = Date.now();
   if (lastTap) {
-    const diff = (now - lastTap) / 1000; // Secondes
-    let speed = 0;
-    
-    // Formule approximative pour Phasmo : Le fantôme fait environ 1.5 à 1.7 pas par mètre parcouru
-    // Si délai entre pas est 0.6s -> Vitesse ~1.7 m/s
-    // Si délai 0.3s -> Vitesse ~3.0 m/s
-    
-    // Estimation simplifiée : Vitesse = 1 / délai
-    let estim = (1 / diff) * 1.1; // Ajustement facteur
-    
+    const diff = (now - lastTap) / 1000;
+    let estim = (1 / diff) * 1.1; 
     let label = "Normal";
     let color = "#cbd5e1";
-    
-    if(estim > 2.3) { label = "T. RAPIDE (Rev/Thaye/Moroi)"; color = "var(--danger)"; }
-    else if(estim > 1.9) { label = "RAPIDE (Hantu/Deo)"; color = "var(--warn)"; }
-    else if(estim < 1.4) { label = "LENT (Rev caché/Deo proche)"; color = "var(--purple)"; }
-    
+    if(estim > 2.3) { label = "T. RAPIDE"; color = "var(--danger)"; }
+    else if(estim > 1.9) { label = "RAPIDE"; color = "var(--warn)"; }
+    else if(estim < 1.4) { label = "LENT"; color = "var(--purple)"; }
     document.getElementById('bpm-val').innerHTML = `${estim.toFixed(1)} m/s <br><span style="color:${color};font-size:0.8rem">${label}</span>`;
   } else {
     document.getElementById('bpm-val').innerText = "Tapez encore...";
   }
   lastTap = now;
-  // Reset après 2s sans tap
   setTimeout(() => { if(Date.now() - lastTap >= 2000) lastTap = 0; }, 2000);
 }
 
@@ -321,10 +361,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v13', JSON.stringify(state));
+  localStorage.setItem('phasmo_v14', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v13');
+  const saved = localStorage.getItem('phasmo_v14');
   if (saved) { try { state = JSON.parse(saved); } catch(e){} }
 }
 
@@ -477,7 +517,7 @@ function stopTimer() {
 
 function resetAll() {
   state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', checks: {} };
-  localStorage.removeItem('phasmo_v13');
+  localStorage.removeItem('phasmo_v14');
   location.reload();
 }
 
