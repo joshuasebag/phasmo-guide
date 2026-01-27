@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v18.3 (Demon Crucifix)</title>
+  <title>PHASMO-TRACKER v19.0 (Speed Master)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -107,9 +107,9 @@
 
     .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
 
-    /* VUE EMPLACEMENTS & GUIDES */
-    #view-maps { display: none; }
-    #view-guide { display: none; column-count: 2; column-gap: 20px; }
+    /* VUES (MAPS, GUIDE, SPEED) */
+    #view-maps, #view-guide, #view-speed { display: none; }
+    #view-guide, #view-speed { column-count: 2; column-gap: 20px; }
     
     .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
     .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
@@ -117,6 +117,7 @@
     .loc-icon { font-size: 2rem; }
     .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
+    
     .guide-section { margin-bottom: 20px; break-inside: avoid; }
     .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
     .guide-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -124,20 +125,24 @@
     .guide-table td { padding: 6px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
     .cost { color: var(--danger); font-weight: bold; font-family: monospace; white-space: nowrap; }
     .rare { color: var(--purple); font-weight: bold; }
+    .val-fast { color: var(--danger); font-weight: bold; }
+    .val-slow { color: var(--purple); font-weight: bold; }
+    .val-norm { color: #cbd5e1; }
 
     footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
     .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
 
-    @media(max-width: 1200px){ #view-guide { column-count: 1; } }
+    @media(max-width: 1200px){ #view-guide, #view-speed { column-count: 1; } }
     @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v18.3</div>
+  <div class="brand">PHASMO-TRACKER v19.0</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
+    <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
     <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
     <button class="nav-item" onclick="setTab('guide', this)">GUIDES</button>
   </div>
@@ -211,6 +216,42 @@
   <div class="main-content">
     <div id="tab-tracker" class="grid"></div>
 
+    <div id="tab-speed">
+      <div class="card guide-section">
+        <div class="guide-title">🐇 LES RAPIDES / LENTS</div>
+        <table class="guide-table">
+          <tr><th>Entité</th><th>Vitesse (m/s)</th><th>Condition</th></tr>
+          <tr><td>Revenant</td><td class="val-fast">3.0 m/s</td><td>S'il vous voit (LOS)</td></tr>
+          <tr><td>Revenant</td><td class="val-slow">1.0 m/s</td><td>Caché (Pas de LOS)</td></tr>
+          <tr><td>Deogen</td><td class="val-fast">3.0 m/s</td><td>Loin de vous (+6m)</td></tr>
+          <tr><td>Deogen</td><td class="val-slow">0.4 m/s</td><td>Tout près (Escargot)</td></tr>
+          <tr><td>Hantu</td><td class="val-fast">2.7 m/s</td><td>Glacial (Disjoncteur OFF)</td></tr>
+          <tr><td>Hantu</td><td class="val-slow">1.4 m/s</td><td>Chaud (Disjoncteur ON)</td></tr>
+          <tr><td>Thaye</td><td class="val-fast">2.75 m/s</td><td>Début de partie (Jeune)</td></tr>
+          <tr><td>Thaye</td><td class="val-slow">1.0 m/s</td><td>Fin de partie (Vieux)</td></tr>
+          <tr><td>Moroi</td><td class="val-fast">2.25 m/s</td><td>0% Santé Mentale</td></tr>
+          <tr><td>Raiju</td><td class="val-fast">2.5 m/s</td><td>Près d'électronique actif</td></tr>
+          <tr><td>Jumeaux</td><td class="val-fast">1.9 m/s</td><td>Jumeau "Leurre"</td></tr>
+          <tr><td>Jumeaux</td><td class="val-slow">1.5 m/s</td><td>Jumeau "Principal"</td></tr>
+        </table>
+      </div>
+
+      <div class="card guide-section">
+        <div class="guide-title">🚶 LES NORMAUX (1.7 m/s)</div>
+        <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:10px;">
+          Ces fantômes marchent à <b>1.7 m/s</b> de base. Ils accélèrent progressivement s'ils vous voient (Ligne de vue), jusqu'à <b>2.8 m/s</b>.
+        </p>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
+          <span class="badge">Esprit</span><span class="badge">Spectre</span><span class="badge">Fantôme</span>
+          <span class="badge">Poltergeist</span><span class="badge">Banshee</span><span class="badge">Djinn</span>
+          <span class="badge">Cauchemar</span><span class="badge">Ombre</span><span class="badge">Démon</span>
+          <span class="badge">Yurei</span><span class="badge">Oni</span><span class="badge">Yokai</span>
+          <span class="badge">Goryo</span><span class="badge">Myling</span><span class="badge">Onryo</span>
+          <span class="badge">Obake</span><span class="badge">Mimic</span><span class="badge">Gallu</span>
+        </div>
+      </div>
+    </div>
+
     <div id="tab-maps">
       <select class="map-select" id="map-selector" onchange="loadLocs(this.value)">
         <option value="">-- CHOISIR UNE CARTE --</option>
@@ -282,7 +323,6 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
-/* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
@@ -368,10 +408,10 @@ function saveState() {
   ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
     state.checks[id] = document.getElementById(id).checked;
   });
-  localStorage.setItem('phasmo_v18', JSON.stringify(state));
+  localStorage.setItem('phasmo_v19', JSON.stringify(state));
 }
 function loadState() {
-  const saved = localStorage.getItem('phasmo_v18');
+  const saved = localStorage.getItem('phasmo_v19');
   if (saved) { try { state = JSON.parse(saved); if(!state.manual) state.manual=[]; } catch(e){} }
 }
 
@@ -463,10 +503,10 @@ function render() {
 function setSan(val) { state.san = val; document.getElementById('san-disp').innerText = val + "%"; saveState(); render(); }
 function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-speed').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
 function loadLocs(key) { state.map = key; saveState(); const area = document.getElementById('loc-area'); if (!key || !LOCATIONS[key]) { area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>'; return; } const items = LOCATIONS[key]; area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`; }
-function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function setTab(tab, btn) { document.getElementById('tab-tracker').style.display = 'none'; document.getElementById('tab-maps').style.display = 'none'; document.getElementById('tab-guide').style.display = 'none'; document.getElementById('tab-speed').style.display = 'none'; if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; if (tab === 'speed') document.getElementById('tab-speed').style.display = 'block'; document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 function runTimer(sec, btn) { clearInterval(tInterval); document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); btn.classList.add('active'); let t = sec; const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let s = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${s}`; }; tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const ctx = new (window.AudioContext||window.webkitAudioContext)(); const o = ctx.createOscillator(); o.connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.2); } }, 1000); }
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
-function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v18'); location.reload(); }
+function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v19'); location.reload(); }
 
 init();
 </script>
