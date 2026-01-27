@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PHASMO-TRACKER v19.6 (Twin Buttons)</title>
+  <title>PHASMO-TRACKER v19.7 (5-Speed Grid)</title>
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
@@ -61,7 +61,7 @@
     .sc-label { font-weight: 800; display: flex; align-items: center; gap: 6px; min-width: 70px; }
     .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
 
-    /* BPM Area */
+    /* BPM */
     .bpm-area { margin-top: 15px; }
     .bpm-btn { 
       width: 100%; padding: 14px; background: rgba(15, 23, 42, 0.4); 
@@ -73,33 +73,35 @@
     .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); border-style: solid; border-color: var(--accent); }
     .bpm-display { text-align: center; font-family: monospace; font-size: 1.3rem; color: #f1f5f9; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
 
-    /* --- STYLE UNIFIÉ POUR MÉTRONOME ET FILTRE --- */
+    /* METRONOME & FILTRE SHARED STYLES */
     .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
-    .btn-grid-4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-grid-metronome { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     
+    /* GRILLE 5 BOUTONS POUR LE FILTRE */
+    .btn-grid-5 { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr 1fr; /* 3 colonnes */
+      gap: 6px; 
+    }
+    /* Le bouton "TOUT" prend toute la largeur en bas */
+    .btn-full-width { grid-column: span 3; margin-top: 2px; }
+
     .btn-unified { 
-      padding: 10px; 
+      padding: 10px 4px; 
       background: #1e293b; 
       border: 1px solid var(--border); 
       color: #cbd5e1; 
       border-radius: 6px; 
-      font-size: 0.75rem; 
+      font-size: 0.65rem; /* Un peu plus petit pour rentrer */
       cursor: pointer; 
-      font-weight: bold; 
+      font-weight: 800; 
       transition: 0.2s;
-      display: flex; justify-content: center; align-items: center; gap:5px;
+      display: flex; justify-content: center; align-items: center; text-align:center;
+      text-transform: uppercase;
     }
     .btn-unified:hover { background: #334155; }
+    .btn-unified.active { background: var(--accent); color: #020617; border-color: var(--accent); box-shadow: 0 0 10px rgba(45, 212, 191, 0.3); }
     
-    /* Active State (Green/Teal) */
-    .btn-unified.active, .btn-unified.playing { 
-      background: var(--accent); 
-      color: #020617; 
-      border-color: var(--accent); 
-      box-shadow: 0 0 10px rgba(45, 212, 191, 0.3); 
-    }
-    
-    /* Stop/Reset Style (Red) */
     .btn-stop { background: #450a0a; border-color: #7f1d1d; color: #fecaca; }
     .btn-stop:hover { background: #7f1d1d; }
     .btn-stop.active { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
@@ -169,7 +171,7 @@
 <body>
 
 <header>
-  <div class="brand">PHASMO-TRACKER v19.6</div>
+  <div class="brand">PHASMO-TRACKER v19.7</div>
   <div class="nav-pills">
     <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
     <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
@@ -221,7 +223,7 @@
         <div class="bpm-display" id="bpm-val">-- m/s</div>
         
         <div class="section-label">MÉTRONOME :</div>
-        <div class="btn-grid-4">
+        <div class="btn-grid-metronome">
           <button class="btn-unified" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
           <button class="btn-unified" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
           <button class="btn-unified" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
@@ -230,10 +232,13 @@
       </div>
 
       <div class="section-label">FILTRE VITESSE :</div>
-      <div class="btn-grid-4">
+      <div class="btn-grid-5">
+        <button class="btn-unified" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
         <button class="btn-unified" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
         <button class="btn-unified" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
+        
         <button class="btn-unified" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
+        <button class="btn-unified" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
         <button class="btn-unified btn-stop active" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
       </div>
     </div>
@@ -370,6 +375,7 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
+/* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
@@ -507,11 +513,22 @@ function render() {
        return !gp.includes(id);
     });
     
-    // NOUVELLE LOGIQUE DE FILTRE SPLITTÉ
+    // NOUVELLE LOGIQUE DE FILTRE 5 BOUTONS
     let speedMatch = true;
     if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
-    if (state.speed === 'fast' && !['2.5','2.7','3.0','Var'].includes(g.sp)) speedMatch = false;
-    if (state.speed === 'slow' && !['2.7','3.0','Var'].includes(g.sp)) speedMatch = false; // Exclut Djinn/Raiju
+    
+    // XSLOW (Très lent < 1.5) : Rev (1.0), Hantu (1.4), Deo (0.4), Thaye Vieux (1.0), Jumeaux (1.5)
+    if (state.speed === 'xslow' && !['3.0','2.7','2.75','Var'].includes(g.sp) && g.sp !== '1.0' && g.n !== 'Jumeaux' && g.n !== 'Hantu') speedMatch = false;
+    
+    // SLOW (Lent ~1.5) : Hantu chaud, Jumeaux
+    if (state.speed === 'slow' && g.n !== 'Hantu' && g.n !== 'Jumeaux' && g.n !== 'Revenant' && g.n !== 'Thaye' && g.n !== 'Deogen') speedMatch = false;
+
+    // FAST (Rapide > 1.7) : Hantu, Raiju, Jumeaux, Moroi
+    if (state.speed === 'fast' && !['2.5','2.7','Var'].includes(g.sp)) speedMatch = false;
+
+    // XFAST (Très rapide > 2.5) : Rev, Deo, Thaye, Hantu, Moroi
+    if (state.speed === 'xfast' && !['3.0','2.7','2.75','Var'].includes(g.sp)) speedMatch = false;
+
 
     let searchMatch = true;
     if (state.search) {
