@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate</title>
+  <title>PHASMO-TRACKER Ultimate (Smart AI)</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker complet Phasmophobia 27 entités. Identification, tests de vitesse, guide des objets maudits et chronomètres." />
+  <meta name="description" content="Tracker Phasmophobia avec recherche intelligente. Décrivez une situation, l'outil trouve le fantôme et le test associé." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -88,7 +88,6 @@
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
     .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
     
-    /* GUIDES STYLES */
     .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
     .obj-icon { font-size: 2rem; min-width: 40px; }
     .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); }
@@ -129,7 +128,7 @@
   <main class="main-area" id="main-content">
     
     <div id="view-tracker">
-      <input type="text" class="search-input" placeholder="🔍 Chercher (ex: Obake, Vitesse...)" oninput="setSearch(this.value)">
+      <input type="text" class="search-input" placeholder="🔍 Décrivez la situation (ex: sel, éteint la lumière, rapide...)" oninput="setSearch(this.value)">
       <div id="ghost-grid" class="grid"></div>
     </div>
 
@@ -154,6 +153,23 @@
         <button class="btn-action metro-btn" style="width:100%; margin-top:5px" onclick="stopMetronome()">🛑 STOP SON</button>
         <button class="btn-action" style="width:100%; margin-top:5px" onmousedown="tapBpm()">👣 TAPOTER RYTHME</button>
         <div id="bpm-val" class="text-center" style="margin-top:5px; font-weight:bold; color:#cbd5e1">-- m/s</div>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 10px 0; color:var(--accent)">OBJETS MAUDITS 🗺️</h4>
+        <select class="search-input" onchange="loadLocs(this.value)">
+          <option value="">-- CHOISIR UNE CARTE --</option>
+          <option value="tanglewood">6 Tanglewood Drive</option>
+          <option value="willow">Willow Street</option>
+          <option value="edgefield">42 Edgefield Road</option>
+          <option value="ridgeview">10 Ridgeview Court</option>
+          <option value="grafton">Grafton Farmhouse</option>
+          <option value="bleasdale">Bleasdale Farmhouse</option>
+          <option value="woodwind">Camp Woodwind</option>
+          <option value="prison">Prison</option>
+          <option value="sunny">Sunny Meadows</option>
+        </select>
+        <div id="loc-area"></div>
       </div>
 
       <div class="card">
@@ -386,7 +402,12 @@ function renderGhosts() {
     const excluded = state.exc.some(id => { if(g.n==='Mimic' && id==='orb') return false; return gp.includes(id); });
     const manuallyKilled = state.manual.includes(g.n);
     let searchMatch = true;
-    if(state.search) { if(!(g.n + ' ' + g.t).toLowerCase().includes(state.search.toLowerCase())) searchMatch = false; }
+    if(state.search) {
+        const cleanDesc = g.d.replace(/<[^>]*>/g, ' ');
+        const fullText = (g.n + ' ' + g.t + ' ' + cleanDesc).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const searchText = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if(!fullText.includes(searchText)) searchMatch = false;
+    }
     if((impossible || excluded) && !manuallyKilled) return ''; 
     let cls = 'ghost candidate'; if(manuallyKilled) cls = 'ghost manual-excluded';
 
