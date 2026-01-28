@@ -419,7 +419,7 @@ function renderGhosts() {
         const searchText = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         if(!fullText.includes(searchText)) searchMatch = false;
     }
-    if((impossible || excluded) && !manuallyKilled) return ''; 
+    if((impossible || excluded || !searchMatch) && !manuallyKilled) return ''; 
     let cls = 'ghost candidate'; if(manuallyKilled) cls = 'ghost manual-excluded';
 
     return `
