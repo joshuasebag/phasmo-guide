@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (AI)</title>
+  <title>PHASMO-TRACKER Ultimate (IA)</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker Phasmophobia avec Assistant IA. Décrivez la situation, l'IA vous donne le test à faire." />
+  <meta name="description" content="Tracker Phasmophobia avec IA. Décrivez la situation (ex: 'il court vite'), l'outil trouve les fantômes et les tests." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -89,7 +89,7 @@
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); }
     .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* AI ADVICE BOX */
+    /* AI BOX */
     .ai-box {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5));
       border: 1px solid #38bdf8; border-left: 4px solid #38bdf8;
@@ -100,7 +100,7 @@
     .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
     .ai-content { font-size: 0.9rem; color: #e0f2fe; line-height: 1.4; }
 
-    /* FANTÔMES */
+    /* GHOSTS */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
@@ -118,6 +118,7 @@
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
     .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
     
+    /* HIGHLIGHT */
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
     /* UTILS & GUIDES */
@@ -184,10 +185,10 @@
   <main class="main-area" id="main-content">
     
     <div id="view-tracker">
-      <input type="text" class="search-input" placeholder="🔍 Décrivez... (ex: sel, attaque tôt, rapide, courant...)" oninput="setSearch(this.value)">
+      <input type="text" class="search-input" placeholder="🔍 Ex: 'Il marche pas dans le sel', 'très rapide'..." oninput="setSearch(this.value)">
       
       <div id="ai-suggestion" class="ai-box">
-        <div class="ai-title">🤖 CONSEIL IA</div>
+        <div class="ai-title">🤖 CONSEIL IA (Analyse de situation)</div>
         <div class="ai-content" id="ai-text"></div>
       </div>
 
@@ -366,48 +367,68 @@ function toggleProof(id) {
   saveState(); renderProofs(); renderGhosts();
 }
 
-function highlightText(text, searchTerm) {
-  if (!searchTerm) return text;
-  const regex = new RegExp(`(${searchTerm})`, 'gi');
+function highlightText(text, searchTerms) {
+  if (!searchTerms || searchTerms.length === 0) return text;
+  // Créer une regex qui cherche n'importe quel mot-clé (ou|ou|ou)
+  const regex = new RegExp(`(${searchTerms.join('|')})`, 'gi');
   return text.replace(regex, '<span class="highlight">$1</span>');
 }
 
 function renderGhosts() {
-  // GESTION IA
   const aiBox = document.getElementById('ai-suggestion');
   const aiText = document.getElementById('ai-text');
   let aiFound = false;
+  let activeTokens = [];
+
+  // TRAITEMENT IA & TOKENS
   if(state.search) {
-    const s = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // 1. Nettoyer la phrase (Enlever le, la, un, il, elle...)
+    const stopWords = ['le','la','les','un','une','des','il','elle','on','nous','vous','ils','elles','est','a','ont','sont','c\'est','dans','par','pour','en','vers','avec','sans','sous','sur','ne','pas','plus','moins','très','trop','peux','veut','fait'];
+    
+    // 2. Créer les tokens (mots-clés)
+    const rawTokens = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[\s,'.]+/);
+    activeTokens = rawTokens.filter(t => t.length > 2 && !stopWords.includes(t));
+
+    // 3. Vérifier les règles IA
+    const cleanSearch = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     for(let r of AI_RULES) {
-      if(r.k.some(k => s.includes(k))) {
+      if(r.k.some(k => cleanSearch.includes(k))) {
         aiText.innerHTML = r.m; aiBox.classList.add('visible'); aiFound = true; break;
       }
     }
   }
   if(!aiFound) aiBox.classList.remove('visible');
 
-  // GESTION GHOSTS
+  // FILTRAGE DES CARTES
   const container = document.getElementById('ghost-grid');
   container.innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
+    
+    // Preuves
     const impossible = state.inc.some(id => !gp.includes(id));
     const excluded = state.exc.some(id => { if(g.n==='Mimic' && id==='orb') return false; return gp.includes(id); });
     const manuallyKilled = state.manual.includes(g.n);
     
+    // Recherche par Mots-Clés (Match souple)
     let searchMatch = true;
-    if(state.search) {
+    if(activeTokens.length > 0) {
+        // On construit tout le texte du fantôme
         const cleanDesc = g.d.replace(/<[^>]*>/g, ' ');
         const fullText = (g.n + ' ' + g.t + ' ' + cleanDesc).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const searchText = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        if(!fullText.includes(searchText)) searchMatch = false;
+        
+        // Si AUCUN token n'est trouvé dans le texte, on cache
+        const found = activeTokens.some(token => fullText.includes(token));
+        if(!found) searchMatch = false;
     }
+
     if((impossible || excluded || !searchMatch) && !manuallyKilled) return ''; 
+    
     let cls = 'ghost candidate'; if(manuallyKilled) cls = 'ghost manual-excluded';
 
-    const displayName = state.search ? highlightText(g.n, state.search) : g.n;
-    const displayShort = state.search ? highlightText(g.t, state.search) : g.t;
-    const displayDesc = state.search ? highlightText(g.d, state.search) : g.d;
+    // Highlight (Surlignage des mots trouvés)
+    const displayName = activeTokens.length ? highlightText(g.n, activeTokens) : g.n;
+    const displayShort = activeTokens.length ? highlightText(g.t, activeTokens) : g.t;
+    const displayDesc = activeTokens.length ? highlightText(g.d, activeTokens) : g.d;
 
     return `
       <div class="${cls}">
@@ -426,7 +447,7 @@ function renderGhosts() {
           <button class="btn-action" style="flex:2" onclick="toggleDetails('${g.n}')">📖 DÉTAILS</button>
           <button class="btn-action" onclick="toggleManual('${g.n}')">${manuallyKilled ? '↺' : '❌'}</button>
         </div>
-        <div id="details-${g.n}" class="g-details">${displayDesc}</div>
+        <div id="details-${g.n}" class="g-details ${activeTokens.length ? 'open' : ''}">${displayDesc}</div>
       </div>
     `;
   }).join('');
