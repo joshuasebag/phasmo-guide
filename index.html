@@ -4,10 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (Vocal Fix)</title>
+  <title>PHASMO-TRACKER Ultimate</title>
+  
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+  
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker Phasmophobia avec Commandes Vocales Corrigées. Parlez naturellement, l'IA comprend les noms de fantômes." />
+  <meta name="description" content="L'outil ultime pour Phasmophobia. Journal de preuves, Assistant IA vocal, Chronomètres, Métronome de vitesse et Guide des objets maudits." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -20,7 +22,7 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* LAYOUT */
+    /* LAYOUT GLOBAL */
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
     .controls-area { 
       background: #020617; border-right: 1px solid var(--border); 
@@ -29,25 +31,28 @@
     }
     .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
 
-    /* RESPONSIVE */
+    /* CLASSES RESPONSIVE */
     .pc-only { display: block; }
     .mobile-only { display: none; }
 
+    /* MEDIA QUERIES (PC) */
     @media (min-width: 900px) {
       .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
-      .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); }
+      .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
       .nav-pills { display: flex; gap: 5px; margin-bottom: 15px; background: #1e293b; padding: 5px; border-radius: 8px; }
-      .nav-item { flex: 1; padding: 8px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; border-radius: 6px; }
+      .nav-item { flex: 1; padding: 8px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.2s; }
       .nav-item.active { background: var(--accent); color: #000; }
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     }
 
+    /* MEDIA QUERIES (MOBILE) */
     @media (max-width: 899px) {
       .app-layout { flex-direction: column; }
       .controls-area, .pc-header { display: none; }
       .pc-only { display: none !important; }
       .mobile-only { display: block !important; }
+      
       .mobile-nav {
         position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
         background: #0f172a; border-top: 1px solid var(--border);
@@ -57,6 +62,7 @@
       .mn-item { background: none; border: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: bold; width: 100%; padding: 8px 0; }
       .mn-item.active { color: var(--accent); }
       .mn-icon { font-size: 1.2rem; }
+      
       .mobile-proof-bar {
         position: sticky; top: 0; z-index: 50;
         background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px);
@@ -65,11 +71,12 @@
         white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
       }
       .mobile-proof-bar::-webkit-scrollbar { display: none; }
+      
       .main-area { padding-bottom: 80px; }
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     }
 
-    /* COMPONENTS */
+    /* COMPOSANTS UI */
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     
     .proof-btn, .sidebar-btn {
@@ -85,11 +92,12 @@
 
     .proof-btn[data-state="inc"] { background: var(--success); color: #000; border-color: var(--success); }
     .proof-btn[data-state="exc"] { background: var(--danger); color: #fff; border-color: var(--danger); text-decoration: line-through; opacity: 0.7; }
+    
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); }
     .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* SEARCH BAR WITH MIC */
+    /* SEARCH BAR & MIC */
     .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
     .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
     .mic-btn {
@@ -99,7 +107,7 @@
     }
     .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
 
-    /* AI BOX */
+    /* AI ADVICE BOX */
     .ai-box {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5));
       border: 1px solid #38bdf8; border-left: 4px solid #38bdf8;
@@ -110,7 +118,7 @@
     .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
     .ai-content { font-size: 0.9rem; color: #e0f2fe; line-height: 1.4; }
 
-    /* GHOSTS */
+    /* GHOST CARDS */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
@@ -130,7 +138,7 @@
     
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
-    /* UTILS & GUIDES */
+    /* GUIDES & UTILS */
     .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
     .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
     .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
@@ -163,6 +171,7 @@
       <button class="nav-item" onclick="setTab('tools')">CARTES</button>
       <button class="nav-item" onclick="setTab('guides')">GUIDES</button>
     </div>
+    
     <div id="pc-proofs-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
     
     <div class="sidebar-section">
@@ -195,12 +204,12 @@
     
     <div id="view-tracker">
       <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 Écrivez ou parlez... (ex: 'Deogen', 'Rapide')" oninput="setSearch(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Ex: 'Il court vite', 'Disjoncteur'..." oninput="setSearch(this.value)">
         <button class="mic-btn" onclick="toggleVoice()" id="mic-btn">🎙️</button>
       </div>
       
       <div id="ai-suggestion" class="ai-box">
-        <div class="ai-title">🤖 CONSEIL IA (Analyse de situation)</div>
+        <div class="ai-title">🤖 CONSEIL IA (Analyse)</div>
         <div class="ai-content" id="ai-text"></div>
       </div>
 
@@ -244,6 +253,7 @@
         </select>
         <div id="loc-area"></div>
       </div>
+      
       <div class="card">
         <div style="display:flex; justify-content:space-between;"><span>🧠 Santé Mentale</span><span id="san-disp" style="color:var(--accent)">100%</span></div>
         <input type="range" style="width:100%" min="0" max="100" value="100" oninput="setSan(this.value)">
@@ -253,13 +263,87 @@
     <div id="view-guides" class="hidden">
       <div class="card">
         <h4 style="color:var(--accent); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🔮 GUIDE DES OBJETS MAUDITS</h4>
-        <div class="obj-card"><div class="obj-icon">🃏</div><div class="obj-info"><h4>Cartes de Tarot</h4><ul class="obj-list"><li><b style="color:#facc15">Soleil</b>: 100% Santé</li><li><b style="color:#ef4444">Lune</b>: 0% Santé</li><li><b style="color:#2dd4bf">Tour</b>: Interaction</li><li><b style="color:#facc15">Roue</b>: +/- 25% Santé</li><li><b style="color:#ef4444">Diable</b>: Event</li><li><b style="color:#ef4444">Mort</b>: CHASSE MAUDITE</li><li><b style="color:#a855f7">Ermite</b>: Bloque 1min</li><li><b style="color:#10b981">Prêtresse</b>: Ressuscite</li><li><b style="color:#ef4444">Pendu</b>: MORT</li><li><b style="color:#a855f7">Fou</b>: Troll</li></ul></div></div>
-        <div class="obj-card"><div class="obj-icon">🧩</div><div class="obj-info"><h4>Ouija Board</h4><p>Dites <b>"Au revoir"</b> !</p><ul class="obj-list"><li>Lieu : <span class="risk">-50%</span></li><li>Os : <span class="risk">-50%</span></li><li>Âge : <span class="risk">-5%</span></li><li>Cache-cache : <span class="risk">-25% + CHASSE (5s)</span></li></ul></div></div>
-        <div class="obj-card"><div class="obj-icon">✋</div><div class="obj-info"><h4>Patte de Singe</h4><ul class="obj-list"><li><b>Voir:</b> Aveugle + Chasse</li><li><b>Revivre:</b> 50% chance mort</li><li><b>Partir:</b> Lent</li><li><b>Sain:</b> Santé 50% + Baisse</li><li><b>Piéger:</b> Enfermé</li></ul></div></div>
-        <div class="obj-card"><div class="obj-icon">🎶</div><div class="obj-info"><h4>Boîte à Musique</h4><span class="risk">Chasse si touchée ou jetée.</span></div></div>
-        <div class="obj-card"><div class="obj-icon">🧸</div><div class="obj-info"><h4>Poupée Vaudou</h4><span class="risk">-5% par pic. Cœur = Chasse.</span></div></div>
-        <div class="obj-card"><div class="obj-icon">🔮</div><div class="obj-info"><h4>Miroir Hanté</h4><span class="risk">-7.5%/s. 0% = Chasse.</span></div></div>
-        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">Invoque et Chasse après 5s.</span></div></div>
+        
+        <div class="obj-card">
+          <div class="obj-icon">🃏</div>
+          <div class="obj-info">
+            <h4>Cartes de Tarot</h4>
+            <ul class="obj-list">
+              <li><b style="color:#facc15">Soleil</b> : Santé 100%</li>
+              <li><b style="color:#ef4444">Lune</b> : Santé 0%</li>
+              <li><b style="color:#2dd4bf">Tour</b> : Interaction forcée</li>
+              <li><b style="color:#facc15">Roue</b> : +25% (Vert) ou -25% (Rouge)</li>
+              <li><b style="color:#ef4444">Diable</b> : Event Fantôme</li>
+              <li><b style="color:#ef4444">Mort</b> : CHASSE MAUDITE</li>
+              <li><b style="color:#a855f7">Ermite</b> : Bloque le fantôme (1min)</li>
+              <li><b style="color:#10b981">Prêtresse</b> : Ressuscite un joueur</li>
+              <li><b style="color:#ef4444">Pendu</b> : MORT INSTANTANÉE</li>
+              <li><b style="color:#a855f7">Fou</b> : Fausse carte (Troll)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">🧩</div>
+          <div class="obj-info">
+            <h4>Ouija Board</h4>
+            <p>Dites <b>"Au revoir"</b> sinon le tableau casse = Chasse.</p>
+            <ul class="obj-list">
+              <li>"Où êtes-vous ?" : <span class="risk">-50% Santé</span></li>
+              <li>"Quelle est votre pièce ?" : <span class="risk">-50% Santé</span></li>
+              <li>"Où est l'os ?" : <span class="risk">-50% Santé</span></li>
+              <li>"Quel âge avez-vous ?" : <span class="risk">-5% Santé</span></li>
+              <li>"Cache-cache !" : Compte 5s puis <span class="risk">-25% + CHASSE</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">✋</div>
+          <div class="obj-info">
+            <h4>Patte de Singe (Vœux)</h4>
+            <ul class="obj-list">
+              <li><b>Je souhaite voir le fantôme :</b> Event + Aveugle + Chasse</li>
+              <li><b>Je souhaite revivre :</b> 50% chance de mourir soi-même</li>
+              <li><b>Je souhaite partir :</b> Déverrouille portes mais ralentit joueur</li>
+              <li><b>Je souhaite être sain :</b> Santé 50% + Baisse rapide</li>
+              <li><b>Je souhaite le piéger :</b> Bloqué 1min mais joueur enfermé</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">🎶</div>
+          <div class="obj-info">
+            <h4>Boîte à Musique</h4>
+            <span class="risk">Le fantôme chante. CHASSE SI : Touchée par le fantôme, jetée, ou joueur trop proche. (-75% Santé).</span>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">🧸</div>
+          <div class="obj-info">
+            <h4>Poupée Vaudou</h4>
+            <span class="risk">Coût : -5% par pic. Aiguille CŒUR = CHASSE MAUDITE (-10%). Si santé trop basse = Chasse.</span>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">🔮</div>
+          <div class="obj-info">
+            <h4>Miroir Hanté</h4>
+            <span class="risk">Montre la pièce. Coût : -7.5%/s. Brise + CHASSE si 0% Santé.</span>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">⭕</div>
+          <div class="obj-info">
+            <h4>Cercle d'Invocation</h4>
+            <span class="risk">Coût : -16% par bougie. Invoque le fantôme (Piégé 5s) puis CHASSE.</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -274,9 +358,10 @@
 </nav>
 
 <script>
+/* === DONNÉES === */
 const PROOFS = [ { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Box' }, { id:'frz', label:'Froid' }, { id:'uv', label:'UV' }, { id:'dot', label:'DOTS' }, { id:'wrt', label:'Ecrit' } ];
 
-// RÈGLES INTELLIGENTES (AI)
+// RÈGLES INTELLIGENTES (IA)
 const AI_RULES = [
   { k: ['sel', 'salt'], m: "👣 <b>Problème de Sel ?</b> Si un fantôme marche dans le sel sans laisser d'UV (ou ne marche jamais dedans), c'est un <b>SPECTRE</b> (100% sûr)." },
   { k: ['rapide', 'vitesse', 'speed', 'courir'], m: "⚡ <b>Vitesse Anormale ?</b> Vérifiez le <b>Revenant</b> (Si vue), <b>Hantu</b> (Froid), <b>Thaye</b> (Jeune), <b>Deogen</b> (De loin) ou <b>Moroi</b> (Santé basse). Utilisez le métronome !" },
@@ -286,37 +371,38 @@ const AI_RULES = [
   { k: ['lumiere', 'courant', 'lampe', 'interrupteur'], m: "💡 <b>Problème électrique ?</b> Le <b>Cauchemar</b> n'allume jamais la lumière. Le <b>Hantu</b> n'allume jamais le courant. Le <b>Jinn</b> ne coupe jamais le courant." },
   { k: ['objet', 'jeter', 'lancer'], m: "📦 <b>Objets qui volent ?</b> Le <b>Poltergeist</b> jette les objets très fort et en groupe. C'est son test unique." },
   { k: ['photo'], m: "📸 <b>Photo ratée ?</b> Si le fantôme n'apparaît pas sur la photo (mais qu'elle est validée), c'est un <b>FANTÔME</b>." },
-  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Invisible longtemps = <b>Fantôme</b>. Très visible = <b>Oni</b>. Change de forme = <b>Obake</b>." }
+  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Invisible longtemps = <b>Fantôme</b>. Très visible = <b>Oni</b>. Change de forme = <b>Obake</b>." },
+  { k: ['piece', 'favori', 'bouge'], m: "🏠 <b>Pièce favorite ?</b> Le <b>Goryo</b> ne change jamais de pièce favorite. Les autres peuvent changer." }
 ];
 
 const GHOSTS = [
-  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><p>Ne chasse pas pendant <b>180s</b> après encens.</p>' },
-  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', d:'<h5>Test Sel</h5><p>Ne marche <b>JAMAIS</b> dans le sel.</p>' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', d:'<h5>Test Photo</h5><p>Disparaît sur la photo.</p>' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Test Pile</h5><p>Jette plusieurs objets à la fois.</p>' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique.', d:'<h5>Cible</h5><p>Ne tue que sa cible. Cri unique au micro.</p>' },
+  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><p>Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).</p>' },
+  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', d:'<h5>Test Sel (100%)</h5><p>Ne marche <b>JAMAIS</b> dans le sel. Se TP sur les joueurs.</p>' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', d:'<h5>Test Photo</h5><p>Disparaît sur la photo (mais titre "Fantôme"). Clignote lentement en chasse (Invisible).</p>' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Test Pile</h5><p>Jette plusieurs objets à la fois (Explosion). Baisse la santé quand il jette.</p>' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique.', d:'<h5>Cible</h5><p>Ne tue que sa cible. Ignore les autres. Cri unique au micro parabolique.</p>' },
   { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide avec courant.', d:'<h5>Pouvoir</h5><p>Rapide de loin si courant ON. Ne coupe jamais le courant.</p>' },
-  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Lumière</h5><p>Chasse à 60% dans le noir. Ne peut pas allumer.</p>' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Dangereux.', d:'<h5>Vitesse</h5><p>Lent (1.0) caché, TGV (3.0) si vu.</p>' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><p>Ne chasse pas si plusieurs joueurs proches.</p>' },
-  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasse</h5><p>Cooldown de 20s seulement.</p>' },
-  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte</h5><p>Claque la porte d\'entrée (-15% San).</p>' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Chasse</h5><p>Clignote peu. Très visible.</p>' },
-  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Voix</h5><p>Chasse à 80% si on parle. Entend mal en chasse.</p>' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Vitesse</h5><p>Rapide au froid. Buée visible.</p>' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS</h5><p>Visible que caméra, sans personne.</p>' },
-  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas</h5><p>Pas silencieux en chasse.</p>' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Feu.', d:'<h5>Bougie</h5><p>Souffler bougie peut déclencher chasse.</p>' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double.', d:'<h5>Vitesse</h5><p>Un lent, un rapide.</p>' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Elec.', d:'<h5>Vitesse</h5><p>Rapide près des objets électroniques.</p>' },
-  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Forme.', d:'<h5>UV</h5><p>Empreinte 6 doigts.</p>' },
-  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'Copieur.', d:'<h5>Orbe</h5><p>A toujours des orbes (4e preuve).</p>' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit.', d:'<h5>Vitesse</h5><p>Rapide si santé basse.</p>' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Traqueur.', d:'<h5>Vision</h5><p>Vous trouve toujours. Lent près.</p>' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit.', d:'<h5>Age</h5><p>Rapide au début, lent à la fin.</p>' },
-  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'Custom.', d:'<p>Custom.</p>' },
-  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'Custom.', d:'<p>Custom.</p>' },
-  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'Custom.', d:'<p>Custom.</p>' }
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Lumière</h5><p>Chasse à 60% dans le noir. Coupe lumière instant. Ne peut pas allumer.</p>' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Dangereux.', d:'<h5>Vitesse</h5><p>Lent (1.0) si caché. TGV (3.0) dès qu\'il vous voit.</p>' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><p>Ne chasse pas si plusieurs joueurs proches. Beaucoup d\'events "Fumée".</p>' },
+  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasse</h5><p>Peut chasser à 70% (ou 100% avec pouvoir). Cooldown de 20s seulement.</p>' },
+  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte</h5><p>Claque la porte d\'entrée (-15% San). Bloqué dans sa pièce par encens.</p>' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Chasse</h5><p>Clignote très peu. Très visible. Pas d\'event "Fumée".</p>' },
+  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Voix</h5><p>Chasse à 80% si on parle. Entend mal (2m) en chasse.</p>' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Vitesse</h5><p>Rapide au froid. Buée visible en chasse (si courant OFF). N\'allume pas le courant.</p>' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS</h5><p>Visible que caméra, sans personne dans la pièce. Ne change pas de pièce.</p>' },
+  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas</h5><p>Pas silencieux en chasse (Lampe clignote avant d\'entendre les pas).</p>' },
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Feu.', d:'<h5>Bougie</h5><p>Souffler bougie peut déclencher chasse (agit comme crucifix).</p>' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double.', d:'<h5>Vitesse</h5><p>Un lent (1.5), un rapide (1.9). Interactions à deux endroits.</p>' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Elec.', d:'<h5>Vitesse</h5><p>Rapide (2.5) près des objets électroniques actifs. Brouille de loin.</p>' },
+  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Forme.', d:'<h5>UV & Forme</h5><p>Empreinte 6 doigts. Change de forme (1s) pendant la chasse.</p>' },
+  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'Copieur.', d:'<h5>Orbe</h5><p>A toujours des orbes (4e preuve). Copie les autres fantômes.</p>' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit.', d:'<h5>Vitesse</h5><p>Rapide si santé basse. Box maudit (baisse santé x2).</p>' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Traqueur.', d:'<h5>Vision</h5><p>Vous trouve toujours (Cachette inutile). Rapide loin, Lent près. Respire à la Box.</p>' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit.', d:'<h5>Age</h5><p>Rapide et agressif au début, lent et calme à la fin.</p>' },
+  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'(Entité Custom/Mod)', d:'<h5>Custom</h5><p>Comportement variable selon le serveur.</p>' },
+  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'(Entité Custom/Mod)', d:'<h5>Custom</h5><p>Comportement variable selon le serveur.</p>' },
+  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'(Entité Custom/Mod)', d:'<h5>Custom</h5><p>Comportement variable selon le serveur.</p>' }
 ];
 
 const LOCATIONS = {
@@ -391,6 +477,7 @@ function renderGhosts() {
   let aiFound = false;
   let activeTokens = [];
 
+  // TRAITEMENT IA & TOKENS
   if(state.search) {
     const stopWords = ['le','la','les','un','une','des','il','elle','on','nous','vous','ils','elles','est','a','ont','sont','c\'est','dans','par','pour','en','vers','avec','sans','sous','sur','ne','pas','plus','moins','très','trop','peux','veut','fait'];
     const rawTokens = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[\s,'.]+/);
@@ -405,6 +492,7 @@ function renderGhosts() {
   }
   if(!aiFound) aiBox.classList.remove('visible');
 
+  // GHOSTS
   const container = document.getElementById('ghost-grid');
   container.innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
@@ -476,18 +564,14 @@ function toggleVoice() {
   
   recognition.onresult = (event) => {
     let transcript = event.results[0][0].transcript.toLowerCase();
-    
-    // CORRECTIONS PHONÉTIQUES
     transcript = transcript
       .replace(/deo.*/g, 'deogen').replace(/taille|thai/g, 'thaye').replace(/jean|gin/g, 'djinn')
       .replace(/han tou|un tout/g, 'hantu').replace(/raichu|rail/g, 'raiju')
       .replace(/on y|au nid/g, 'oni').replace(/l'oeil|ok/g, 'yokai')
       .replace(/benchy/g, 'banshee').replace(/maillling/g, 'myling');
-
     document.getElementById('search-input').value = transcript;
     setSearch(transcript);
   };
-  
   recognition.start();
 }
 
