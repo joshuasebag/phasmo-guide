@@ -2,365 +2,258 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (Journal & Vitesse)</title>
-  
+  <title>PHASMO-TRACKER Ultimate</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
-
+  
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-
-  <meta name="description" content="Le meilleur tracker interactif pour Phasmophobia. Journal de preuves intelligent, test de vitesse (BPM/Métronome) pour identifier les fantômes (Revenant, Deogen, etc.) et guides complets." />
-  <meta name="keywords" content="Phasmophobia, Tracker, Journal, Guide, Vitesse Fantôme, Ghost Speed, Preuves, Outil, Aide, Joshua Sebag, Maélann Logeais" />
+  
+  <meta name="description" content="Le tracker ultime pour Phasmophobia. Identifiez les fantômes, testez leur vitesse et consultez les guides. Compatible PC et Mobile." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
-  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0f172a">
 
-  <meta property="og:title" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:description" content="Tracker avancé avec test de vitesse (BPM), filtres de preuves et métronome intégré. Créé par Joshua & Maélann." />
-  <meta property="og:type" content="website" />
-  <meta property="og:locale" content="fr_FR" />
   <style>
     :root {
       --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
       --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --purple: #a855f7;
+      --nav-height: 60px;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* HEADER */
-    header {
-      position: sticky; top: 0; z-index: 999;
-      background: rgba(15, 23, 42, 0.95);
-      border-bottom: 1px solid var(--border); padding: 10px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      backdrop-filter: blur(8px);
-    }
-    .brand { font-weight: 900; color: var(--accent); font-size: 1.1rem; }
+    /* === LAYOUT GLOBAL === */
+    .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
     
-    .nav-pills { display: flex; gap: 5px; background: #020617; padding: 4px; border-radius: 8px; border: 1px solid var(--border); }
-    .nav-item {
-      background: transparent; border: none; color: #94a3b8; 
-      padding: 6px 14px; cursor: pointer; font-weight: 600; border-radius: 6px; transition: 0.2s;
+    /* SIDEBAR (PC) / CONTROLS (MOBILE) */
+    .controls-area {
+      background: #020617; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 20;
     }
-    .nav-item.active { background: var(--accent); color: #0f172a; }
-    .btn-reset { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
 
-    /* LAYOUT */
-    .container {
-      display: grid; grid-template-columns: 320px 1fr; gap: 20px;
-      max-width: 1600px; margin: 20px auto; padding: 0 20px; flex: 1; width: 100%;
+    /* MAIN CONTENT */
+    .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
+
+    /* === RESPONSIVE LOGIC === */
+    /* MODE PC (> 900px) */
+    @media (min-width: 900px) {
+      .controls-area { width: 320px; padding: 20px; overflow-y: auto; }
+      .mobile-nav, .mobile-proof-bar { display: none !important; }
+      .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); }
+      .nav-pills { display: flex; gap: 5px; margin-bottom: 15px; background: #1e293b; padding: 5px; border-radius: 8px; }
+      .nav-item { flex: 1; padding: 8px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; border-radius: 6px; }
+      .nav-item.active { background: var(--accent); color: #000; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
     }
-    aside { display: flex; flex-direction: column; gap: 15px; position: sticky; top: 80px; height: fit-content; }
-    .main-content { min-width: 0; }
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
 
-    /* RECHERCHE */
-    .search-container { position: relative; }
-    .search-input { 
-      width: 100%; padding: 10px 10px 10px 35px; 
-      background: #020617; border: 1px solid var(--accent); 
-      color: white; border-radius: 8px; font-size: 0.9rem;
+    /* MODE MOBILE (< 900px) */
+    @media (max-width: 899px) {
+      .app-layout { flex-direction: column; }
+      .controls-area { display: none; } /* On cache la grosse sidebar sur mobile */
+      .pc-header { display: none; }
+      
+      /* Navigation du bas */
+      .mobile-nav {
+        position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
+        background: #0f172a; border-top: 1px solid var(--border);
+        display: flex; justify-content: space-around; align-items: center;
+        z-index: 100; padding-bottom: env(safe-area-inset-bottom);
+      }
+      .mn-item { background: none; border: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: bold; width: 100%; padding: 8px 0; }
+      .mn-item.active { color: var(--accent); }
+      .mn-icon { font-size: 1.2rem; }
+
+      /* Barre de Preuves Sticky en haut */
+      .mobile-proof-bar {
+        position: sticky; top: 0; z-index: 50;
+        background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+        padding: 8px; display: flex; gap: 8px; overflow-x: auto;
+        white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
+      }
+      .mobile-proof-bar::-webkit-scrollbar { display: none; }
+      
+      .main-area { padding-bottom: 80px; } /* Espace pour le menu du bas */
+      .grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
     }
-    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--accent); }
 
-    /* TIMER */
-    .timer-box { text-align: center; margin-bottom: 10px; }
-    .timer-val { font-family: monospace; font-size: 2.2rem; color: var(--warn); font-weight: bold; background: #020617; border-radius: 8px; padding: 5px; border: 1px solid var(--border); }
-    .timer-actions { display: flex; gap: 5px; margin-top: 10px; }
-    .btn-time { flex: 1; padding: 8px; background: #334155; border: 1px solid var(--border); color: white; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .btn-time.active { background: var(--warn); color: black; border-color: var(--warn); }
+    /* === COMPOSANTS COMMUNS === */
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     
-    /* SPEED CHEAT SHEET */
-    .speed-cheat { margin-top: 15px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.85rem; }
-    .sc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .sc-label { font-weight: 800; display: flex; align-items: center; gap: 6px; min-width: 70px; }
-    .sc-names { color: #94a3b8; text-align: right; font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
-
-    /* BPM */
-    .bpm-area { margin-top: 15px; }
-    .bpm-btn { 
-      width: 100%; padding: 14px; background: rgba(15, 23, 42, 0.4); 
-      border: 2px dashed #475569; color: #cbd5e1; font-weight: 800; 
-      text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; 
-      border-radius: 8px; transition: 0.1s; margin-bottom: 5px;
-      display: flex; justify-content: center; align-items: center; gap: 8px;
+    /* PREUVES BUTTONS */
+    .proof-btn {
+      flex: 0 0 auto;
+      padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: #1e293b; color: #cbd5e1; font-weight: bold; font-size: 0.85rem;
+      cursor: pointer; transition: 0.2s; user-select: none;
     }
-    .bpm-btn:active { background: var(--accent); color: #000; transform: scale(0.98); border-style: solid; border-color: var(--accent); }
-    .bpm-display { text-align: center; font-family: monospace; font-size: 1.3rem; color: #f1f5f9; margin-bottom: 15px; font-weight: bold; letter-spacing: 1px; }
+    .proof-btn[data-state="inc"] { background: var(--success); color: #000; border-color: var(--success); }
+    .proof-btn[data-state="exc"] { background: var(--danger); color: #fff; border-color: var(--danger); text-decoration: line-through; opacity: 0.7; }
 
-    /* UNIFIED BUTTONS */
-    .section-label { font-size: 0.75rem; color: #94a3b8; margin-top: 15px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
-    .btn-grid-metronome { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    
-    /* GRILLE 5 BOUTONS */
-    .btn-grid-5 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-
-    .btn-unified { 
-      padding: 10px 4px; 
-      background: #1e293b; 
-      border: 1px solid var(--border); 
-      color: #cbd5e1; 
-      border-radius: 6px; 
-      font-size: 0.65rem; 
-      cursor: pointer; 
-      font-weight: 800; 
-      transition: 0.2s;
-      display: flex; justify-content: center; align-items: center; text-align:center;
-      text-transform: uppercase;
-    }
-    .btn-unified:hover { background: #334155; }
-    .btn-unified.active { background: var(--accent); color: #020617; border-color: var(--accent); box-shadow: 0 0 10px rgba(45, 212, 191, 0.3); }
-    
-    .btn-stop { background: #450a0a; border-color: #7f1d1d; color: #fecaca; }
-    .btn-stop:hover { background: #7f1d1d; }
-    .btn-stop.active { background: #ef4444; color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
-
-    /* CHECKLIST */
-    .check-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #334155; }
-    .check-row:last-child { border-bottom: none; }
-    .check-label { font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
-    .check-input { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-
-    /* PREUVES */
-    .proof-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #334155; }
-    .proof-label { font-size: 0.9rem; font-weight: 600; }
-    .btn-proof { padding: 4px 8px; border: 1px solid var(--border); background: #0f172a; color: #64748b; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; margin-left: 3px; }
-    .btn-proof[data-status="yes"] { background: var(--success); color: #020617; border-color: var(--success); }
-    .btn-proof[data-status="no"] { background: var(--danger); color: white; border-color: var(--danger); }
-
-    /* GRILLE FANTÔMES */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+    /* FANTÔMES */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
-    .ghost.excluded { opacity: 0.15; filter: grayscale(1); order: 3; }
-    .ghost.manual-excluded { opacity: 0.15; filter: grayscale(1); order: 4; border: 1px dashed var(--danger); }
-    .ghost.candidate { opacity: 1; border-color: var(--accent); box-shadow: 0 0 15px rgba(45, 212, 191, 0.1); order: 1; }
-    .ghost.danger { border-left: 4px solid var(--danger); }
+    .ghost.excluded { display: none; } /* Cache les exclus */
+    .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
+    .ghost.candidate { border-color: var(--accent); order: 1; box-shadow: 0 0 10px rgba(45,212,191,0.1); }
     
-    .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .g-name { font-size: 1.2rem; font-weight: 800; }
-    .badge { display: inline-block; font-size: 0.7rem; padding: 2px 6px; background: #020617; border: 1px solid #333; border-radius: 4px; margin: 0 3px 3px 0; color: #94a3b8; }
+    .g-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .g-name { font-size: 1.2rem; font-weight: 900; color: white; }
+    .g-meta { font-size: 0.8rem; color: #94a3b8; display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+    .g-actions { display: flex; gap: 8px; margin-top: 8px; }
+    
+    .btn-action { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border); background: #0f172a; color: #cbd5e1; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; }
+    .btn-action.active { background: var(--accent); color: black; animation: pulse 1s infinite; border-color: var(--accent); }
+    
+    /* TIMER & CONTROLS */
+    .timer-display { font-family: monospace; font-size: 2rem; color: var(--warn); text-align: center; background: #000; border-radius: 8px; padding: 5px; margin-bottom: 10px; border: 1px solid var(--border); }
+    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    
+    /* BADGES */
+    .badge { font-size: 0.7rem; padding: 2px 6px; background: #000; border-radius: 4px; color: #64748b; border: 1px solid #333; }
     .badge.match { color: var(--success); border-color: var(--success); }
-    
-    .g-actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 5px; margin-top: 8px; }
-    .btn-secret { background: #334155; border: none; padding: 6px; border-radius: 6px; color: #cbd5e1; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
-    .btn-kill { background: #0f172a; border: 1px solid var(--danger); color: var(--danger); border-radius: 6px; cursor: pointer; font-weight: bold; width: 40px; }
-    .btn-kill.active { background: var(--danger); color: white; border-color: var(--danger); width: auto; }
-    
-    /* Bouton Métronome Carte */
-    .btn-metro-small { 
-      background: #0f172a; border: 1px solid var(--accent); color: var(--accent); 
-      border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.75rem; 
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-    }
-    .btn-metro-small.playing { background: var(--accent); color: #000; animation: pulse 1s infinite; }
 
-    .secret-txt { display: none; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.2); border-left: 2px solid var(--accent); font-size: 0.85rem; line-height: 1.4; }
+    /* UTILS */
+    .hidden { display: none !important; }
+    .text-center { text-align: center; }
+    .search-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; margin-bottom: 10px; font-size: 1rem; }
 
-    /* VUES */
-    #tab-maps, #tab-guide, #tab-speed { display: none; }
-    #tab-guide, #tab-speed { column-count: 2; column-gap: 20px; }
-    
-    .map-select { width: 100%; padding: 15px; background: var(--panel); color: white; border: 1px solid var(--accent); border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-bottom: 20px; }
-    .loc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-    .loc-card { background: #020617; border: 1px solid var(--border); border-radius: 8px; padding: 15px; display: flex; align-items: center; gap: 15px; }
-    .loc-icon { font-size: 2rem; }
-    .loc-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
-    .loc-info p { margin: 0; color: #94a3b8; font-size: 0.9rem; }
-    
-    .guide-section { margin-bottom: 20px; break-inside: avoid; }
-    .guide-title { font-size: 1rem; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    /* ANIMATION */
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+    /* MAPS & GUIDES */
     .guide-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-    .guide-table th { text-align: left; color: #94a3b8; padding: 6px; border-bottom: 1px solid #334155; }
-    .guide-table td { padding: 6px; border-bottom: 1px solid #1e293b; color: #e2e8f0; }
-    .cost { color: var(--danger); font-weight: bold; font-family: monospace; white-space: nowrap; }
-    .rare { color: var(--purple); font-weight: bold; }
+    .guide-table td, .guide-table th { padding: 8px; border-bottom: 1px solid #333; text-align: left; color: #e2e8f0; }
     .val-fast { color: var(--danger); font-weight: bold; }
     .val-slow { color: var(--purple); font-weight: bold; }
-
-    footer { text-align: center; padding: 20px; margin-top: 20px; border-top: 1px solid var(--border); color: #64748b; font-size: 0.9rem; background: #0b1120; }
-    .creator { color: var(--accent); font-weight: bold; letter-spacing: 0.5px; }
-    .sponsor { color: #f472b6; font-style: italic; font-weight: bold; margin-left: 8px; font-size: 0.85rem; }
-
-    @media(max-width: 1200px){ #tab-guide, #tab-speed { column-count: 1; } }
-    @media(max-width: 768px){ .container { grid-template-columns: 1fr; } aside { position: relative; top: 0; width: 100%; } }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">PHASMO-TRACKER v20.6</div>
-  <div class="nav-pills">
-    <button class="nav-item active" onclick="setTab('tracker', this)">JOURNAL</button>
-    <button class="nav-item" onclick="setTab('speed', this)">VITESSE</button>
-    <button class="nav-item" onclick="setTab('maps', this)">CARTES</button>
-    <button class="nav-item" onclick="setTab('guide', this)">GUIDES</button>
-  </div>
-  <button class="btn-reset" onclick="resetAll()">RESET</button>
-</header>
+<div class="mobile-proof-bar" id="mobile-proofs"></div>
 
-<div class="container">
+<div class="app-layout">
   
-  <aside>
-    <div class="card" style="padding: 10px;">
-      <div class="search-container">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="Rech. comportement (ex: Courant...)" oninput="setSearch(this.value)">
-      </div>
+  <aside class="controls-area">
+    <div class="pc-header">PHASMO ULTIMATE 👻</div>
+    
+    <div class="nav-pills">
+      <button class="nav-item active" onclick="setTab('tracker')">JOURNAL</button>
+      <button class="nav-item" onclick="setTab('tools')">OUTILS</button>
+      <button class="nav-item" onclick="setTab('guides')">GUIDES</button>
     </div>
 
-    <div class="card">
-      <div class="timer-box"><div class="timer-val" id="timer-disp">00:00</div></div>
-      <div class="timer-actions">
-        <button class="btn-time" onclick="runTimer(90, this)">90s</button>
-        <button class="btn-time" onclick="runTimer(180, this)">180s</button>
-        <button class="btn-time" style="background:#450a0a" onclick="stopTimer()">X</button>
-      </div>
-      
-      <div class="speed-cheat">
-        <div class="sc-row">
-          <div class="sc-label" style="color:var(--purple)">🐢 LENT</div>
-          <div class="sc-names">Rev (Sans Vue), Deo (Tout près)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#f1f5f9">🚶 NORM</div>
-          <div class="sc-names">La majorité (1.7 m/s)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#fbbf24">🐇 VITE</div>
-          <div class="sc-names">Hantu, Raiju, Jumeaux (Vite)</div>
-        </div>
-        <div class="sc-row">
-          <div class="sc-label" style="color:#ef4444">🔥 T.VITE</div>
-          <div class="sc-names">Rev (Si Vu), Deo (Loin)</div>
-        </div>
-      </div>
-
-      <div class="bpm-area">
-        <button class="bpm-btn" onmousedown="tapBpm()">👣 TAPOTER AU RYTHME</button>
-        <div class="bpm-display" id="bpm-val">-- m/s</div>
-        
-        <div class="section-label">MÉTRONOME :</div>
-        <div class="btn-grid-metronome">
-          <button class="btn-unified" onclick="startMetronome(1.0, this)">🐢 LENT (1.0)</button>
-          <button class="btn-unified" onclick="startMetronome(1.7, this)">🚶 NORM (1.7)</button>
-          <button class="btn-unified" onclick="startMetronome(2.5, this)">🐇 VITE (2.5)</button>
-          <button class="btn-unified btn-stop" onclick="stopMetronome()">STOP</button>
-        </div>
-      </div>
-
-      <div class="section-label">FILTRE VITESSE :</div>
-      <div class="btn-grid-5">
-        <button class="btn-unified" id="sp-xslow" onclick="setSpeed('xslow', this)">🐢 T.LENT</button>
-        <button class="btn-unified" id="sp-slow" onclick="setSpeed('slow', this)">🐢 LENT</button>
-        <button class="btn-unified" id="sp-normal" onclick="setSpeed('normal', this)">🚶 NORM</button>
-        
-        <button class="btn-unified" id="sp-fast" onclick="setSpeed('fast', this)">🐇 VITE</button>
-        <button class="btn-unified" id="sp-xfast" onclick="setSpeed('xfast', this)">🔥 T.VITE</button>
-        <button class="btn-unified btn-stop active" id="sp-all" onclick="setSpeed('all', this)">🔄 TOUT</button>
-      </div>
+    <div id="pc-proofs-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+    
+    <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: #64748b; border-top: 1px solid #333; padding-top: 10px;">
+      Dev: <span style="color:var(--accent)">Sebag Joshua</span> & <span style="color:var(--accent)">Logeais Maélann</span>
     </div>
-
-    <div class="card">
-      <div style="font-weight:800; color:var(--accent); margin-bottom:10px; font-size:0.9rem; border-bottom:1px solid #334155; padding-bottom:5px;">MISSIONS 📝</div>
-      <div class="check-row"><label class="check-label" for="chk-bone">🦴 Os récupéré</label><input type="checkbox" id="chk-bone" class="check-input" onchange="saveState()"></div>
-      <div class="check-row"><label class="check-label" for="chk-obj1">📌 Objectif 2</label><input type="checkbox" id="chk-obj1" class="check-input" onchange="saveState()"></div>
-      <div class="check-row"><label class="check-label" for="chk-obj2">📌 Objectif 3</label><input type="checkbox" id="chk-obj2" class="check-input" onchange="saveState()"></div>
-      <div class="check-row"><label class="check-label" for="chk-photo">📸 Photos Parfaites</label><input type="checkbox" id="chk-photo" class="check-input" onchange="saveState()"></div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; margin-bottom:5px">
-        <span style="font-size:0.9rem; font-weight:bold">Santé Mentale</span>
-        <span style="color:var(--accent); font-weight:bold" id="san-disp">100%</span>
-      </div>
-      <input type="range" min="0" max="100" value="100" style="width:100%" id="san-input" oninput="setSan(this.value)">
-    </div>
-
-    <div class="card" id="proofs-list"></div>
   </aside>
 
-  <div class="main-content">
-    <div id="tab-tracker" class="grid"></div>
+  <main class="main-area" id="main-content">
+    
+    <div id="view-tracker">
+      <input type="text" class="search-input" placeholder="🔍 Chercher (ex: Deogen...)" oninput="setSearch(this.value)">
+      <div id="ghost-grid" class="grid"></div>
+    </div>
 
-    <div id="tab-speed">
-      <div class="card guide-section">
-        <div class="guide-title">🐇 LES RAPIDES / LENTS</div>
-        <table class="guide-table">
-          <tr><th>Entité</th><th>Vitesse (m/s)</th><th>Condition</th></tr>
-          <tr><td>Revenant</td><td class="val-fast">3.0 m/s</td><td>S'il vous voit (LOS)</td></tr>
-          <tr><td>Revenant</td><td class="val-slow">1.0 m/s</td><td>Caché (Pas de LOS)</td></tr>
-          <tr><td>Deogen</td><td class="val-fast">3.0 m/s</td><td>Loin de vous (+6m)</td></tr>
-          <tr><td>Deogen</td><td class="val-slow">0.4 m/s</td><td>Tout près (Escargot)</td></tr>
-          <tr><td>Hantu</td><td class="val-fast">2.7 m/s</td><td>Glacial (Disjoncteur OFF)</td></tr>
-          <tr><td>Hantu</td><td class="val-slow">1.4 m/s</td><td>Chaud (Disjoncteur ON)</td></tr>
-          <tr><td>Thaye</td><td class="val-fast">2.75 m/s</td><td>Début de partie (Jeune)</td></tr>
-          <tr><td>Thaye</td><td class="val-slow">1.0 m/s</td><td>Fin de partie (Vieux)</td></tr>
-          <tr><td>Moroi</td><td class="val-fast">2.25 m/s</td><td>0% Santé Mentale</td></tr>
-          <tr><td>Raiju</td><td class="val-fast">2.5 m/s</td><td>Près d'électronique actif</td></tr>
-          <tr><td>Jumeaux</td><td class="val-fast">1.9 m/s</td><td>Jumeau "Leurre"</td></tr>
-          <tr><td>Jumeaux</td><td class="val-slow">1.5 m/s</td><td>Jumeau "Principal"</td></tr>
-        </table>
-      </div>
-
-      <div class="card guide-section">
-        <div class="guide-title">🚶 LES NORMAUX (1.7 m/s)</div>
-        <p style="font-size:0.9rem; color:#94a3b8; margin-bottom:10px;">
-          Ces fantômes marchent à <b>1.7 m/s</b> de base. Ils accélèrent progressivement s'ils vous voient (Ligne de vue), jusqu'à <b>2.8 m/s</b>.
-        </p>
-        <div style="display:flex; flex-wrap:wrap; gap:5px;">
-          <span class="badge">Esprit</span><span class="badge">Spectre</span><span class="badge">Fantôme</span>
-          <span class="badge">Poltergeist</span><span class="badge">Banshee</span><span class="badge">Djinn</span>
-          <span class="badge">Cauchemar</span><span class="badge">Ombre</span><span class="badge">Démon</span>
-          <span class="badge">Yurei</span><span class="badge">Oni</span><span class="badge">Yokai</span>
-          <span class="badge">Goryo</span><span class="badge">Myling</span><span class="badge">Onryo</span>
-          <span class="badge">Obake</span><span class="badge">Mimic</span><span class="badge">Gallu</span>
-          <span class="badge">Obambo</span><span class="badge">Dayan</span>
+    <div id="view-tools" class="hidden">
+      
+      <div class="card">
+        <h4 style="margin:0 0 10px 0; color:var(--accent)">CHRONO ⏱️</h4>
+        <div class="timer-display" id="timer-disp">00:00</div>
+        <div class="btn-grid">
+          <button class="btn-action" onclick="runTimer(90)">90s</button>
+          <button class="btn-action" onclick="runTimer(180)">180s</button>
+          <button class="btn-action" style="grid-column: span 2; border-color:var(--danger); color:var(--danger)" onclick="stopTimer()">STOP</button>
         </div>
       </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 10px 0; color:var(--accent)">MÉTRONOME 🔊</h4>
+        <div class="btn-grid">
+          <button class="btn-action metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0 (Lent)</button>
+          <button class="btn-action metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7 (Norm)</button>
+          <button class="btn-action metro-btn" onclick="startMetronome(2.5, this)">🐇 2.5 (Vite)</button>
+          <button class="btn-action metro-btn" onclick="stopMetronome()">🛑 STOP</button>
+        </div>
+        <button class="btn-action" style="width:100%; margin-top:5px" onmousedown="tapBpm()">👣 TAPOTER RYTHME</button>
+        <div id="bpm-val" class="text-center" style="margin-top:5px; font-weight:bold; color:#cbd5e1">--</div>
+      </div>
+
+      <div class="card">
+        <h4 style="margin:0 0 10px 0; color:var(--accent)">OBJETS MAUDITS 🗺️</h4>
+        <select class="search-input" onchange="loadLocs(this.value)">
+          <option value="">-- CHOISIR UNE CARTE --</option>
+          <option value="tanglewood">6 Tanglewood Drive</option>
+          <option value="willow">Willow Street</option>
+          <option value="edgefield">42 Edgefield Road</option>
+          <option value="ridgeview">10 Ridgeview Court</option>
+          <option value="grafton">Grafton Farmhouse</option>
+          <option value="bleasdale">Bleasdale Farmhouse</option>
+          <option value="woodwind">Camp Woodwind</option>
+          <option value="prison">Prison</option>
+          <option value="sunny">Sunny Meadows</option>
+        </select>
+        <div id="loc-area"></div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between;"><span>🧠 Santé Mentale</span><span id="san-disp" style="color:var(--accent)">100%</span></div>
+        <input type="range" style="width:100%" min="0" max="100" value="100" oninput="setSan(this.value)">
+      </div>
     </div>
 
-    <div id="tab-maps">
-      <select class="map-select" id="map-selector" onchange="loadLocs(this.value)">
-        <option value="">-- CHOISIR UNE CARTE --</option>
-        <option value="tanglewood">6 Tanglewood Drive</option>
-        <option value="willow">Willow Street</option>
-        <option value="edgefield">42 Edgefield Road</option>
-        <option value="ridgeview">10 Ridgeview Court</option>
-        <option value="grafton">Grafton Farmhouse</option>
-        <option value="bleasdale">Bleasdale Farmhouse</option>
-        <option value="woodwind">Camp Woodwind</option>
-        <option value="prison">Prison</option>
-        <option value="sunny">Sunny Meadows</option>
-      </select>
-      <div id="loc-area"><div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div></div>
-    </div>
-
-    <div id="tab-guide">
-      <div class="card guide-section">
-        <div class="guide-title">💀 DURÉES DE CHASSE</div>
+    <div id="view-guides" class="hidden">
+      <div class="card">
+        <h4 style="color:var(--accent); margin-top:0">🐇 VITESSES SPÉCIALES</h4>
         <table class="guide-table">
-          <tr><th>Difficulté</th><th>Petite Map</th><th>Moyenne</th><th>Grande</th></tr>
-          <tr><td>Amateur</td><td>20s</td><td>30s</td><td>40s</td></tr>
-          <tr><td>Interméd.</td><td>30s</td><td>40s</td><td>50s</td></tr>
-          <tr><td>Pro</td><td>40s</td><td>50s</td><td>60s</td></tr>
-          <tr><td>Cauchemar</td><td>50s</td><td>60s</td><td>60s+</td></tr>
+          <tr><td>Rev (Vu)</td><td class="val-fast">3.0 m/s</td></tr>
+          <tr><td>Rev (Caché)</td><td class="val-slow">1.0 m/s</td></tr>
+          <tr><td>Deogen (Loin)</td><td class="val-fast">3.0 m/s</td></tr>
+          <tr><td>Deogen (Près)</td><td class="val-slow">0.4 m/s</td></tr>
+          <tr><td>Hantu (Froid)</td><td class="val-fast">2.7 m/s</td></tr>
+          <tr><td>Moroi (0% San)</td><td class="val-fast">2.25 m/s</td></tr>
+          <tr><td>Thaye (Jeune)</td><td class="val-fast">2.75 m/s</td></tr>
         </table>
       </div>
-      <div class="card guide-section"><div class="guide-title">🧩 OUIJA</div><table class="guide-table"><tr><th>Question</th><th>Coût SAN</th></tr><tr><td>Où êtes-vous ?</td><td class="cost">-50%</td></tr><tr><td>Quelle est votre pièce ?</td><td class="cost">-50%</td></tr><tr><td>Où est l'os ?</td><td class="cost">-50%</td></tr><tr><td>Cache-cache !</td><td class="cost">-25% (Chasse)</td></tr></table></div>
-      <div class="card guide-section"><div class="guide-title">🃏 TAROT (10 Cartes)</div><table class="guide-table"><tr><th>Carte</th><th>Effet</th></tr><tr><td style="color:#facc15">The Sun</td><td>Santé 100%</td></tr><tr><td style="color:#ef4444">The Moon</td><td>Santé 0%</td></tr><tr><td style="color:#2dd4bf">The Tower</td><td>Interaction</td></tr><tr><td style="color:#facc15">Wheel of Fortune</td><td><b style="color:#22c55e">VERT (+25%)</b> ou <b style="color:#ef4444">ROUGE (-25%)</b></td></tr><tr><td style="color:#ef4444">The Devil</td><td>Event Paranormal</td></tr><tr><td style="color:#ef4444">The Death</td><td>CHASSE</td></tr><tr><td style="color:#a855f7">The Hermit</td><td>Bloque 1min</td></tr><tr><td style="color:#10b981">High Priestess</td><td>Ressuscite</td></tr><tr><td style="color:#ef4444">The Hanged Man</td><td>MORT</td></tr><tr><td style="color:#a855f7">The Fool</td><td>Troll (Annule l'effet précédent)</td></tr></table></div>
-      <div class="card guide-section"><div class="guide-title">✋ PATTE DE SINGE</div><table class="guide-table"><tr><th>Vœu</th><th>Effet</th></tr><tr><td class="rare">Je souhaite la vie</td><td class="cost">Ressuscite (50% mort)</td></tr><td class="rare">De la connaissance</td><td>Barre 1 preuve + <b style="color:#ef4444">CHASSE</b> + Vision/Ouïe réduites (Définitif)</td></tr><tr><td>Voir le fantôme</td><td>Event + Aveugle</td></tr><tr><td>Être en sécurité</td><td>Ouvre cachette</td></tr><tr><td>Partir</td><td>Ouvre porte (Lent)</td></tr></table></div>
-      <div class="card guide-section"><div class="guide-title">🔮 MIROIR / 🎶 BOÎTE / 🧸 VAUDOU</div><table class="guide-table"><tr><th>Objet</th><th>Risque</th></tr><tr><td>Miroir</td><td>Chasse si 0% Sanité (-7.5%/s)</td></tr><tr><td>Boîte</td><td>Chasse si fantôme touche joueur</td></tr><tr><td>Vaudou</td><td>Aiguille cœur = Chasse (-10%)</td></tr></table></div>
+      <div class="card">
+        <h4 style="color:var(--accent); margin-top:0">🧩 OUIJA (Coût Sanité)</h4>
+        <table class="guide-table">
+          <tr><td>Où êtes-vous ?</td><td class="val-fast">-50%</td></tr>
+          <tr><td>Quel âge ?</td><td class="val-slow">-5%</td></tr>
+          <tr><td>Quelle est votre pièce ?</td><td class="val-fast">-50%</td></tr>
+          <tr><td>Où est l'os ?</td><td class="val-fast">-50%</td></tr>
+          <tr><td>Cache-cache !</td><td class="val-fast">-25% + CHASSE</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent); margin-top:0">✋ PATTE DE SINGE</h4>
+        <table class="guide-table">
+          <tr><td>Je souhaite voir le fantôme</td><td>Event + Aveugle</td></tr>
+          <tr><td>Je souhaite revivre</td><td>50% chance</td></tr>
+          <tr><td>Je souhaite partir</td><td>Déverrouille portes (Lent)</td></tr>
+          <tr><td>Je souhaite être sain</td><td>Santé 50% (mais drain rapide)</td></tr>
+        </table>
+      </div>
     </div>
-  </div>
+
+  </main>
 </div>
 
-<footer>
-  Développeur Web et Data Scientist <span class="creator">Sebag Joshua</span> et Data Scientist <span class="creator">Logeais Maélann</span>
-</footer>
+<nav class="mobile-nav">
+  <button class="mn-item active" onclick="setTab('tracker', this)"><span class="mn-icon">📓</span>Journal</button>
+  <button class="mn-item" onclick="setTab('tools', this)"><span class="mn-icon">🧰</span>Outils</button>
+  <button class="mn-item" onclick="setTab('guides', this)"><span class="mn-icon">📖</span>Guides</button>
+  <button class="mn-item" style="color:var(--danger)" onclick="resetAll()"><span class="mn-icon">🗑️</span>Reset</button>
+</nav>
 
 <script>
-/* === DATA === */
-const PROOFS = [ { id:'emf', label:'EMF Niv 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Spirit Box' }, { id:'frz', label:'Glacial' }, { id:'uv', label:'Traces UV' }, { id:'dot', label:'D.O.T.S' }, { id:'wrt', label:'Écriture' } ];
+/* === DATA COMPLÈTE === */
+const PROOFS = [
+  { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Box' },
+  { id:'frz', label:'Froid' }, { id:'uv', label:'UV' }, { id:'dot', label:'DOTS' }, { id:'wrt', label:'Ecrit' }
+];
 
 const GHOSTS = [
   { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'<b style="color:#2dd4bf">Test Encens:</b> Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).' },
@@ -392,13 +285,6 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'<b style="color:#warn">Custom:</b> Alterne phases Calme/Agressif.' }
 ];
 
-// === AUDIO CONTEXT GLOBAL (Fix Mobile v20.6) ===
-// On crée le contexte une seule fois, en dehors des fonctions.
-// Il sera probablement en état "suspended" sur mobile au début.
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-
-/* (Le reste du code reste inchangé : LOCATIONS, STATE, FUNCTIONS...) */
 const LOCATIONS = {
   'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
   'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
@@ -411,275 +297,212 @@ const LOCATIONS = {
   'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
 };
 
-let state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} };
+// === GLOBAL VARS & AUDIO ===
+let state = { inc: [], exc: [], manual: [], san: 100, search: '' };
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+let metroId = null;
 let tInterval = null;
 let lastTap = 0;
-let metroId = null;
 
+// === INIT ===
 function init() {
   loadState();
   renderProofs();
-  render();
-  document.getElementById('san-input').value = state.san;
-  document.getElementById('map-selector').value = state.map;
-  document.getElementById('search-input').value = state.search;
-  loadLocs(state.map);
-  ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
-    document.getElementById(id).checked = state.checks[id] || false;
-  });
-  setSpeed(state.speed, document.getElementById('sp-' + state.speed));
+  renderGhosts();
+  setTab('tracker');
+}
+
+// === LOGIC ===
+function setTab(tabName, btnMobile) {
+  document.getElementById('view-tracker').classList.add('hidden');
+  document.getElementById('view-tools').classList.add('hidden');
+  document.getElementById('view-guides').classList.add('hidden');
   
-  // FIX V20.0 : Force le tab 'tracker' au démarrage
-  setTab('tracker', document.querySelector('.nav-item.active'));
-}
-
-function toggleManual(name) {
-  if (state.manual.includes(name)) {
-    state.manual = state.manual.filter(x => x !== name);
-  } else {
-    state.manual.push(name);
-  }
-  saveState();
-  render();
-}
-
-// === CARD METRONOME FUNCTION (v20.2) ===
-function toggleGhostMetro(speed, btn) {
-  if (btn.classList.contains('playing')) {
-    stopMetronome();
-    return;
-  }
-  stopMetronome();
-  let speedVal = parseFloat(speed);
-  if (isNaN(speedVal)) speedVal = 1.7; // Fallback pour 'Var'
-  startMetronome(speedVal, btn);
-}
-
-function startMetronome(speed, btn) {
-  // === MOBILE FIX v20.6 : DÉVERROUILLAGE AUDIO ===
-  // Si le contexte est suspendu (bloqué par le navigateur), on le réveille.
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  // ===============================================
-
-  if(btn && !btn.classList.contains('btn-metro-small')) {
-      stopMetronome(); 
-  }
+  document.getElementById('view-'+tabName).classList.remove('hidden');
   
-  if(btn) btn.classList.add('playing');
+  document.querySelectorAll('.mn-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   
-  let delay = 600; 
-  if(speed === 1.0) delay = 1200; 
-  else if(speed === 1.7) delay = 650; 
-  else if(speed === 2.5) delay = 380;
-  else if(speed > 0) delay = 1000 / (speed / 1.7 * 1.5); 
-
-  metroId = setInterval(() => {
-    // Utilisation du contexte global 'audioCtx'
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.frequency.value = 800;
-    gain.gain.value = 0.1;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
-    osc.stop(audioCtx.currentTime + 0.1);
-  }, delay);
-}
-
-function stopMetronome() {
-  clearInterval(metroId);
-  document.querySelectorAll('.metro-btn, .btn-metro-small').forEach(b => b.classList.remove('playing'));
-}
-
-function tapBpm() {
-  const now = Date.now();
-  if (lastTap) {
-    const diff = (now - lastTap) / 1000;
-    let estim = (1 / diff) * 1.1; 
-    let label = "Normal";
-    let color = "#cbd5e1";
-    if(estim > 2.3) { label = "T. RAPIDE"; color = "var(--danger)"; }
-    else if(estim > 1.9) { label = "RAPIDE"; color = "var(--warn)"; }
-    else if(estim < 1.4) { label = "LENT"; color = "var(--purple)"; }
-    document.getElementById('bpm-val').innerHTML = `${estim.toFixed(1)} m/s <br><span style="color:${color};font-size:0.8rem">${label}</span>`;
-  } else { document.getElementById('bpm-val').innerText = "Tapez encore..."; }
-  lastTap = now;
-  setTimeout(() => { if(Date.now() - lastTap >= 2000) lastTap = 0; }, 2000);
-}
-
-function setSearch(val) { state.search = normalize(val); saveState(); render(); }
-function normalize(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
-
-function saveState() {
-  ['chk-bone', 'chk-obj1', 'chk-obj2', 'chk-photo'].forEach(id => {
-    state.checks[id] = document.getElementById(id).checked;
-  });
-  localStorage.setItem('phasmo_v19', JSON.stringify(state));
-}
-function loadState() {
-  const saved = localStorage.getItem('phasmo_v19');
-  if (saved) { try { state = JSON.parse(saved); if(!state.manual) state.manual=[]; } catch(e){} }
+  if(btnMobile) btnMobile.classList.add('active'); // Mobile style
+  else {
+    // PC style sync
+    const pcBtns = document.querySelectorAll('.nav-item');
+    if(tabName==='tracker') pcBtns[0].classList.add('active');
+    if(tabName==='tools') pcBtns[1].classList.add('active');
+    if(tabName==='guides') pcBtns[2].classList.add('active');
+  }
 }
 
 function renderProofs() {
-  document.getElementById('proofs-list').innerHTML = PROOFS.map(p => `
-    <div class="proof-row">
-      <span class="proof-label">${p.label}</span>
-      <div>
-        <button id="btn-inc-${p.id}" class="btn-proof" onclick="toggle('${p.id}','inc')">OUI</button>
-        <button id="btn-exc-${p.id}" class="btn-proof" onclick="toggle('${p.id}','exc')">NON</button>
-        <button class="btn-proof" onclick="toggle('${p.id}','clr')">CLR</button>
-      </div>
-    </div>
-  `).join('');
+  const html = PROOFS.map(p => {
+    let st = '';
+    if(state.inc.includes(p.id)) st = 'data-state="inc"';
+    if(state.exc.includes(p.id)) st = 'data-state="exc"';
+    return `<button class="proof-btn" ${st} onclick="toggleProof('${p.id}')">${p.label}</button>`;
+  }).join('');
+  
+  document.getElementById('mobile-proofs').innerHTML = html; 
+  document.getElementById('pc-proofs-list').innerHTML = html.replace(/proof-btn/g, 'proof-btn btn-action'); 
 }
 
-function toggle(pid, type) {
-  state.inc = state.inc.filter(x => x !== pid);
-  state.exc = state.exc.filter(x => x !== pid);
-  if (type === 'inc') state.inc.push(pid);
-  if (type === 'exc') state.exc.push(pid);
-  saveState();
-  render();
+function toggleProof(id) {
+  if(state.inc.includes(id)) {
+    state.inc = state.inc.filter(x=>x!==id);
+    state.exc.push(id);
+  } else if(state.exc.includes(id)) {
+    state.exc = state.exc.filter(x=>x!==id);
+  } else {
+    state.inc.push(id);
+  }
+  saveState(); renderProofs(); renderGhosts();
 }
 
-function render() {
-  PROOFS.forEach(p => {
-    const bInc = document.getElementById(`btn-inc-${p.id}`);
-    const bExc = document.getElementById(`btn-exc-${p.id}`);
-    bInc.removeAttribute('data-status');
-    bExc.removeAttribute('data-status');
-    if (state.inc.includes(p.id)) bInc.setAttribute('data-status', 'yes');
-    if (state.exc.includes(p.id)) bExc.setAttribute('data-status', 'no');
-  });
-
-  document.getElementById('tab-tracker').innerHTML = GHOSTS.map(g => {
-    let gp = [...g.p]; if (g.n === 'Mimic') gp.push('orb');
-    const allInc = state.inc.every(id => gp.includes(id));
-    const noneExc = state.exc.every(id => {
-       if (g.n === 'Mimic' && id === 'orb') return false; 
-       return !gp.includes(id);
+function renderGhosts() {
+  const container = document.getElementById('ghost-grid');
+  container.innerHTML = GHOSTS.map(g => {
+    let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
+    
+    // Filtres
+    const impossible = state.inc.some(id => !gp.includes(id));
+    const excluded = state.exc.some(id => {
+      if(g.n==='Mimic' && id==='orb') return false;
+      return gp.includes(id);
     });
+    const manuallyKilled = state.manual.includes(g.n);
     
-    // NOUVELLE LOGIQUE DE FILTRE 5 BOUTONS
-    let speedMatch = true;
-    if (state.speed === 'normal' && g.sp !== '1.7') speedMatch = false;
-    
-    // XSLOW (Très lent < 1.0) : Rev (1.0), Deo (0.4), Thaye Vieux (1.0)
-    if (state.speed === 'xslow' && g.n !== 'Revenant' && g.n !== 'Deogen' && g.n !== 'Thaye') speedMatch = false;
-    
-    // SLOW (Lent ~1.5) : Hantu chaud, Jumeaux, Moroi
-    if (state.speed === 'slow' && g.n !== 'Hantu' && g.n !== 'Jumeaux' && g.n !== 'Moroi' && g.n !== 'Thaye') speedMatch = false;
-
-    // FAST (Rapide > 1.7) : Hantu, Raiju, Jumeaux, Moroi
-    if (state.speed === 'fast' && !['2.5','2.7','Var'].includes(g.sp)) speedMatch = false;
-
-    // XFAST (Très rapide > 2.5) : Rev, Deo, Thaye, Hantu, Moroi, Raiju
-    if (state.speed === 'xfast' && !['3.0','2.7','2.75','2.5','Var'].includes(g.sp)) speedMatch = false;
-
-
+    // Recherche
     let searchMatch = true;
-    if (state.search) {
-      const txt = normalize(g.n + ' ' + g.t);
-      if (!txt.includes(state.search)) searchMatch = false;
+    if(state.search) {
+      const str = (g.n + ' ' + g.t).toLowerCase();
+      if(!str.includes(state.search.toLowerCase())) searchMatch = false;
     }
 
-    const isMatch = allInc && noneExc && speedMatch && searchMatch;
-    const canHunt = state.san <= g.th;
-    const isManualExcluded = state.manual && state.manual.includes(g.n);
-    
-    let cls = 'ghost';
-    if (isManualExcluded) cls += ' manual-excluded';
-    else if (!isMatch) cls += ' excluded'; 
-    else cls += ' candidate';
-    if (isMatch && canHunt && !isManualExcluded) cls += ' danger';
+    if((impossible || excluded) && !manuallyKilled) return ''; 
+
+    let cls = 'ghost candidate';
+    if(manuallyKilled) cls = 'ghost manual-excluded';
 
     return `
       <div class="${cls}">
         <div class="g-head">
           <span class="g-name">${g.n}</span>
-          ${isMatch && canHunt && !isManualExcluded ? '<span style="color:var(--danger)">⚠️</span>' : ''}
+          <span style="font-size:0.8rem; font-weight:bold; color:var(--accent)">${g.sp} m/s</span>
         </div>
-        <div class="g-info">Seuil: ${g.th}% | Vitesse: ${g.sp}m/s</div>
-        <div style="margin-bottom:5px">
+        <div class="g-meta">
           ${g.p.map(pid => {
             const lbl = PROOFS.find(x=>x.id===pid).label;
             const match = state.inc.includes(pid) ? 'match' : '';
             return `<span class="badge ${match}">${lbl}</span>`;
           }).join('')}
-          ${g.n==='Mimic' ? '<span class="badge" style="border:1px dashed #555">Fake Orbe</span>' : ''}
+          ${g.n==='Mimic' ? '<span class="badge">Fake Orbe</span>' : ''}
         </div>
-        
+        <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">${g.t}</div>
         <div class="g-actions">
-          <button class="btn-secret" onclick="this.parentElement.nextElementSibling.style.display='block'">TEST</button>
-          
-          <button class="btn-metro-small" onclick="toggleGhostMetro('${g.sp}', this)">
-            🔊 ${g.sp} m/s
-          </button>
-
-          <button class="btn-kill ${isManualExcluded ? 'active' : ''}" onclick="toggleManual('${g.n}')">
-            ${isManualExcluded ? '↺' : '❌'}
-          </button>
+          <button class="btn-action metro-btn" onclick="toggleGhostMetro('${g.sp}', this)">🔊 Son</button>
+          <button class="btn-action" onclick="toggleManual('${g.n}')">${manuallyKilled ? 'Rétablir' : 'Éliminer'}</button>
         </div>
-        
-        <div class="secret-txt">${g.t}</div>
       </div>
     `;
   }).join('');
 }
 
-function setSan(val) { state.san = val; document.getElementById('san-disp').innerText = val + "%"; saveState(); render(); }
-function setSpeed(mode, btn) { state.speed = mode; document.querySelectorAll('.btn-unified').forEach(b => b.classList.remove('active')); btn.classList.add('active'); saveState(); render(); }
-function loadLocs(key) { state.map = key; saveState(); const area = document.getElementById('loc-area'); if (!key || !LOCATIONS[key]) { area.innerHTML = '<div style="text-align:center; color:#64748b; margin-top:50px">Sélectionnez une carte pour voir les objets.</div>'; return; } const items = LOCATIONS[key]; area.innerHTML = `<div class="loc-grid">${items.map(item => `<div class="loc-card"><div class="loc-icon">${item.i}</div><div class="loc-info"><h4>${item.n}</h4><p>${item.l}</p></div></div>`).join('')}</div>`; }
-function setTab(tab, btn) { 
-  // Cache tout
-  document.getElementById('tab-tracker').style.display = 'none'; 
-  document.getElementById('tab-maps').style.display = 'none'; 
-  document.getElementById('tab-guide').style.display = 'none'; 
-  document.getElementById('tab-speed').style.display = 'none'; 
-  
-  // Affiche le bon
-  if (tab === 'tracker') document.getElementById('tab-tracker').style.display = 'grid'; 
-  if (tab === 'maps') document.getElementById('tab-maps').style.display = 'block'; 
-  if (tab === 'guide') document.getElementById('tab-guide').style.display = 'block'; 
-  if (tab === 'speed') document.getElementById('tab-speed').style.display = 'block'; 
-  
-  // Gère les boutons
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active')); 
-  if(btn) btn.classList.add('active'); 
+function toggleManual(name) {
+  if(state.manual.includes(name)) state.manual = state.manual.filter(x=>x!==name);
+  else state.manual.push(name);
+  saveState(); renderGhosts();
 }
-function runTimer(sec, btn) { 
-  // FIX AUDIO TIMER MOBILE
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  
-  clearInterval(tInterval); 
-  document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); 
-  btn.classList.add('active'); 
-  let t = sec; 
-  const tick = () => { 
-    let m = Math.floor(t/60).toString().padStart(2,'0'); 
-    let s = (t%60).toString().padStart(2,'0'); 
-    document.getElementById('timer-disp').innerText = `${m}:${s}`; 
-  }; 
-  tick(); 
-  tInterval = setInterval(() => { 
-    t--; 
-    tick(); 
-    if(t<=0) { 
-      clearInterval(tInterval); 
-      document.getElementById('timer-disp').innerText = "PRET"; 
-      const o = audioCtx.createOscillator(); 
-      o.connect(audioCtx.destination); 
-      o.start(); 
-      o.stop(audioCtx.currentTime+0.2); 
-    } 
-  }, 1000); 
+
+function setSearch(val) { state.search = val; renderGhosts(); }
+
+// === AUDIO (Fix Mobile) ===
+function toggleGhostMetro(speed, btn) {
+  if(btn.classList.contains('active')) { stopMetronome(); return; }
+  stopMetronome();
+  let v = parseFloat(speed) || 1.7;
+  startMetronome(v, btn);
 }
-function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; document.querySelectorAll('.btn-time').forEach(b => b.classList.remove('active')); }
-function resetAll() { state = { inc: [], exc: [], san: 100, speed: 'all', map: '', search: '', manual: [], checks: {} }; localStorage.removeItem('phasmo_v19'); location.reload(); }
+
+function startMetronome(speed, btn) {
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  stopMetronome();
+  if(btn) btn.classList.add('active');
+  
+  let delay = 600;
+  if(speed > 0) delay = 1000 / (speed / 1.7 * 1.5);
+
+  metroId = setInterval(() => {
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.connect(g); g.connect(audioCtx.destination);
+    o.frequency.value = 800; g.gain.value = 0.1;
+    o.start(); g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+    o.stop(audioCtx.currentTime + 0.1);
+  }, delay);
+}
+
+function stopMetronome() {
+  clearInterval(metroId);
+  document.querySelectorAll('.metro-btn, .btn-action').forEach(b => b.classList.remove('active'));
+}
+
+function tapBpm() {
+  const now = Date.now();
+  if(lastTap) {
+    const diff = (now - lastTap)/1000;
+    const est = (1/diff)*1.1;
+    document.getElementById('bpm-val').innerText = est.toFixed(1) + " m/s";
+  }
+  lastTap = now;
+  setTimeout(() => { if(Date.now()-lastTap > 2000) lastTap=0; }, 2000);
+}
+
+// === TIMER ===
+function runTimer(s) {
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  clearInterval(tInterval);
+  let t = s;
+  const tick = () => {
+    let m = Math.floor(t/60).toString().padStart(2,'0');
+    let sec = (t%60).toString().padStart(2,'0');
+    document.getElementById('timer-disp').innerText = `${m}:${sec}`;
+  };
+  tick();
+  tInterval = setInterval(() => {
+    t--; tick();
+    if(t<=0) {
+      clearInterval(tInterval);
+      document.getElementById('timer-disp').innerText = "PRET";
+      const o=audioCtx.createOscillator(); o.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime+0.5);
+    }
+  }, 1000);
+}
+function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; }
+
+// === MAPS ===
+function loadLocs(key) {
+  const div = document.getElementById('loc-area');
+  if(!key) { div.innerHTML=''; return; }
+  const data = LOCATIONS[key] || [];
+  div.innerHTML = data.map(i => `<div style="padding:10px; border-bottom:1px solid #333"><b>${i.i} ${i.n}</b><br><span style="color:#94a3b8">${i.l}</span></div>`).join('');
+}
+
+// === SANITY ===
+function setSan(v) { state.san = v; document.getElementById('san-disp').innerText = v+"%"; saveState(); }
+
+// === STORAGE ===
+function saveState() { localStorage.setItem('phasmo_v21', JSON.stringify(state)); }
+function loadState() {
+  const s = localStorage.getItem('phasmo_v21');
+  if(s) state = JSON.parse(s);
+}
+function resetAll() {
+  if(confirm('Tout remettre à zéro ?')) {
+    localStorage.removeItem('phasmo_v21');
+    location.reload();
+  }
+}
 
 init();
 </script>
