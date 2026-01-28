@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (Smart AI)</title>
+  <title>PHASMO-TRACKER Ultimate</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker Phasmophobia avec recherche intelligente. Décrivez une situation, l'outil trouve le fantôme et le test associé." />
+  <meta name="description" content="Tracker complet Phasmophobia. Identification fantômes, chronos, et guide intégral des objets maudits (Tarot, Ouija, Patte de Singe)." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -88,11 +88,15 @@
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
     .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
     
-    .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-    .obj-icon { font-size: 2rem; min-width: 40px; }
-    .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); }
-    .obj-info p { margin: 0; font-size: 0.85rem; color: #cbd5e1; }
-    .risk { color: var(--danger); font-weight: bold; font-size: 0.8rem; }
+    /* GUIDES STYLES */
+    .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
+    .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
+    .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
+    .obj-info p { margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4; }
+    .obj-list { margin: 5px 0 0 0; padding-left: 20px; font-size: 0.8rem; color: #94a3b8; }
+    .obj-list li { margin-bottom: 3px; }
+    .risk { display: block; margin-top: 5px; color: var(--danger); font-weight: bold; font-size: 0.8rem; }
+    .rare { color: var(--purple); font-weight: bold; }
 
     .hidden { display: none !important; }
     .text-center { text-align: center; }
@@ -181,49 +185,25 @@
     <div id="view-guides" class="hidden">
       
       <div class="card">
-        <h4 style="color:var(--accent); margin-top:0; border-bottom:1px solid #333; padding-bottom:5px;">🔮 OBJETS MAUDITS (DÉTAILS)</h4>
+        <h4 style="color:var(--accent); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🔮 GUIDE DES OBJETS MAUDITS</h4>
         
-        <div class="obj-card">
-          <div class="obj-icon">🎶</div>
-          <div class="obj-info">
-            <h4>Boîte à Musique</h4>
-            <p>Le fantôme chante. Si vous vous approchez trop ou si la boîte touche le sol : <b>CHASSE</b>.</p>
-            <span class="risk">Coût : -75% Santé si écoutée entièrement.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🧸</div>
-          <div class="obj-info">
-            <h4>Poupée Vaudou</h4>
-            <p>Enfoncer une aiguille force une interaction. Si l'aiguille touche le cœur : <b>CHASSE</b>.</p>
-            <span class="risk">Coût : -5% par aiguille (-10% cœur).</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🔮</div>
-          <div class="obj-info">
-            <h4>Miroir Hanté</h4>
-            <p>Regarder dedans montre la pièce du fantôme (vision panoramique).</p>
-            <span class="risk">Coût : -7.5% par seconde. Brise + CHASSE si 0%.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">⭕</div>
-          <div class="obj-info">
-            <h4>Cercle d'Invocation</h4>
-            <p>Allumer les 5 bougies invoque le fantôme. Il est piégé 5s puis chasse.</p>
-            <span class="risk">Coût : -16% par bougie (-80% total).</span>
-          </div>
-        </div>
-
         <div class="obj-card">
           <div class="obj-icon">🃏</div>
           <div class="obj-info">
             <h4>Cartes de Tarot (10 Cartes)</h4>
-            <p><b>Soleil:</b> 100% Santé | <b>Lune:</b> 0% Santé<br><b>Mort:</b> CHASSE | <b>Diable:</b> Event<br><b>Ermite:</b> Bloque 1min | <b>Pendu:</b> MORT immédiate.</p>
+            <p>Tirer une carte déclenche un effet immédiat.</p>
+            <ul class="obj-list">
+              <li><b style="color:#facc15">Le Soleil</b> : Remet la santé mentale à 100%.</li>
+              <li><b style="color:#ef4444">La Lune</b> : Tombe la santé mentale à 0%.</li>
+              <li><b style="color:#2dd4bf">La Tour</b> : Force une interaction.</li>
+              <li><b style="color:#facc15">La Roue</b> : +25% (Vert) ou -25% (Rouge) santé.</li>
+              <li><b style="color:#ef4444">Le Diable</b> : Déclenche un Event Fantôme.</li>
+              <li><b style="color:#ef4444">La Mort</b> : Déclenche une <b>CHASSE MAUDITE</b>.</li>
+              <li><b style="color:#a855f7">L'Ermite</b> : Bloque le fantôme dans sa pièce (1min).</li>
+              <li><b style="color:#10b981">La Grande Prêtresse</b> : Ressuscite un joueur mort.</li>
+              <li><b style="color:#ef4444">Le Pendu</b> : <b>MORT INSTANTANÉE</b> du joueur.</li>
+              <li><b style="color:#a855f7">Le Fou</b> : Apparaît comme une autre carte puis se révèle (Troll).</li>
+            </ul>
           </div>
         </div>
 
@@ -231,37 +211,68 @@
           <div class="obj-icon">🧩</div>
           <div class="obj-info">
             <h4>Ouija Board</h4>
-            <p>Posez des questions ("Où es-tu?", "Quel âge?"). Dites "Au revoir" sinon chasse.</p>
-            <span class="risk">Coût : -50% (Lieu), -5% (Âge/Mort).</span>
+            <p>Activez avec un clic gauche. Posez la question (vocal). Dites <b>"Au revoir"</b> avant de partir sinon le tableau casse et chasse.</p>
+            <ul class="obj-list">
+              <li>"Où êtes-vous ?" / "Quelle est votre pièce ?" : <span class="risk">-50% Santé</span></li>
+              <li>"Où est l'os ?" : <span class="risk">-50% Santé</span></li>
+              <li>"Quel âge avez-vous ?" : <span class="risk">-5% Santé</span></li>
+              <li>"Cache-cache !" : Compte 5s puis <span class="risk">-25% + CHASSE</span></li>
+            </ul>
           </div>
         </div>
 
         <div class="obj-card">
           <div class="obj-icon">✋</div>
           <div class="obj-info">
-            <h4>Patte de Singe</h4>
-            <p>Exauce des vœux mais avec une punition grave (aveugle, sourd, chasse, mort).</p>
+            <h4>Patte de Singe (Vœux)</h4>
+            <p>Chaque vœu a une conséquence négative grave.</p>
+            <ul class="obj-list">
+              <li><b>Je souhaite voir le fantôme :</b> Event (Apparition) + Vous devenez aveugle (Brouillard) + Chasse.</li>
+              <li><b>Je souhaite revivre :</b> Ressuscite un joueur mais 50% de chance de vous tuer.</li>
+              <li><b>Je souhaite partir :</b> Déverrouille les portes pendant une chasse mais vous ralentit énormément.</li>
+              <li><b>Je souhaite être sain :</b> Santé à 50% mais la baisse passive est augmentée.</li>
+              <li><b>Je souhaite piéger le fantôme :</b> Bloque le fantôme 1min mais vous enferme avec lui.</li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      <div class="card">
-        <h4 style="color:var(--accent); margin-top:0">🗺️ LOCALISATION OBJETS</h4>
-        <select class="search-input" onchange="loadLocs(this.value)">
-          <option value="">-- CHOISIR UNE CARTE --</option>
-          <option value="tanglewood">6 Tanglewood Drive</option>
-          <option value="willow">Willow Street</option>
-          <option value="edgefield">42 Edgefield Road</option>
-          <option value="ridgeview">10 Ridgeview Court</option>
-          <option value="grafton">Grafton Farmhouse</option>
-          <option value="bleasdale">Bleasdale Farmhouse</option>
-          <option value="woodwind">Camp Woodwind</option>
-          <option value="prison">Prison</option>
-          <option value="sunny">Sunny Meadows</option>
-        </select>
-        <div id="loc-area"></div>
-      </div>
+        <div class="obj-card">
+          <div class="obj-icon">🎶</div>
+          <div class="obj-info">
+            <h4>Boîte à Musique</h4>
+            <p>Le fantôme chante pour indiquer sa position. Restez loin !</p>
+            <span class="risk">CHASSE SI : Le fantôme touche la boîte, si vous la jetez, ou si vous vous approchez trop du fantôme pendant qu'elle joue. (-75% Santé si finie).</span>
+          </div>
+        </div>
 
+        <div class="obj-card">
+          <div class="obj-icon">🧸</div>
+          <div class="obj-info">
+            <h4>Poupée Vaudou</h4>
+            <p>10 aiguilles. Enfoncer une aiguille force une interaction.</p>
+            <span class="risk">Coût : -5% par aiguille. Si l'aiguille du CŒUR s'enfonce : CHASSE MAUDITE (-10%). Si votre santé est trop basse, toutes les aiguilles s'enfoncent -> Chasse.</span>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">🔮</div>
+          <div class="obj-info">
+            <h4>Miroir Hanté</h4>
+            <p>Permet de voir la pièce du fantôme en direct.</p>
+            <span class="risk">Coût : Draine la santé très vite (-7.5%/s). Si vous tombez à 0%, le miroir se brise et lance une CHASSE MAUDITE.</span>
+          </div>
+        </div>
+
+        <div class="obj-card">
+          <div class="obj-icon">⭕</div>
+          <div class="obj-info">
+            <h4>Cercle d'Invocation</h4>
+            <p>Allumer les 5 bougies pour invoquer le fantôme physiquement.</p>
+            <span class="risk">Coût : -16% par bougie. Une fois les 5 allumées, le fantôme est piégé 5 secondes puis lance une CHASSE MAUDITE. (Faites la photo vite !).</span>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </main>
