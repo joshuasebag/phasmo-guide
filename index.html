@@ -7,7 +7,7 @@
   <title>PHASMO-TRACKER Ultimate</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker complet Phasmophobia. Identification fantômes, chronos, et guide intégral des objets maudits (Tarot, Ouija, Patte de Singe)." />
+  <meta name="description" content="Tracker Phasmophobia avec outils en barre latérale. Chrono et Métronome toujours visibles sur PC. Guide complet objets maudits." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -22,12 +22,23 @@
 
     /* LAYOUT */
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
-    .controls-area { background: #020617; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; }
+    
+    /* SIDEBAR (PC) */
+    .controls-area { 
+      background: #020617; border-right: 1px solid var(--border); 
+      display: flex; flex-direction: column; z-index: 20; 
+      overflow-y: auto; /* Scroll si l'écran est petit en hauteur */
+    }
+
     .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
 
-    /* RESPONSIVE */
+    /* CLASSES RESPONSIVE */
+    .pc-only { display: block; }
+    .mobile-only { display: none; }
+
+    /* RESPONSIVE LOGIC */
     @media (min-width: 900px) {
-      .controls-area { width: 340px; padding: 20px; overflow-y: auto; }
+      .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
       .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); }
       .nav-pills { display: flex; gap: 5px; margin-bottom: 15px; background: #1e293b; padding: 5px; border-radius: 8px; }
@@ -39,6 +50,9 @@
     @media (max-width: 899px) {
       .app-layout { flex-direction: column; }
       .controls-area, .pc-header { display: none; }
+      .pc-only { display: none !important; }
+      .mobile-only { display: block !important; }
+      
       .mobile-nav {
         position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
         background: #0f172a; border-top: 1px solid var(--border);
@@ -48,6 +62,7 @@
       .mn-item { background: none; border: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: bold; width: 100%; padding: 8px 0; }
       .mn-item.active { color: var(--accent); }
       .mn-icon { font-size: 1.2rem; }
+      
       .mobile-proof-bar {
         position: sticky; top: 0; z-index: 50;
         background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px);
@@ -56,6 +71,7 @@
         white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
       }
       .mobile-proof-bar::-webkit-scrollbar { display: none; }
+      
       .main-area { padding-bottom: 80px; }
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     }
@@ -63,14 +79,28 @@
     /* COMPONENTS */
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     
-    .proof-btn {
-      flex: 0 0 auto; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px;
+    /* BOUTONS UNIFIÉS */
+    .proof-btn, .sidebar-btn {
+      flex: 0 0 auto; padding: 10px; border: 1px solid var(--border); border-radius: 8px;
       background: #1e293b; color: #cbd5e1; font-weight: bold; font-size: 0.85rem;
-      cursor: pointer; transition: 0.2s; user-select: none;
+      cursor: pointer; transition: 0.2s; user-select: none; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
     }
+    
+    /* Sidebar Tools Container */
+    .sidebar-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
+    .sidebar-title { color: var(--accent); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+    .sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+
+    /* États */
     .proof-btn[data-state="inc"] { background: var(--success); color: #000; border-color: var(--success); }
     .proof-btn[data-state="exc"] { background: var(--danger); color: #fff; border-color: var(--danger); text-decoration: line-through; opacity: 0.7; }
+    
+    .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
+    .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); }
+    .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
+    /* FANTÔMES */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
@@ -88,6 +118,8 @@
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
     .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
     
+    .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
+
     /* GUIDES STYLES */
     .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
     .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
@@ -96,7 +128,6 @@
     .obj-list { margin: 5px 0 0 0; padding-left: 20px; font-size: 0.8rem; color: #94a3b8; }
     .obj-list li { margin-bottom: 3px; }
     .risk { display: block; margin-top: 5px; color: var(--danger); font-weight: bold; font-size: 0.8rem; }
-    .rare { color: var(--purple); font-weight: bold; }
 
     .hidden { display: none !important; }
     .text-center { text-align: center; }
@@ -106,8 +137,7 @@
     
     .badge { font-size: 0.7rem; padding: 2px 6px; background: #000; border-radius: 4px; color: #64748b; border: 1px solid #333; }
     .badge.match { color: var(--success); border-color: var(--success); }
-    .val-fast { color: var(--danger); font-weight: bold; }
-    .val-slow { color: var(--purple); font-weight: bold; }
+    .timer-val { font-family: monospace; font-size: 1.5rem; color: var(--warn); text-align: center; background: #000; border-radius: 6px; padding: 4px; margin-bottom: 5px; border: 1px solid #333; }
   </style>
 </head>
 <body>
@@ -118,12 +148,36 @@
   
   <aside class="controls-area">
     <div class="pc-header">PHASMO ULTIMATE 👻</div>
+    
     <div class="nav-pills">
       <button class="nav-item active" onclick="setTab('tracker')">JOURNAL</button>
-      <button class="nav-item" onclick="setTab('tools')">OUTILS</button>
+      <button class="nav-item" onclick="setTab('tools')">CARTES</button>
       <button class="nav-item" onclick="setTab('guides')">GUIDES</button>
     </div>
+
     <div id="pc-proofs-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
+    
+    <div class="sidebar-section">
+      <div class="sidebar-title">⏱️ CHRONOMÈTRE</div>
+      <div class="timer-val" id="timer-disp-sidebar">00:00</div>
+      <div class="sidebar-grid">
+        <button class="sidebar-btn" onclick="runTimer(90)">90s</button>
+        <button class="sidebar-btn" onclick="runTimer(180)">180s</button>
+      </div>
+      <button class="sidebar-btn stop" style="width:100%" onclick="stopTimer()">STOP</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">🔊 MÉTRONOME</div>
+      <div class="sidebar-grid">
+        <button class="sidebar-btn metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0</button>
+        <button class="sidebar-btn metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7</button>
+        <button class="sidebar-btn metro-btn" onclick="startMetronome(2.5, this)">🐇 2.5</button>
+        <button class="sidebar-btn stop" onclick="stopMetronome()">OFF</button>
+      </div>
+      <button class="sidebar-btn" style="width:100%; margin-top:5px" onmousedown="tapBpm()">👣 TAP BPM: <span id="bpm-val-sidebar" style="margin-left:5px">--</span></button>
+    </div>
+
     <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: #64748b; border-top: 1px solid #333; padding-top: 10px;">
       Dev: <span style="color:var(--accent)">Sebag Joshua</span> & <span style="color:var(--accent)">Logeais Maélann</span>
     </div>
@@ -132,31 +186,31 @@
   <main class="main-area" id="main-content">
     
     <div id="view-tracker">
-      <input type="text" class="search-input" placeholder="🔍 Décrivez la situation (ex: sel, éteint la lumière, rapide...)" oninput="setSearch(this.value)">
+      <input type="text" class="search-input" placeholder="🔍 Ex: Sel, Rapide, Lumière..." oninput="setSearch(this.value)">
       <div id="ghost-grid" class="grid"></div>
     </div>
 
     <div id="view-tools" class="hidden">
-      <div class="card">
+      
+      <div class="card mobile-only">
         <h4 style="margin:0 0 10px 0; color:var(--accent)">CHRONO ⏱️</h4>
-        <div class="text-center" style="font-size:2rem; font-family:monospace; margin-bottom:10px" id="timer-disp">00:00</div>
+        <div class="timer-val" id="timer-disp-mobile">00:00</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px">
-          <button class="btn-action" onclick="runTimer(90)">90s (Encens)</button>
-          <button class="btn-action" onclick="runTimer(180)">180s (Esprit)</button>
-          <button class="btn-action" style="grid-column: span 2; border-color:var(--danger)" onclick="stopTimer()">STOP</button>
+          <button class="sidebar-btn" onclick="runTimer(90)">90s</button>
+          <button class="sidebar-btn" onclick="runTimer(180)">180s</button>
+          <button class="sidebar-btn stop" style="grid-column: span 2;" onclick="stopTimer()">STOP</button>
         </div>
       </div>
 
-      <div class="card">
+      <div class="card mobile-only">
         <h4 style="margin:0 0 10px 0; color:var(--accent)">MÉTRONOME 🔊</h4>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px">
-          <button class="btn-action metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0</button>
-          <button class="btn-action metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7</button>
-          <button class="btn-action metro-btn" onclick="startMetronome(2.5, this)">🐇 2.5</button>
+          <button class="sidebar-btn metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0</button>
+          <button class="sidebar-btn metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7</button>
+          <button class="sidebar-btn metro-btn" onclick="startMetronome(2.5, this)">🐇 2.5</button>
         </div>
-        <button class="btn-action metro-btn" style="width:100%; margin-top:5px" onclick="stopMetronome()">🛑 STOP SON</button>
-        <button class="btn-action" style="width:100%; margin-top:5px" onmousedown="tapBpm()">👣 TAPOTER RYTHME</button>
-        <div id="bpm-val" class="text-center" style="margin-top:5px; font-weight:bold; color:#cbd5e1">-- m/s</div>
+        <button class="sidebar-btn stop" style="width:100%; margin-top:5px" onclick="stopMetronome()">STOP SON</button>
+        <button class="sidebar-btn" style="width:100%; margin-top:5px" onmousedown="tapBpm()">👣 TAP BPM: <span id="bpm-val-mobile">--</span></button>
       </div>
 
       <div class="card">
@@ -183,95 +237,16 @@
     </div>
 
     <div id="view-guides" class="hidden">
-      
       <div class="card">
         <h4 style="color:var(--accent); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🔮 GUIDE DES OBJETS MAUDITS</h4>
         
-        <div class="obj-card">
-          <div class="obj-icon">🃏</div>
-          <div class="obj-info">
-            <h4>Cartes de Tarot (10 Cartes)</h4>
-            <p>Tirer une carte déclenche un effet immédiat.</p>
-            <ul class="obj-list">
-              <li><b style="color:#facc15">Le Soleil</b> : Remet la santé mentale à 100%.</li>
-              <li><b style="color:#ef4444">La Lune</b> : Tombe la santé mentale à 0%.</li>
-              <li><b style="color:#2dd4bf">La Tour</b> : Force une interaction.</li>
-              <li><b style="color:#facc15">La Roue</b> : +25% (Vert) ou -25% (Rouge) santé.</li>
-              <li><b style="color:#ef4444">Le Diable</b> : Déclenche un Event Fantôme.</li>
-              <li><b style="color:#ef4444">La Mort</b> : Déclenche une <b>CHASSE MAUDITE</b>.</li>
-              <li><b style="color:#a855f7">L'Ermite</b> : Bloque le fantôme dans sa pièce (1min).</li>
-              <li><b style="color:#10b981">La Grande Prêtresse</b> : Ressuscite un joueur mort.</li>
-              <li><b style="color:#ef4444">Le Pendu</b> : <b>MORT INSTANTANÉE</b> du joueur.</li>
-              <li><b style="color:#a855f7">Le Fou</b> : Apparaît comme une autre carte puis se révèle (Troll).</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🧩</div>
-          <div class="obj-info">
-            <h4>Ouija Board</h4>
-            <p>Activez avec un clic gauche. Posez la question (vocal). Dites <b>"Au revoir"</b> avant de partir sinon le tableau casse et chasse.</p>
-            <ul class="obj-list">
-              <li>"Où êtes-vous ?" / "Quelle est votre pièce ?" : <span class="risk">-50% Santé</span></li>
-              <li>"Où est l'os ?" : <span class="risk">-50% Santé</span></li>
-              <li>"Quel âge avez-vous ?" : <span class="risk">-5% Santé</span></li>
-              <li>"Cache-cache !" : Compte 5s puis <span class="risk">-25% + CHASSE</span></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">✋</div>
-          <div class="obj-info">
-            <h4>Patte de Singe (Vœux)</h4>
-            <p>Chaque vœu a une conséquence négative grave.</p>
-            <ul class="obj-list">
-              <li><b>Je souhaite voir le fantôme :</b> Event (Apparition) + Vous devenez aveugle (Brouillard) + Chasse.</li>
-              <li><b>Je souhaite revivre :</b> Ressuscite un joueur mais 50% de chance de vous tuer.</li>
-              <li><b>Je souhaite partir :</b> Déverrouille les portes pendant une chasse mais vous ralentit énormément.</li>
-              <li><b>Je souhaite être sain :</b> Santé à 50% mais la baisse passive est augmentée.</li>
-              <li><b>Je souhaite piéger le fantôme :</b> Bloque le fantôme 1min mais vous enferme avec lui.</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🎶</div>
-          <div class="obj-info">
-            <h4>Boîte à Musique</h4>
-            <p>Le fantôme chante pour indiquer sa position. Restez loin !</p>
-            <span class="risk">CHASSE SI : Le fantôme touche la boîte, si vous la jetez, ou si vous vous approchez trop du fantôme pendant qu'elle joue. (-75% Santé si finie).</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🧸</div>
-          <div class="obj-info">
-            <h4>Poupée Vaudou</h4>
-            <p>10 aiguilles. Enfoncer une aiguille force une interaction.</p>
-            <span class="risk">Coût : -5% par aiguille. Si l'aiguille du CŒUR s'enfonce : CHASSE MAUDITE (-10%). Si votre santé est trop basse, toutes les aiguilles s'enfoncent -> Chasse.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🔮</div>
-          <div class="obj-info">
-            <h4>Miroir Hanté</h4>
-            <p>Permet de voir la pièce du fantôme en direct.</p>
-            <span class="risk">Coût : Draine la santé très vite (-7.5%/s). Si vous tombez à 0%, le miroir se brise et lance une CHASSE MAUDITE.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">⭕</div>
-          <div class="obj-info">
-            <h4>Cercle d'Invocation</h4>
-            <p>Allumer les 5 bougies pour invoquer le fantôme physiquement.</p>
-            <span class="risk">Coût : -16% par bougie. Une fois les 5 allumées, le fantôme est piégé 5 secondes puis lance une CHASSE MAUDITE. (Faites la photo vite !).</span>
-          </div>
-        </div>
-
+        <div class="obj-card"><div class="obj-icon">🃏</div><div class="obj-info"><h4>Cartes de Tarot</h4><ul class="obj-list"><li><b style="color:#facc15">Soleil</b>: 100% Santé</li><li><b style="color:#ef4444">Lune</b>: 0% Santé</li><li><b style="color:#2dd4bf">Tour</b>: Interaction</li><li><b style="color:#facc15">Roue</b>: +/- 25% Santé</li><li><b style="color:#ef4444">Diable</b>: Event</li><li><b style="color:#ef4444">Mort</b>: CHASSE MAUDITE</li><li><b style="color:#a855f7">Ermite</b>: Bloque 1min</li><li><b style="color:#10b981">Prêtresse</b>: Ressuscite</li><li><b style="color:#ef4444">Pendu</b>: MORT</li><li><b style="color:#a855f7">Fou</b>: Troll</li></ul></div></div>
+        <div class="obj-card"><div class="obj-icon">🧩</div><div class="obj-info"><h4>Ouija Board</h4><p>Dites <b>"Au revoir"</b> !</p><ul class="obj-list"><li>Lieu : <span class="risk">-50%</span></li><li>Os : <span class="risk">-50%</span></li><li>Âge : <span class="risk">-5%</span></li><li>Cache-cache : <span class="risk">-25% + CHASSE</span></li></ul></div></div>
+        <div class="obj-card"><div class="obj-icon">✋</div><div class="obj-info"><h4>Patte de Singe</h4><ul class="obj-list"><li><b>Voir:</b> Aveugle + Chasse</li><li><b>Revivre:</b> 50% chance mort</li><li><b>Partir:</b> Lent</li><li><b>Sain:</b> Santé 50% + Baisse</li><li><b>Piéger:</b> Enfermé</li></ul></div></div>
+        <div class="obj-card"><div class="obj-icon">🎶</div><div class="obj-info"><h4>Boîte à Musique</h4><span class="risk">Chasse si touchée ou jetée.</span></div></div>
+        <div class="obj-card"><div class="obj-icon">🧸</div><div class="obj-info"><h4>Poupée Vaudou</h4><span class="risk">-5% par pic. Cœur = Chasse.</span></div></div>
+        <div class="obj-card"><div class="obj-icon">🔮</div><div class="obj-info"><h4>Miroir Hanté</h4><span class="risk">-7.5%/s. 0% = Chasse.</span></div></div>
+        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">Invoque et Chasse après 5s.</span></div></div>
       </div>
     </div>
 
@@ -289,60 +264,33 @@
 const PROOFS = [ { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Box' }, { id:'frz', label:'Froid' }, { id:'uv', label:'UV' }, { id:'dot', label:'DOTS' }, { id:'wrt', label:'Ecrit' } ];
 
 const GHOSTS = [
-  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', 
-    d:'<h5>Test de l\'Encens</h5><p>Si vous utilisez de l\'encens près de lui, l\'Esprit ne peut <b>PAS</b> chasser pendant <b>180 secondes</b> (3 minutes). Les autres c\'est 90s.</p><h5>Comportement</h5><p>Aucun pouvoir spécial. Vitesse normale.</p>' },
-  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', 
-    d:'<h5>Test du Sel (100% Sûr)</h5><p>Si un fantôme marche dans du sel sans laisser d\'empreinte de pied (UV ou visible), c\'est un Spectre. <b>Il ne marche JAMAIS dans le sel.</b></p><h5>Téléportation</h5><p>Il peut se téléporter sur un joueur aléatoire (donne EMF 2 ou 5).</p>' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', 
-    d:'<h5>Test Photo</h5><p>Si vous le prenez en photo (hors chasse), il disparaît instantanément de la vision mais pas de la photo (la photo montre "Fantôme" mais est vide).</p><h5>Chasse</h5><p>Il clignote très lentement (invisible longtemps). Il draine la santé si on le regarde.</p>' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette plein d\'objets.', 
-    d:'<h5>Test "Pile d\'objets"</h5><p>Faites une pile de 3-4 objets. Le Poltergeist peut tous les jeter en même temps (Explosion). Si vous voyez plusieurs objets voler en simultané, c\'est lui.</p><h5>Santé</h5><p>Chaque objet jeté baisse la santé mentale des joueurs proches.</p>' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique. Cri micro.', 
-    d:'<h5>Chasse & Cible</h5><p>Elle ne tue QUE sa cible. Elle ignore les autres joueurs (passe à travers eux). Si la cible est dehors, elle chasse normalement.</p><h5>Micro Parabolique</h5><p>Chance d\'entendre un cri unique (spécifique à la Banshee) au micro.</p>' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide avec courant.', 
-    d:'<h5>Pouvoir (Courant ON)</h5><p>Si le disjoncteur est allumé, il sprint (2.5 m/s) vers vous s\'il vous voit de loin. Il ralentit (1.7 m/s) à moins de 3 mètres.</p><h5>Capacité cachée</h5><p>Peut drainer 25% de santé instantanément si vous êtes près de lui (EMF 2 au disjoncteur).</p><p><b>Ne peut jamais éteindre le disjoncteur.</b></p>' },
-  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste la lumière.', 
-    d:'<h5>Lumière vs Obscurité</h5><p>Chasse à 60% de santé s\'il est dans le noir. Chasse à 40% seulement si la lumière est allumée.</p><h5>Test Interrupteur</h5><p>Il a une chance d\'éteindre la lumière immédiatement après que vous l\'ayez allumée. <b>Il ne peut pas allumer la lumière.</b></p>' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Le plus dangereux.', 
-    d:'<h5>Vitesse Extrême</h5><p><b>Caché (Pas de vue) :</b> Très lent (1.0 m/s), comme un joueur accroupi.<br><b>Vu (Ligne de vue) :</b> Accélère instantanément à 3.0 m/s (impossible à distancer sans encens). Ne courez pas en ligne droite !</p>' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide en groupe.', 
-    d:'<h5>Timidité</h5><p>Ne chasse pas si plusieurs personnes sont dans la même pièce que lui. Très difficile à trouver (peu d\'activité). Seuil de chasse très bas (35%).</p><h5>Events</h5><p>Préfère les "events" de fumée (boule d\'air) plutôt que les apparitions physiques.</p>' },
-  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Chasse très souvent.', 
-    d:'<h5>Aggressivité</h5><p>Peut chasser dès 70% de santé mentale. A une capacité rare pour chasser à 100% de santé.</p><h5>Cooldown</h5><p>Peut rechasser seulement 20 secondes après la fin d\'une chasse.</p><h5>Crucifix</h5><p>Les crucifix fonctionnent à 5 mètres (au lieu de 3m).</p>' },
-  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Draine santé. Portes.', 
-    d:'<h5>Porte d\'entrée</h5><p>Seul fantôme capable de fermer complètement la porte d\'entrée (hors chasse) et de la claquer. Cela draine 15% de santé.</p><h5>Test Encens</h5><p>L\'encens le piège dans sa pièce pendant 90s (il ne peut pas en sortir).</p>' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Très visible. Actif.', 
-    d:'<h5>Visibilité Chasse</h5><p>L\'Oni clignote très peu. Il est visible la plupart du temps pendant la chasse.</p><h5>Activité</h5><p>Très actif quand il y a du monde. Draine beaucoup de santé sur les events physiques (apparitions). <b>Ne fait jamais l\'event "Boule de fumée".</b></p>' },
-  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd & Sensible voix.', 
-    d:'<h5>Sensible à la voix</h5><p>Peut chasser dès 80% de santé si vous parlez près de lui.</p><h5>Sourd (Chasse)</h5><p>Pendant une chasse, il n\'entend votre voix et votre équipement qu\'à moins de 2 mètres. Vous pouvez courir derrière lui sans qu\'il vous repère facilement.</p>' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Vitesse thermique.', 
-    d:'<h5>Froid = Rapide</h5><p>Très rapide (2.7 m/s) dans les pièces froides/couloirs. Lent (1.4 m/s) dans les pièces chaudes.</p><h5>Buée</h5><p>Pendant la chasse, si le courant est coupé, on peut voir sa respiration (buée) sortir de sa bouche.</p><p><b>Ne peut pas allumer le courant.</b></p>' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', 
-    d:'<h5>Test DOTS Spécial</h5><p>Ses DOTS ne sont visibles <b>QUE</b> via une caméra vidéo, et <b>SEULEMENT</b> si personne n\'est dans la pièce avec lui.</p><h5>Roaming</h5><p>Il ne s\'éloigne presque jamais de sa pièce favorite.</p>' },
-  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Pas silencieux.', 
-    d:'<h5>Chasse Silencieuse</h5><p>Ses bruits de pas sont très faibles. Si vous entendez ses pas, c\'est qu\'il est déjà très proche. Souvent, la lampe torche clignote AVANT que vous n\'entendiez ses pas.</p><h5>Sons paranormaux</h5><p>Fait beaucoup de bruits au micro parabolique.</p>' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Peur du feu.', 
-    d:'<h5>Le Feu = Crucifix</h5><p>Une bougie allumée agit comme un crucifix. Si l\'Onryo souffle une bougie, il a une forte chance de lancer une chasse immédiatement (sauf s\'il y a une autre bougie ou un crucifix).</p><h5>Test</h5><p>S\'il souffle 3 bougies et ne chasse pas (alors qu\'il n\'y a pas de crucifix), ce n\'est probablement pas lui.</p>' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double interaction.', 
-    d:'<h5>Leurre vs Réel</h5><p>Un jumeau est dans la pièce fantôme, l\'autre se balade. Vous pouvez avoir des interactions à deux endroits opposés simultanément.</p><h5>Chasse</h5><p>50% de chance que le "Vrai" chasse (Vitesse 1.5 m/s - Lent).<br>50% de chance que le "Leurre" chasse (Vitesse 1.9 m/s - Rapide).</p>' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Boost Elec.', 
-    d:'<h5>Vitesse Électronique</h5><p>S\'il passe près d\'un équipement électronique allumé (lampe, dots, radio...), il accélère instantanément à 2.5 m/s.</p><h5>Perturbation</h5><p>Il brouille les équipements électroniques de beaucoup plus loin (15m) que les autres fantômes (10m).</p>' },
-  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Changeur de forme.', 
-    d:'<h5>Empreinte UV</h5><p>Seul fantôme à laisser une empreinte de main à 6 doigts (16% de chance). Peut aussi faire disparaître ses empreintes plus vite.</p><h5>Chasse (Shapeshift)</h5><p>Il a une chance de changer de modèle 3D pendant une fraction de seconde durant la chasse (on le voit clignoter bizarrement).</p>' },
-  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'Le Copieur.', 
-    d:'<h5>Orbes Fantômes</h5><p>Le Mimic a TOUJOURS des orbes fantômes, même en 0 preuve. C\'est sa "fausse" 4ème preuve.</p><h5>Comportement</h5><p>Il copie n\'importe quel autre fantôme et change régulièrement. Il peut être un Raiju rapide, puis devenir un Deogen lent, etc.</p>' },
-  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit & Rapide.', 
-    d:'<h5>Vitesse / Santé</h5><p>Plus votre santé mentale est basse, plus il est rapide. À 0% de santé, il fonce à 2.25 m/s.</p><h5>Spirit Box</h5><p>Si vous obtenez une réponse à la Spirit Box, vous êtes "maudit" : votre santé mentale baisse deux fois plus vite, même avec une lumière/bougie.</p>' },
-  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Vous trouve toujours.', 
-    d:'<h5>Vision Totale</h5><p>Il sait toujours où vous êtes. Se cacher est inutile, il viendra dans votre placard.</p><h5>Vitesse</h5><p>Très rapide de loin (3.0 m/s). Super lent (0.4 m/s) quand il est tout près de vous. Vous pouvez le "balader" en marchant autour d\'une table.</p><h5>Spirit Box</h5><p>Respiration lourde/Grogne unique si vous êtes collé à lui avec la Box.</p>' },
-  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillissement.', 
-    d:'<h5>Jeune (Début)</h5><p>Très actif, très rapide (2.75 m/s), chasse tôt (75%).</p><h5>Vieux (Fin)</h5><p>S\'il reste près des joueurs, il "vieillit". Il devient lent (1.0 m/s), moins actif et chasse moins (15%).</p><h5>Pas de Vitesse LOS</h5><p>Contrairement aux autres, il n\'accélère pas s\'il vous voit (Ligne de vue).</p>' },
-  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'(Entité Custom/Mod)', 
-    d:'<h5>Custom</h5><p>Cette entité n\'est pas officielle. Comportement variable selon le serveur.</p>' },
-  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'(Entité Custom/Mod)', 
-    d:'<h5>Custom</h5><p>Cette entité n\'est pas officielle. Comportement variable selon le serveur.</p>' },
-  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'(Entité Custom/Mod)', 
-    d:'<h5>Custom</h5><p>Cette entité n\'est pas officielle. Comportement variable selon le serveur.</p>' }
+  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><p>Ne chasse pas pendant <b>180s</b> après encens.</p>' },
+  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', d:'<h5>Test Sel</h5><p>Ne marche <b>JAMAIS</b> dans le sel.</p>' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', d:'<h5>Test Photo</h5><p>Disparaît sur la photo.</p>' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Test Pile</h5><p>Jette plusieurs objets à la fois.</p>' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique.', d:'<h5>Cible</h5><p>Ne tue que sa cible. Cri unique au micro.</p>' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide avec courant.', d:'<h5>Pouvoir</h5><p>Rapide de loin si courant ON. Ne coupe jamais le courant.</p>' },
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Lumière</h5><p>Chasse à 60% dans le noir. Ne peut pas allumer.</p>' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Dangereux.', d:'<h5>Vitesse</h5><p>Lent (1.0) caché, TGV (3.0) si vu.</p>' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><p>Ne chasse pas si plusieurs joueurs proches.</p>' },
+  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasse</h5><p>Cooldown de 20s seulement.</p>' },
+  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte</h5><p>Claque la porte d\'entrée (-15% San).</p>' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Chasse</h5><p>Clignote peu. Très visible.</p>' },
+  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Voix</h5><p>Chasse à 80% si on parle. Entend mal en chasse.</p>' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Vitesse</h5><p>Rapide au froid. Buée visible.</p>' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS</h5><p>Visible que caméra, sans personne.</p>' },
+  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas</h5><p>Pas silencieux en chasse.</p>' },
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Feu.', d:'<h5>Bougie</h5><p>Souffler bougie peut déclencher chasse.</p>' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double.', d:'<h5>Vitesse</h5><p>Un lent, un rapide.</p>' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Elec.', d:'<h5>Vitesse</h5><p>Rapide près des objets électroniques.</p>' },
+  { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Forme.', d:'<h5>UV</h5><p>Empreinte 6 doigts.</p>' },
+  { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'Copieur.', d:'<h5>Orbe</h5><p>A toujours des orbes (4e preuve).</p>' },
+  { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit.', d:'<h5>Vitesse</h5><p>Rapide si santé basse.</p>' },
+  { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Traqueur.', d:'<h5>Vision</h5><p>Vous trouve toujours. Lent près.</p>' },
+  { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit.', d:'<h5>Age</h5><p>Rapide au début, lent à la fin.</p>' },
+  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'Custom.', d:'<p>Custom.</p>' },
+  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'Custom.', d:'<p>Custom.</p>' },
+  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'Custom.', d:'<p>Custom.</p>' }
 ];
 
 const LOCATIONS = {
@@ -395,7 +343,7 @@ function renderProofs() {
     return `<button class="proof-btn" ${st} onclick="toggleProof('${p.id}')">${p.label}</button>`;
   }).join('');
   document.getElementById('mobile-proofs').innerHTML = html; 
-  document.getElementById('pc-proofs-list').innerHTML = html.replace(/proof-btn/g, 'proof-btn btn-action'); 
+  document.getElementById('pc-proofs-list').innerHTML = html.replace(/proof-btn/g, 'proof-btn sidebar-btn'); 
 }
 
 function toggleProof(id) {
@@ -405,6 +353,12 @@ function toggleProof(id) {
   saveState(); renderProofs(); renderGhosts();
 }
 
+function highlightText(text, searchTerm) {
+  if (!searchTerm) return text;
+  const regex = new RegExp(`(${searchTerm})`, 'gi');
+  return text.replace(regex, '<span class="highlight">$1</span>');
+}
+
 function renderGhosts() {
   const container = document.getElementById('ghost-grid');
   container.innerHTML = GHOSTS.map(g => {
@@ -412,6 +366,7 @@ function renderGhosts() {
     const impossible = state.inc.some(id => !gp.includes(id));
     const excluded = state.exc.some(id => { if(g.n==='Mimic' && id==='orb') return false; return gp.includes(id); });
     const manuallyKilled = state.manual.includes(g.n);
+    
     let searchMatch = true;
     if(state.search) {
         const cleanDesc = g.d.replace(/<[^>]*>/g, ' ');
@@ -422,9 +377,13 @@ function renderGhosts() {
     if((impossible || excluded || !searchMatch) && !manuallyKilled) return ''; 
     let cls = 'ghost candidate'; if(manuallyKilled) cls = 'ghost manual-excluded';
 
+    const displayName = state.search ? highlightText(g.n, state.search) : g.n;
+    const displayShort = state.search ? highlightText(g.t, state.search) : g.t;
+    const displayDesc = state.search ? highlightText(g.d, state.search) : g.d;
+
     return `
       <div class="${cls}">
-        <div class="g-head"><span class="g-name">${g.n}</span><span style="font-size:0.8rem; font-weight:bold; color:var(--accent)">${g.sp} m/s</span></div>
+        <div class="g-head"><span class="g-name">${displayName}</span><span style="font-size:0.8rem; font-weight:bold; color:var(--accent)">${g.sp} m/s</span></div>
         <div class="g-meta">
           ${g.p.map(pid => {
             const lbl = PROOFS.find(x=>x.id===pid).label;
@@ -433,13 +392,13 @@ function renderGhosts() {
           }).join('')}
           ${g.n==='Mimic' ? '<span class="badge">Fake Orbe</span>' : ''}
         </div>
-        <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">${g.t}</div>
+        <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:8px; line-height:1.4;">${displayShort}</div>
         <div class="g-actions">
           <button class="btn-action metro-btn" onclick="toggleGhostMetro('${g.sp}', this)">🔊</button>
           <button class="btn-action" style="flex:2" onclick="toggleDetails('${g.n}')">📖 DÉTAILS</button>
           <button class="btn-action" onclick="toggleManual('${g.n}')">${manuallyKilled ? '↺' : '❌'}</button>
         </div>
-        <div id="details-${g.n}" class="g-details">${g.d}</div>
+        <div id="details-${g.n}" class="g-details">${displayDesc}</div>
       </div>
     `;
   }).join('');
@@ -470,18 +429,18 @@ function startMetronome(speed, btn) {
     o.start(); g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1); o.stop(audioCtx.currentTime + 0.1);
   }, delay);
 }
-function stopMetronome() { clearInterval(metroId); document.querySelectorAll('.metro-btn, .btn-action').forEach(b => b.classList.remove('active')); }
+function stopMetronome() { clearInterval(metroId); document.querySelectorAll('.metro-btn, .btn-action, .sidebar-btn').forEach(b => b.classList.remove('active')); }
 function tapBpm() {
-  const now = Date.now(); if(lastTap) { const diff = (now - lastTap)/1000; const est = (1/diff)*1.1; document.getElementById('bpm-val').innerText = est.toFixed(1) + " m/s"; }
+  const now = Date.now(); if(lastTap) { const diff = (now - lastTap)/1000; const est = (1/diff)*1.1; const t1 = document.getElementById('bpm-val-sidebar'); const t2 = document.getElementById('bpm-val-mobile'); if(t1) t1.innerText = est.toFixed(1); if(t2) t2.innerText = est.toFixed(1); }
   lastTap = now; setTimeout(() => { if(Date.now()-lastTap > 2000) lastTap=0; }, 2000);
 }
 function runTimer(s) {
   if(audioCtx.state === 'suspended') audioCtx.resume();
   clearInterval(tInterval); let t = s;
-  const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let sec = (t%60).toString().padStart(2,'0'); document.getElementById('timer-disp').innerText = `${m}:${sec}`; };
-  tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "PRET"; const o=audioCtx.createOscillator(); o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5); } }, 1000);
+  const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let sec = (t%60).toString().padStart(2,'0'); const t1=document.getElementById('timer-disp-sidebar'); const t2=document.getElementById('timer-disp-mobile'); if(t1) t1.innerText=`${m}:${sec}`; if(t2) t2.innerText=`${m}:${sec}`; };
+  tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); const t1=document.getElementById('timer-disp-sidebar'); const t2=document.getElementById('timer-disp-mobile'); if(t1) t1.innerText="PRET"; if(t2) t2.innerText="PRET"; const o=audioCtx.createOscillator(); o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5); } }, 1000);
 }
-function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp').innerText = "00:00"; }
+function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp-sidebar').innerText = "00:00"; document.getElementById('timer-disp-mobile').innerText = "00:00"; }
 function loadLocs(key) { const div = document.getElementById('loc-area'); if(!key) { div.innerHTML=''; return; } const data = LOCATIONS[key] || []; div.innerHTML = data.map(i => `<div style="padding:10px; border-bottom:1px solid #333"><b>${i.i} ${i.n}</b><br><span style="color:#94a3b8">${i.l}</span></div>`).join(''); }
 function setSan(v) { state.san = v; document.getElementById('san-disp').innerText = v+"%"; saveState(); }
 function saveState() { localStorage.setItem('phasmo_v21', JSON.stringify(state)); }
