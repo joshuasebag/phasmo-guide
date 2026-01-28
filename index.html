@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (IA)</title>
+  <title>PHASMO-TRACKER Ultimate (Vocal)</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker Phasmophobia avec IA. Décrivez la situation (ex: 'il court vite'), l'outil trouve les fantômes et les tests." />
+  <meta name="description" content="Tracker Phasmophobia avec Commandes Vocales. Parlez à l'IA pour identifier le fantôme. Guide complet objets maudits." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -89,6 +89,16 @@
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); }
     .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
+    /* SEARCH BAR WITH MIC */
+    .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
+    .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
+    .mic-btn {
+      width: 50px; background: #1e293b; border: 1px solid var(--border); border-radius: 8px;
+      color: #cbd5e1; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
+      transition: 0.2s;
+    }
+    .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
+
     /* AI BOX */
     .ai-box {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5));
@@ -118,7 +128,6 @@
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
     .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
     
-    /* HIGHLIGHT */
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
     /* UTILS & GUIDES */
@@ -132,8 +141,8 @@
 
     .hidden { display: none !important; }
     .text-center { text-align: center; }
-    .search-input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; margin-bottom: 10px; font-size: 1rem; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     
     .badge { font-size: 0.7rem; padding: 2px 6px; background: #000; border-radius: 4px; color: #64748b; border: 1px solid #333; }
@@ -185,7 +194,10 @@
   <main class="main-area" id="main-content">
     
     <div id="view-tracker">
-      <input type="text" class="search-input" placeholder="🔍 Ex: 'Il marche pas dans le sel', 'très rapide'..." oninput="setSearch(this.value)">
+      <div class="search-container">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Écrivez ou parlez... (ex: 'Il marche dans le sel')" oninput="setSearch(this.value)">
+        <button class="mic-btn" onclick="toggleVoice()" id="mic-btn">🎙️</button>
+      </div>
       
       <div id="ai-suggestion" class="ai-box">
         <div class="ai-title">🤖 CONSEIL IA (Analyse de situation)</div>
@@ -369,7 +381,6 @@ function toggleProof(id) {
 
 function highlightText(text, searchTerms) {
   if (!searchTerms || searchTerms.length === 0) return text;
-  // Créer une regex qui cherche n'importe quel mot-clé (ou|ou|ou)
   const regex = new RegExp(`(${searchTerms.join('|')})`, 'gi');
   return text.replace(regex, '<span class="highlight">$1</span>');
 }
@@ -382,14 +393,10 @@ function renderGhosts() {
 
   // TRAITEMENT IA & TOKENS
   if(state.search) {
-    // 1. Nettoyer la phrase (Enlever le, la, un, il, elle...)
     const stopWords = ['le','la','les','un','une','des','il','elle','on','nous','vous','ils','elles','est','a','ont','sont','c\'est','dans','par','pour','en','vers','avec','sans','sous','sur','ne','pas','plus','moins','très','trop','peux','veut','fait'];
-    
-    // 2. Créer les tokens (mots-clés)
     const rawTokens = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[\s,'.]+/);
     activeTokens = rawTokens.filter(t => t.length > 2 && !stopWords.includes(t));
 
-    // 3. Vérifier les règles IA
     const cleanSearch = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     for(let r of AI_RULES) {
       if(r.k.some(k => cleanSearch.includes(k))) {
@@ -399,24 +406,19 @@ function renderGhosts() {
   }
   if(!aiFound) aiBox.classList.remove('visible');
 
-  // FILTRAGE DES CARTES
+  // GHOSTS
   const container = document.getElementById('ghost-grid');
   container.innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
     
-    // Preuves
     const impossible = state.inc.some(id => !gp.includes(id));
     const excluded = state.exc.some(id => { if(g.n==='Mimic' && id==='orb') return false; return gp.includes(id); });
     const manuallyKilled = state.manual.includes(g.n);
     
-    // Recherche par Mots-Clés (Match souple)
     let searchMatch = true;
     if(activeTokens.length > 0) {
-        // On construit tout le texte du fantôme
         const cleanDesc = g.d.replace(/<[^>]*>/g, ' ');
         const fullText = (g.n + ' ' + g.t + ' ' + cleanDesc).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        
-        // Si AUCUN token n'est trouvé dans le texte, on cache
         const found = activeTokens.some(token => fullText.includes(token));
         if(!found) searchMatch = false;
     }
@@ -425,7 +427,6 @@ function renderGhosts() {
     
     let cls = 'ghost candidate'; if(manuallyKilled) cls = 'ghost manual-excluded';
 
-    // Highlight (Surlignage des mots trouvés)
     const displayName = activeTokens.length ? highlightText(g.n, activeTokens) : g.n;
     const displayShort = activeTokens.length ? highlightText(g.t, activeTokens) : g.t;
     const displayDesc = activeTokens.length ? highlightText(g.d, activeTokens) : g.d;
@@ -463,6 +464,26 @@ function toggleManual(name) {
   saveState(); renderGhosts();
 }
 function setSearch(val) { state.search = val; renderGhosts(); }
+
+// VOICE RECOGNITION
+function toggleVoice() {
+  const micBtn = document.getElementById('mic-btn');
+  if (!('webkitSpeechRecognition' in window)) { alert("Vocal non supporté (Utilisez Chrome/Edge)"); return; }
+  
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'fr-FR';
+  
+  recognition.onstart = () => { micBtn.classList.add('listening'); };
+  recognition.onend = () => { micBtn.classList.remove('listening'); };
+  
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('search-input').value = transcript;
+    setSearch(transcript);
+  };
+  
+  recognition.start();
+}
 
 function toggleGhostMetro(speed, btn) {
   if(btn.classList.contains('active')) { stopMetronome(); return; }
