@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate (Vocal)</title>
+  <title>PHASMO-TRACKER Ultimate (Vocal Fix)</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
-  <meta name="description" content="Tracker Phasmophobia avec Commandes Vocales. Parlez à l'IA pour identifier le fantôme. Guide complet objets maudits." />
+  <meta name="description" content="Tracker Phasmophobia avec Commandes Vocales Corrigées. Parlez naturellement, l'IA comprend les noms de fantômes." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
 
@@ -195,7 +195,7 @@
     
     <div id="view-tracker">
       <div class="search-container">
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 Écrivez ou parlez... (ex: 'Il marche dans le sel')" oninput="setSearch(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Écrivez ou parlez... (ex: 'Deogen', 'Rapide')" oninput="setSearch(this.value)">
         <button class="mic-btn" onclick="toggleVoice()" id="mic-btn">🎙️</button>
       </div>
       
@@ -391,7 +391,6 @@ function renderGhosts() {
   let aiFound = false;
   let activeTokens = [];
 
-  // TRAITEMENT IA & TOKENS
   if(state.search) {
     const stopWords = ['le','la','les','un','une','des','il','elle','on','nous','vous','ils','elles','est','a','ont','sont','c\'est','dans','par','pour','en','vers','avec','sans','sous','sur','ne','pas','plus','moins','très','trop','peux','veut','fait'];
     const rawTokens = state.search.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[\s,'.]+/);
@@ -406,7 +405,6 @@ function renderGhosts() {
   }
   if(!aiFound) aiBox.classList.remove('visible');
 
-  // GHOSTS
   const container = document.getElementById('ghost-grid');
   container.innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
@@ -465,7 +463,7 @@ function toggleManual(name) {
 }
 function setSearch(val) { state.search = val; renderGhosts(); }
 
-// VOICE RECOGNITION
+// VOICE
 function toggleVoice() {
   const micBtn = document.getElementById('mic-btn');
   if (!('webkitSpeechRecognition' in window)) { alert("Vocal non supporté (Utilisez Chrome/Edge)"); return; }
@@ -477,7 +475,15 @@ function toggleVoice() {
   recognition.onend = () => { micBtn.classList.remove('listening'); };
   
   recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
+    let transcript = event.results[0][0].transcript.toLowerCase();
+    
+    // CORRECTIONS PHONÉTIQUES
+    transcript = transcript
+      .replace(/deo.*/g, 'deogen').replace(/taille|thai/g, 'thaye').replace(/jean|gin/g, 'djinn')
+      .replace(/han tou|un tout/g, 'hantu').replace(/raichu|rail/g, 'raiju')
+      .replace(/on y|au nid/g, 'oni').replace(/l'oeil|ok/g, 'yokai')
+      .replace(/benchy/g, 'banshee').replace(/maillling/g, 'myling');
+
     document.getElementById('search-input').value = transcript;
     setSearch(transcript);
   };
