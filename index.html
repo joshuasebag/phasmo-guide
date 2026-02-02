@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate</title>
+  <title>PHASMO-TRACKER Ultimate v30.0</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:title" content="Tracker Phasmophobia Expert" />
-  <meta name="description" content="Outil complet Phasmophobia : Journal, Vitesse, Vocal IA, Objets Maudits (Dayan, Gallu, Obambo inclus)." />
+  <meta property="og:title" content="Tracker Phasmophobia Expert v30.0" />
+  <meta name="description" content="Outil complet Phasmophobia v30.0 : Journal, Vitesse, Vocal IA, Objets Maudits (Dayan, Gallu, Obambo inclus)." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
@@ -31,13 +31,12 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-    /* LAYOUT */
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
     .controls-area { background: #020617; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
     .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
 
-    /* RESPONSIVE */
     .pc-only { display: block; } .mobile-only { display: none; }
+    
     @media (min-width: 900px) {
       .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
@@ -47,6 +46,7 @@
       .nav-item.active { background: var(--accent); color: #000; }
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     }
+    
     @media (max-width: 899px) {
       .app-layout { flex-direction: column; }
       .controls-area, .pc-header { display: none; }
@@ -61,7 +61,6 @@
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     }
 
-    /* COMPOSANTS */
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     .proof-btn, .sidebar-btn { flex: 0 0 auto; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #1e293b; color: #cbd5e1; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: 0.2s; user-select: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px; }
     .sidebar-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
@@ -72,19 +71,16 @@
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); } .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* SEARCH */
     .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
     .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
     .mic-btn { width: 50px; background: #1e293b; border: 1px solid var(--border); border-radius: 8px; color: #cbd5e1; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
     .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
 
-    /* AI BOX */
     .ai-box { background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5)); border: 1px solid #38bdf8; border-left: 4px solid #38bdf8; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: none; animation: slideDown 0.3s ease-out; }
     .ai-box.visible { display: block; }
     .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
     .ai-content { font-size: 0.9rem; color: #e0f2fe; line-height: 1.4; }
 
-    /* FANTOMES */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
@@ -101,7 +97,6 @@
     .g-details ul { margin: 0; padding-left: 20px; } .g-details li { margin-bottom: 4px; }
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
-    /* UTILS & GUIDES */
     .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
     .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
     .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
@@ -123,7 +118,11 @@
 
 <div class="app-layout">
   <aside class="controls-area">
-    <div class="pc-header">PHASMO ULTIMATE 👻</div>
+    <div class="pc-header">
+      PHASMO ULTIMATE 👻 
+      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v30.0</span>
+    </div>
+    
     <div class="nav-pills">
       <button class="nav-item active" onclick="setTab('tracker')">JOURNAL</button>
       <button class="nav-item" onclick="setTab('tools')">CARTES</button>
@@ -238,42 +237,41 @@
 </nav>
 
 <script>
-/* === DONNÉES COMPLÈTES === */
 const PROOFS = [ { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Box' }, { id:'frz', label:'Froid' }, { id:'uv', label:'UV' }, { id:'dot', label:'DOTS' }, { id:'wrt', label:'Ecrit' } ];
 
 const AI_RULES = [
-  { k: ['sel', 'salt'], m: "👣 <b>Problème de Sel ?</b> Si un fantôme marche dans le sel sans laisser d'UV (ou ne marche jamais dedans), c'est un <b>SPECTRE</b> (100% sûr)." },
-  { k: ['rapide', 'vitesse', 'speed', 'courir'], m: "⚡ <b>Vitesse Anormale ?</b> Vérifiez le <b>Revenant</b> (Si vue), <b>Hantu</b> (Froid), <b>Thaye</b> (Jeune), <b>Deogen</b> (De loin), <b>Moroi</b> (Santé basse) ou <b>Raiju</b> (Élec)." },
-  { k: ['lent', 'slow'], m: "🐢 <b>Fantôme Lent ?</b> <b>Deogen</b> (Tout près), <b>Revenant</b> (Caché), <b>Thaye</b> (Vieux), <b>Hantu</b> (Chaud) ou <b>Obambo</b> (Calme)." },
-  { k: ['tot', 'tôt', 'attaque', 'chasse', 'agressif'], m: "⚔️ <b>Attaque Précoce ?</b> Le <b>Démon</b> attaque à 70% (et parfois 100%). Le <b>Thaye</b> à 75%. Le <b>Yokai</b> à 80% si vous parlez. Le <b>Raiju</b> à 65% près d'électronique." },
-  { k: ['parler', 'voix', 'cri', 'box'], m: "🎤 <b>Réaction à la voix ?</b> Le <b>Yokai</b> chasse si vous parlez. La <b>Banshee</b> a un cri unique au micro. Le <b>Deogen</b> respire fort dans la Spirit Box (1m)." },
-  { k: ['lumiere', 'courant', 'lampe', 'interrupteur'], m: "💡 <b>Problème électrique ?</b> Le <b>Cauchemar</b> n'allume jamais la lumière. Le <b>Hantu</b> n'allume jamais le courant. Le <b>Jinn</b> ne coupe jamais le courant. La <b>Mare</b> éteint tout de suite." },
-  { k: ['objet', 'jeter', 'lancer'], m: "📦 <b>Objets qui volent ?</b> Le <b>Poltergeist</b> jette les objets très fort et en groupe (Explosion = -2% santé/objet)." },
-  { k: ['photo'], m: "📸 <b>Photo ratée ?</b> Si le fantôme n'apparaît pas sur la photo (mais qu'elle est validée 3 étoiles), c'est un <b>FANTÔME</b>." },
-  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Invisible longtemps = <b>Fantôme</b>. Très visible = <b>Oni</b>. Change de forme = <b>Obake</b>." },
-  { k: ['piece', 'favori', 'bouge'], m: "🏠 <b>Pièce favorite ?</b> Le <b>Goryo</b> ne change jamais de pièce favorite. Les autres peuvent changer." }
+  { k: ['sel', 'salt'], m: "👣 <b>Problème de Sel ?</b> Le <b>SPECTRE</b> ne marche JAMAIS dedans. Le <b>GALLU</b> enragé ne marche pas dedans." },
+  { k: ['rapide', 'vitesse', 'speed'], m: "⚡ <b>Vitesse Anormale ?</b> Vérifiez <b>Revenant</b> (Vue), <b>Hantu</b> (Froid), <b>Thaye</b> (Jeune), <b>Deogen</b> (Loin), <b>Moroi</b> (Santé basse), <b>Dayan</b> (Mouvement) ou <b>Obambo</b> (Agressif)." },
+  { k: ['lent', 'slow'], m: "🐢 <b>Fantôme Lent ?</b> <b>Deogen</b> (Près), <b>Revenant</b> (Caché), <b>Thaye</b> (Vieux), <b>Hantu</b> (Chaud), <b>Dayan</b> (Immobile) ou <b>Obambo</b> (Calme)." },
+  { k: ['tot', 'tôt', 'attaque', 'chasse'], m: "⚔️ <b>Attaque Précoce ?</b> <b>Démon</b> (70%), <b>Thaye</b> (75%), <b>Yokai</b> (80% voix), <b>Raiju</b> (65% élec), <b>Obambo</b> (65% agressif)." },
+  { k: ['parler', 'voix', 'cri'], m: "🎤 <b>Voix ?</b> Le <b>Yokai</b> chasse si vous parlez. La <b>Banshee</b> crie au micro. Le <b>Deogen</b> respire à la Spirit Box (1m)." },
+  { k: ['lumiere', 'courant', 'lampe'], m: "💡 <b>Élec ?</b> <b>Cauchemar</b> n'allume jamais. <b>Hantu</b> n'allume jamais courant. <b>Jinn</b> ne coupe jamais courant." },
+  { k: ['objet', 'jeter'], m: "📦 <b>Objets ?</b> <b>Poltergeist</b> jette fort (Explosion)." },
+  { k: ['photo'], m: "📸 <b>Photo ?</b> Si fantôme invisible sur photo validée = <b>FANTÔME</b>." },
+  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Lent = <b>Fantôme</b>. Rapide = <b>Oni</b>. Forme = <b>Obake</b>." },
+  { k: ['piece', 'favori', 'bouge'], m: "🏠 <b>Pièce favorite ?</b> Le <b>Goryo</b> ne change jamais de pièce favorite." }
 ];
 
 const GHOSTS = [
-  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><ul><li>Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).</li><li>Si chasse avant 3min = Pas Esprit.</li></ul>' },
+  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><ul><li>Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).</li></ul>' },
   { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel.', d:'<h5>Test Sel (100%)</h5><ul><li>Ne marche <b>JAMAIS</b> dans le sel.</li><li>S\'il marche dans le sel = Pas Spectre.</li><li>Peut se téléporter sur un joueur (EMF 2/5).</li></ul>' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Photo vide. Clignote lent.', d:'<h5>Test Photo</h5><ul><li>Disparaît sur la photo (Photo "Fantôme" validée mais vide).</li><li>Clignote lentement en chasse (Invisible 1s à 2s).</li><li>Draine la santé si on le regarde.</li></ul>' },
-  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Test Pile</h5><ul><li>Faites une pile d\'objets. Il peut tout jeter d\'un coup (Explosion).</li><li>-2% santé par objet jeté.</li><li>Jette les objets plus fort et plus loin.</li></ul>' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique. Chant.', d:'<h5>Cible Unique</h5><ul><li>Ne tue que sa cible. Ignore les autres (passe à travers).</li><li>Cri unique au micro parabolique.</li><li>Si elle chante et touche le joueur : -15% santé.</li></ul>' },
-  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide avec courant.', d:'<h5>Pouvoir Courant</h5><ul><li>Vitesse 2.5 m/s si courant ON et vous voit de loin.</li><li>Ralentit à moins de 3m.</li><li>Ne coupe JAMAIS le courant.</li><li>Pouvoir caché : -25% santé si près de lui (EMF 2 au disjoncteur).</li></ul>' },
-  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Obscurité</h5><ul><li>Chasse à 60% dans le noir (40% lumière).</li><li>Éteint les lumières instantanément.</li><li>Ne peut PAS allumer la lumière.</li></ul>' },
-  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Dangereux.', d:'<h5>Vitesse Extrême</h5><ul><li><b>Caché :</b> Très lent (1.0 m/s).</li><li><b>Vu :</b> TGV (3.0 m/s) dès qu\'il vous voit (ou lampe/voix).</li><li>Ralentit à la dernière position connue. Ne courez pas en ligne droite.</li></ul>' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><ul><li>Ne chasse pas si plusieurs joueurs dans la pièce.</li><li>Chasse à 35% seulement.</li><li>Beaucoup d\'events "Fumée" (Ombre noire).</li></ul>' },
-  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasse Fréquente</h5><ul><li>Peut chasser à 70% santé (Rarement 100% avec pouvoir).</li><li>Cooldown de 20s seulement entre chasses.</li><li>Encens dure 60s (au lieu de 90s).</li><li>Portée Crucifix augmentée (5m).</li></ul>' },
-  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte d\'entrée</h5><ul><li>Seul fantôme qui ferme TOTALEMENT la porte d\'entrée hors chasse (-15% santé).</li><li>L\'encens le bloque dans sa pièce pendant 90s.</li></ul>' },
-  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Visibilité</h5><ul><li>Clignote très peu en chasse (Très visible).</li><li>Ne fait JAMAIS l\'event "Boule de fumée" (souffle).</li><li>Draine -20% santé sur collision (Event).</li></ul>' },
-  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Sensible Voix</h5><ul><li>Chasse à 80% si on parle près de lui.</li><li>Sourd en chasse : Entend à moins de 2.5m (au lieu de 10m).</li><li>Activité augmente si on parle.</li></ul>' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Thermique</h5><ul><li><b>Froid :</b> Rapide (2.7 m/s).</li><li><b>Chaud :</b> Lent (1.4 m/s).</li><li>Buée visible en chasse (si courant OFF).</li><li>N\'allume JAMAIS le courant.</li></ul>' },
-  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS Spécial</h5><ul><li>DOTS visible UNIQUEMENT via caméra vidéo.</li><li>Ne se montre pas aux DOTS si quelqu\'un est dans la pièce.</li><li>Ne change JAMAIS de pièce favorite.</li></ul>' },
-  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas Discrets</h5><ul><li>Pas silencieux en chasse (On l\'entend à < 12m au lieu de 20m).</li><li>Astuce : Si la lampe clignote mais que vous n\'entendez pas de pas, c\'est un Myling.</li></ul>' },
-  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Feu.', d:'<h5>Peur du Feu</h5><ul><li>Le feu agit comme un crucifix (portée 4m).</li><li>Priorité : Bougie > Crucifix.</li><li>S\'il souffle une bougie et qu\'il n\'y a pas d\'autre feu/crucifix = CHASSE (même à 100% santé).</li></ul>' },
-  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double.', d:'<h5>Deux Fantômes</h5><ul><li>Un lent (1.5 m/s), un rapide (1.9 m/s).</li><li>Interactions à deux endroits différents simultanément.</li><li>Peut chasser depuis deux endroits différents.</li></ul>' },
-  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Elec.', d:'<h5>Boost Électrique</h5><ul><li>Vitesse 2.5 m/s près des objets électroniques actifs.</li><li>Brouille les équipements de loin (15m au lieu de 10m).</li><li>Chasse à 65% si électronique proche.</li></ul>' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Photo vide. Clignote lent.', d:'<h5>Test Photo</h5><ul><li>Disparaît sur la photo (Photo validée mais vide).</li><li>Clignote lentement en chasse.</li><li>Draine santé si regardé.</li></ul>' },
+  { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Explosion d\'Objets</h5><ul><li>Jette plusieurs objets en même temps.</li><li>-2% de santé par objet jeté.</li></ul>' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique.', d:'<h5>Stalker</h5><ul><li>Ne tue que sa cible.</li><li>Cri unique au micro parabolique.</li><li>Chant = -15% santé.</li></ul>' },
+  { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide si courant ON.', d:'<h5>Courant</h5><ul><li>Vitesse 2.5 m/s si courant ON et ligne de vue.</li><li>Ne coupe JAMAIS le courant.</li><li>Pouvoir : -25% santé si près du disjoncteur.</li></ul>' },
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Obscurité</h5><ul><li>Chasse à 60% dans le noir.</li><li>Éteint les lumières instantanément.</li><li>Ne peut PAS allumer la lumière.</li></ul>' },
+  { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'TGV si vu.', d:'<h5>Vitesse Extrême</h5><ul><li><b>Caché :</b> 1.0 m/s (Lent).</li><li><b>Vu :</b> 3.0 m/s (Immédiat).</li></ul>' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><ul><li>Ne chasse pas si >1 joueur dans la pièce.</li><li>Chasse à 35% seulement.</li><li>Events "Fumée" fréquents.</li></ul>' },
+  { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasseur</h5><ul><li>Chasse à 70%.</li><li>Cooldown 20s.</li><li>Encens = 60s.</li><li>Portée Crucifix 5m.</li></ul>' },
+  { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte</h5><ul><li>Ferme totalement la porte entrée hors chasse (-15% santé).</li><li>Encens le bloque dans sa pièce.</li></ul>' },
+  { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Visible</h5><ul><li>Clignote très peu en chasse.</li><li>Pas d\'event "Fumée".</li><li>-20% santé sur collision event.</li></ul>' },
+  { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Voix</h5><ul><li>Chasse à 80% si on parle.</li><li>Entend à < 2.5m en chasse.</li></ul>' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Thermique</h5><ul><li>Rapide au froid (2.7 m/s).</li><li>Buée visible en chasse (Courant OFF).</li><li>N\'allume JAMAIS le courant.</li></ul>' },
+  { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS</h5><ul><li>Visible QUE caméra vidéo (Personne dans la pièce).</li><li>Ne change jamais de pièce.</li></ul>' },
+  { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas Discrets</h5><ul><li>Pas inaudibles à > 12m.</li><li>Si lampe clignote sans bruit = Myling.</li></ul>' },
+  { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Peur du Feu.', d:'<h5>Bougie</h5><ul><li>Bougie = Crucifix (4m).</li><li>Souffler bougie peut déclencher chasse.</li></ul>' },
+  { n:'Jumeaux', p:['emf','frz','box'], th:50, sp:'Var', t:'Double.', d:'<h5>Deux Entités</h5><ul><li>Un lent (1.5 m/s), un rapide (1.9 m/s).</li><li>Interactions simultanées.</li></ul>' },
+  { n:'Raiju', p:['dot','emf','orb'], th:65, sp:'2.5', t:'Boost Elec.', d:'<h5>Électronique</h5><ul><li>Vitesse 2.5 m/s près des objets électroniques actifs.</li><li>Brouille les équipements de loin (15m au lieu de 10m).</li><li>Chasse à 65% si électronique proche.</li></ul>' },
   { n:'Obake', p:['emf','orb','uv'], th:50, sp:'1.7', t:'Forme.', d:'<h5>Changeforme</h5><ul><li>Empreinte unique à 6 doigts (16.7% chance).</li><li>Change de modèle 3D (pendant 1s) au moins une fois par chasse.</li><li>25% de chance de ne pas laisser d\'UV.</li></ul>' },
   { n:'Mimic', p:['box','uv','frz'], th:50, sp:'Var', t:'Copieur.', d:'<h5>L\'Imposteur</h5><ul><li>A toujours des ORBES (C\'est une fausse preuve, il en a 4 en tout).</li><li>Copie le comportement d\'un autre fantôme et change régulièrement.</li></ul>' },
   { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit.', d:'<h5>Vitesse & Santé</h5><ul><li>Vitesse augmente quand santé baisse (Max 2.25 m/s à 0%).</li><li>Aveuglé 7.5s après encens (au lieu de 5s).</li><li>Réponse Spirit Box = Maudit (Baisse santé x2).</li></ul>' },
@@ -286,12 +284,12 @@ const GHOSTS = [
 ];
 
 const LOCATIONS = {
-  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond)' }, { i:'🧸', n:'Poupée', l:'Garage' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
-  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir' }, { i:'🧩', n:'Ouija', l:'Garage' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
-  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
-  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre' }, { i:'✋', n:'Patte', l:'Chambre' } ],
-  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Jumelle' } ],
-  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Master' } ],
+  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
+  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
+  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
+  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
+  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
+  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
   'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
   'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
   'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
@@ -474,4 +472,4 @@ function resetAll() { if(confirm('Tout remettre à zéro ?')) { localStorage.rem
 init();
 </script>
 </body>
-</html>
+</html>v
