@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate v35.0</title>
+  <title>PHASMO-TRACKER Ultimate v36.0</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:title" content="Tracker Phasmophobia Expert v35.0" />
-  <meta name="description" content="Tracker Phasmophobia Adaptatif. Mode Sans Preuves ergonomique, IA Vocale, Objets Maudits." />
+  <meta property="og:title" content="Tracker Phasmophobia Expert v36.0" />
+  <meta name="description" content="Tracker Phasmophobia avec Analyseur Audio de Chasse, Modes de Difficulté, IA Vocale." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
@@ -70,7 +70,7 @@
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); } .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* ZONE FILTRES */
+    /* FILTRES & UI */
     .speed-filter-container { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 15px; }
     .speed-btn { padding: 8px; background: #1e293b; border: 1px solid var(--border); border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
     .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
@@ -86,6 +86,15 @@
     .mic-btn { width: 50px; background: #1e293b; border: 1px solid var(--border); border-radius: 8px; color: #cbd5e1; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
     .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
 
+    /* ANALYSEUR AUDIO */
+    .audio-viz-container { margin-top: 10px; background: #000; padding: 10px; border-radius: 8px; border: 1px solid #333; display: none; }
+    .audio-viz-container.active { display: block; animation: slideDown 0.3s; }
+    .audio-bar-wrapper { width: 100%; height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-top: 5px; }
+    .audio-bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.05s ease-out; }
+    .audio-bar.peak { background: var(--danger); }
+    .audio-stats { display: flex; justify-content: space-between; font-size: 0.8rem; color: #cbd5e1; margin-top: 5px; font-family: monospace; }
+
+    /* AI BOX & GHOSTS */
     .ai-box { background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5)); border: 1px solid #38bdf8; border-left: 4px solid #38bdf8; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: none; animation: slideDown 0.3s ease-out; }
     .ai-box.visible { display: block; }
     .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
@@ -133,7 +142,7 @@
   <aside class="controls-area">
     <div class="pc-header">
       PHASMO ULTIMATE 👻 
-      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v35.0</span>
+      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v36.0</span>
     </div>
     
     <div class="diff-container">
@@ -166,6 +175,21 @@
 
     <div class="sidebar-section">
       <div class="sidebar-title">🔊 MÉTRONOME & VITESSE</div>
+      
+      <button class="sidebar-btn" onclick="toggleAudioAnalyzer('sidebar')" style="width:100%; margin-bottom:8px; border-color:var(--accent); color:var(--accent);">🎤 ANALYSE AUDIO (BÊTA)</button>
+      
+      <div id="audio-viz-sidebar" class="audio-viz-container">
+        <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#94a3b8;">
+          <span>Sensibilité:</span>
+          <input type="range" min="0" max="100" value="50" oninput="setAudioThreshold(this.value)" style="width:60%">
+        </div>
+        <div class="audio-bar-wrapper"><div class="audio-bar" id="audio-bar-sidebar"></div></div>
+        <div class="audio-stats">
+          <span>BPM: <span id="audio-bpm-sidebar" style="color:var(--accent)">--</span></span>
+          <span>~<span id="audio-speed-sidebar" style="color:var(--accent)">--</span> m/s</span>
+        </div>
+      </div>
+
       <div class="sidebar-grid">
         <button class="sidebar-btn metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0</button>
         <button class="sidebar-btn metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7</button>
@@ -221,6 +245,19 @@
       </div>
       <div class="card mobile-only">
         <h4 style="margin:0 0 10px 0; color:var(--accent)">MÉTRONOME 🔊</h4>
+        <button class="sidebar-btn" onclick="toggleAudioAnalyzer('mobile')" style="width:100%; margin-bottom:8px; border-color:var(--accent); color:var(--accent);">🎤 ANALYSE AUDIO (BÊTA)</button>
+        <div id="audio-viz-mobile" class="audio-viz-container">
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#94a3b8;">
+            <span>Sensibilité:</span>
+            <input type="range" min="0" max="100" value="50" oninput="setAudioThreshold(this.value)" style="width:60%">
+          </div>
+          <div class="audio-bar-wrapper"><div class="audio-bar" id="audio-bar-mobile"></div></div>
+          <div class="audio-stats">
+            <span>BPM: <span id="audio-bpm-mobile" style="color:var(--accent)">--</span></span>
+            <span>~<span id="audio-speed-mobile" style="color:var(--accent)">--</span> m/s</span>
+          </div>
+        </div>
+
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:5px">
           <button class="sidebar-btn metro-btn" onclick="startMetronome(1.0, this)">🐢 1.0</button>
           <button class="sidebar-btn metro-btn" onclick="startMetronome(1.7, this)">🚶 1.7</button>
@@ -329,24 +366,18 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:65, sp:'Var', t:'Double face.', d:'<h5>Le Bipolaire</h5><ul><li><b>Calme :</b> 1.45 m/s. Chasse à 10% (Rare).</li><li><b>Agressif :</b> 1.96 m/s. Chasse à 65%.</li><li>Change d\'état toutes les 2 min ou si on le regarde.</li></ul>' }
 ];
 
-const LOCATIONS = {
-  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
-  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
-  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
-  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
-  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
-  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
-  'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
-  'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
-  'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
-};
-
 let state = { inc: [], exc: [], manual: [], san: 100, search: '', speedFilter: null, difficulty: 'ama' };
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 let metroId = null;
 let tInterval = null;
 let lastTap = 0;
+let audioAnalysing = false;
+let audioAnalyzerNode = null;
+let audioSource = null;
+let audioThreshold = 50; // 0-100%
+let lastPeakTime = 0;
+let beatTimes = [];
 
 function init() { loadState(); renderProofs(); renderGhosts(); setTab('tracker'); }
 
@@ -369,8 +400,6 @@ function setTab(tabName, btnMobile) {
 function setDiff(val) {
   state.difficulty = val;
   saveState();
-  
-  // RESET AUTO SI 0 PREUVE
   if(val === 'apoc') {
     state.inc = []; state.exc = [];
     document.getElementById('pc-proofs-list').style.display = 'none';
@@ -403,8 +432,6 @@ function renderProofs() {
   }).join('');
   document.getElementById('mobile-proofs').innerHTML = html; 
   document.getElementById('pc-proofs-list').innerHTML = html.replace(/proof-btn/g, 'proof-btn sidebar-btn'); 
-  
-  // Appliquer la visibilité selon difficulté au chargement
   if(state.difficulty === 'apoc') {
     document.getElementById('pc-proofs-list').style.display = 'none';
     document.getElementById('mobile-proofs').style.display = 'none';
@@ -590,6 +617,69 @@ function runTimer(s) {
 }
 
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp-sidebar').innerText = "00:00"; document.getElementById('timer-disp-mobile').innerText = "00:00"; }
+
+/* AUDIO ANALYZER LOGIC */
+async function toggleAudioAnalyzer(mode) {
+  if(audioAnalysing) {
+    if(audioSource) audioSource.disconnect();
+    audioAnalysing = false;
+    document.getElementById('audio-viz-sidebar').classList.remove('active');
+    document.getElementById('audio-viz-mobile').classList.remove('active');
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioSource = audioCtx.createMediaStreamSource(stream);
+    audioAnalyzerNode = audioCtx.createAnalyser();
+    audioAnalyzerNode.fftSize = 256;
+    audioSource.connect(audioAnalyzerNode);
+    audioAnalysing = true;
+    document.getElementById('audio-viz-'+mode).classList.add('active');
+    detectBeats(mode);
+  } catch(e) { alert("Micro non détecté. Vérifiez vos permissions."); }
+}
+
+function setAudioThreshold(val) { audioThreshold = val; }
+
+function detectBeats(mode) {
+  if(!audioAnalysing) return;
+  const bufferLength = audioAnalyzerNode.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+  audioAnalyzerNode.getByteFrequencyData(dataArray);
+  
+  let sum = 0; for(let i=0; i<bufferLength; i++) sum += dataArray[i];
+  let average = sum / bufferLength;
+  let val = (average / 255) * 100;
+  
+  const bar = document.getElementById('audio-bar-'+mode);
+  const thresh = audioThreshold * 0.8; // scaling
+  
+  if(bar) {
+    bar.style.width = Math.min(val * 3, 100) + '%';
+    if(val > thresh) {
+      bar.classList.add('peak');
+      const now = Date.now();
+      if(now - lastPeakTime > 250) { // Debounce 250ms
+        if(lastPeakTime !== 0) {
+          const diff = (now - lastPeakTime) / 1000;
+          beatTimes.push(diff);
+          if(beatTimes.length > 4) beatTimes.shift();
+          
+          let avgDiff = beatTimes.reduce((a,b)=>a+b,0) / beatTimes.length;
+          let bpm = Math.round(60 / avgDiff);
+          let speed = (1.7 * (bpm / 115)).toFixed(1); // Calibration approx
+          
+          document.getElementById('audio-bpm-'+mode).innerText = bpm;
+          document.getElementById('audio-speed-'+mode).innerText = speed;
+        }
+        lastPeakTime = now;
+      }
+    } else {
+      bar.classList.remove('peak');
+    }
+  }
+  requestAnimationFrame(() => detectBeats(mode));
+}
 
 function loadLocs(key) { const div = document.getElementById('loc-area'); if(!key) { div.innerHTML=''; return; } const data = LOCATIONS[key] || []; div.innerHTML = data.map(i => `<div style="padding:10px; border-bottom:1px solid #333"><b>${i.i} ${i.n}</b><br><span style="color:#94a3b8">${i.l}</span></div>`).join(''); }
 
