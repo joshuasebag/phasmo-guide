@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate v33.0</title>
+  <title>PHASMO-TRACKER Ultimate v34.0</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:title" content="Tracker Phasmophobia Expert v33.0" />
-  <meta name="description" content="Tracker Phasmophobia : Filtres de vitesse, Journal, IA Vocale, Objets Maudits." />
+  <meta property="og:title" content="Tracker Phasmophobia Expert v34.0" />
+  <meta name="description" content="Tracker Phasmophobia avec Modes de Difficulté, Reset Rapide, IA Vocale et Chronos." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
@@ -40,7 +40,7 @@
     @media (min-width: 900px) {
       .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
-      .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
+      .pc-header { display: block; margin-bottom: 15px; font-size: 1.2rem; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
       .nav-pills { display: flex; gap: 5px; margin-bottom: 15px; background: #1e293b; padding: 5px; border-radius: 8px; }
       .nav-item { flex: 1; padding: 8px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.2s; }
       .nav-item.active { background: var(--accent); color: #000; }
@@ -70,11 +70,16 @@
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); } .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* FILTRES VITESSE */
+    /* FILTRES VITESSE & DIFF */
     .speed-filter-container { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 15px; }
     .speed-btn { padding: 8px; background: #1e293b; border: 1px solid var(--border); border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
     .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
     .speed-btn.reset { border-color: var(--danger); color: var(--danger); }
+
+    .diff-container { display: flex; gap: 5px; margin-bottom: 15px; }
+    .diff-select { flex:1; padding: 8px; background: #020617; border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+    .btn-reset-pc { width: 40px; background: #1e293b; border: 1px solid var(--danger); color: var(--danger); border-radius: 6px; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+    .btn-reset-pc:hover { background: var(--danger); color: white; }
 
     .search-container { display: flex; gap: 10px; margin-bottom: 10px; }
     .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
@@ -128,9 +133,19 @@
   <aside class="controls-area">
     <div class="pc-header">
       PHASMO ULTIMATE 👻 
-      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v33.0</span>
+      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v34.0</span>
     </div>
     
+    <div class="diff-container">
+      <select id="diff-select" class="diff-select" onchange="setDiff(this.value)">
+        <option value="ama">🟢 Amateur/Pro (3 Preuves)</option>
+        <option value="night">🔴 Cauchemar (2 Preuves)</option>
+        <option value="ins">🟣 Démence (1 Preuve)</option>
+        <option value="apoc">⚫ Sans Preuve (0)</option>
+      </select>
+      <button class="btn-reset-pc" onclick="resetGame()" title="Reset Partie">↻</button>
+    </div>
+
     <div class="nav-pills">
       <button class="nav-item active" onclick="setTab('tracker')">JOURNAL</button>
       <button class="nav-item" onclick="setTab('tools')">CARTES</button>
@@ -239,7 +254,7 @@
       </div>
       <div class="card">
         <div style="display:flex; justify-content:space-between;"><span>🧠 Santé Mentale</span><span id="san-disp" style="color:var(--accent)">100%</span></div>
-        <input type="range" style="width:100%" min="0" max="100" value="100" oninput="setSan(this.value)">
+        <input type="range" style="width:100%" min="0" max="100" value="100" id="san-slider" oninput="setSan(this.value)">
       </div>
     </div>
 
@@ -252,7 +267,7 @@
         <div class="obj-card"><div class="obj-icon">🎶</div><div class="obj-info"><h4>Boîte à Musique</h4><span class="risk">Chasse si touchée/jetée. Joueur < 5m = Chasse. Coût : -75%</span></div></div>
         <div class="obj-card"><div class="obj-icon">🧸</div><div class="obj-info"><h4>Poupée Vaudou</h4><span class="risk">-5% par pic. Cœur = CHASSE (-10%).</span></div></div>
         <div class="obj-card"><div class="obj-icon">🔮</div><div class="obj-info"><h4>Miroir Hanté</h4><span class="risk">-7.5%/s. 0% = CHASSE.</span></div></div>
-        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">-16% par bougie (-80% total). Invoque et Chasse après 5s.</span></div></div>
+        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">-16% par bougie. Invoque et Chasse après 5s.</span></div></div>
       </div>
     </div>
 
@@ -263,7 +278,7 @@
   <button class="mn-item active" onclick="setTab('tracker', this)"><span class="mn-icon">📓</span>Journal</button>
   <button class="mn-item" onclick="setTab('tools', this)"><span class="mn-icon">🧰</span>Outils</button>
   <button class="mn-item" onclick="setTab('guides', this)"><span class="mn-icon">📖</span>Guides</button>
-  <button class="mn-item" style="color:var(--danger)" onclick="resetAll()"><span class="mn-icon">🗑️</span>Reset</button>
+  <button class="mn-item" style="color:var(--danger)" onclick="resetGame()"><span class="mn-icon">🗑️</span>Reset</button>
 </nav>
 
 <script>
@@ -313,19 +328,7 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:65, sp:'Var', t:'Double face.', d:'<h5>Le Bipolaire</h5><ul><li><b>Calme :</b> 1.45 m/s. Chasse à 10% (Rare).</li><li><b>Agressif :</b> 1.96 m/s. Chasse à 65%.</li><li>Change d\'état toutes les 2 min ou si on le regarde.</li></ul>' }
 ];
 
-const LOCATIONS = {
-  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
-  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
-  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
-  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
-  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
-  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
-  'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
-  'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
-  'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
-};
-
-let state = { inc: [], exc: [], manual: [], san: 100, search: '', speedFilter: null };
+let state = { inc: [], exc: [], manual: [], san: 100, search: '', speedFilter: null, difficulty: 'ama' };
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
 let metroId = null;
@@ -350,6 +353,23 @@ function setTab(tabName, btnMobile) {
   }
 }
 
+function setDiff(val) {
+  state.difficulty = val;
+  saveState();
+}
+
+function resetGame() {
+  if(confirm('Réinitialiser la chasse ?')) {
+    state.inc = []; state.exc = []; state.manual = []; state.san = 100; state.search = ''; state.speedFilter = null;
+    stopTimer(); stopMetronome();
+    document.getElementById('search-input').value = '';
+    const sanSlider = document.getElementById('san-slider');
+    if(sanSlider) sanSlider.value = 100;
+    setSan(100);
+    renderProofs(); renderGhosts();
+  }
+}
+
 function renderProofs() {
   const html = PROOFS.map(p => {
     let st = '';
@@ -368,7 +388,6 @@ function toggleProof(id) {
   saveState(); renderProofs(); renderGhosts();
 }
 
-// SPEED FILTER LOGIC
 function filterSpeed(type) {
   state.speedFilter = (state.speedFilter === type) ? null : type;
   document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
@@ -402,7 +421,6 @@ function renderGhosts() {
   }
   if(!aiFound) aiBox.classList.remove('visible');
 
-  // Listes de filtres de vitesse
   const FAST_GHOSTS = ['Djinn','Hantu','Jumeaux','Raiju','Mimic','Moroi','Deogen','Thaye','Revenant','Dayan','Gallu','Obambo'];
   const SLOW_GHOSTS = ['Revenant','Hantu','Jumeaux','Mimic','Moroi','Deogen','Thaye','Dayan','Gallu','Obambo'];
 
@@ -410,23 +428,16 @@ function renderGhosts() {
   container.innerHTML = GHOSTS.map(g => {
     let gp = [...g.p]; if(g.n==='Mimic') gp.push('orb');
     
-    // 1. Filtre Preuves
     const impossible = state.inc.some(id => !gp.includes(id));
     const excluded = state.exc.some(id => { if(g.n==='Mimic' && id==='orb') return false; return gp.includes(id); });
     
-    // 2. Filtre Vitesse
     let speedMatch = true;
     if(state.speedFilter === 'fast' && !FAST_GHOSTS.includes(g.n)) speedMatch = false;
     if(state.speedFilter === 'slow' && !SLOW_GHOSTS.includes(g.n)) speedMatch = false;
-    if(state.speedFilter === 'normal' && (FAST_GHOSTS.includes(g.n) || SLOW_GHOSTS.includes(g.n))) {
-       // "Normal" exclut les fantômes à vitesse variable, SAUF s'ils ont une phase normale très commune.
-       // Ici on garde simple : si c'est listé rapide/lent, c'est pas "Normal fixe".
-       speedMatch = false;
-    }
+    if(state.speedFilter === 'normal' && (FAST_GHOSTS.includes(g.n) || SLOW_GHOSTS.includes(g.n))) speedMatch = false;
 
     const manuallyKilled = state.manual.includes(g.n);
     
-    // 3. Recherche
     let searchMatch = true;
     if(activeTokens.length > 0) {
         const cleanDesc = g.d.replace(/<[^>]*>/g, ' ');
@@ -470,7 +481,6 @@ function toggleDetails(name) { document.getElementById('details-'+name).classLis
 function toggleManual(name) { if(state.manual.includes(name)) state.manual = state.manual.filter(x=>x!==name); else state.manual.push(name); saveState(); renderGhosts(); }
 function setSearch(val) { state.search = val; renderGhosts(); }
 
-// VOICE
 function toggleVoice() {
   const micBtn = document.getElementById('mic-btn');
   if (!('webkitSpeechRecognition' in window)) { alert("Utilisez Chrome/Edge"); return; }
@@ -512,6 +522,7 @@ function toggleGhostMetro(speed, btn) {
   if(btn.classList.contains('active')) { stopMetronome(); return; }
   stopMetronome(); let v = parseFloat(speed) || 1.7; startMetronome(v, btn);
 }
+
 function startMetronome(speed, btn) {
   if(audioCtx.state === 'suspended') audioCtx.resume();
   stopMetronome(); if(btn) btn.classList.add('active');
@@ -523,22 +534,35 @@ function startMetronome(speed, btn) {
     o.start(); g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1); o.stop(audioCtx.currentTime + 0.1);
   }, delay);
 }
+
 function stopMetronome() { clearInterval(metroId); document.querySelectorAll('.metro-btn, .btn-action, .sidebar-btn').forEach(b => b.classList.remove('active')); }
+
 function tapBpm() {
-  const now = Date.now(); if(lastTap) { const diff = (now - lastTap)/1000; const est = (1/diff)*1.1; const t1 = document.getElementById('bpm-val-sidebar'); const t2 = document.getElementById('bpm-val-mobile'); if(t1) t1.innerText = est.toFixed(1); if(t2) t2.innerText = est.toFixed(1); }
+  const now = Date.now(); 
+  if(lastTap) { 
+    const diff = (now - lastTap)/1000; const est = (1/diff)*1.1; 
+    const t1 = document.getElementById('bpm-val-sidebar'); 
+    const t2 = document.getElementById('bpm-val-mobile'); 
+    if(t1) t1.innerText = est.toFixed(1); 
+    if(t2) t2.innerText = est.toFixed(1); 
+  }
   lastTap = now; setTimeout(() => { if(Date.now()-lastTap > 2000) lastTap=0; }, 2000);
 }
+
 function runTimer(s) {
   if(audioCtx.state === 'suspended') audioCtx.resume();
   clearInterval(tInterval); let t = s;
   const tick = () => { let m = Math.floor(t/60).toString().padStart(2,'0'); let sec = (t%60).toString().padStart(2,'0'); const t1=document.getElementById('timer-disp-sidebar'); const t2=document.getElementById('timer-disp-mobile'); if(t1) t1.innerText=`${m}:${sec}`; if(t2) t2.innerText=`${m}:${sec}`; };
   tick(); tInterval = setInterval(() => { t--; tick(); if(t<=0) { clearInterval(tInterval); const t1=document.getElementById('timer-disp-sidebar'); const t2=document.getElementById('timer-disp-mobile'); if(t1) t1.innerText="PRET"; if(t2) t2.innerText="PRET"; const o=audioCtx.createOscillator(); o.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.5); } }, 1000);
 }
+
 function stopTimer() { clearInterval(tInterval); document.getElementById('timer-disp-sidebar').innerText = "00:00"; document.getElementById('timer-disp-mobile').innerText = "00:00"; }
+
 function loadLocs(key) { const div = document.getElementById('loc-area'); if(!key) { div.innerHTML=''; return; } const data = LOCATIONS[key] || []; div.innerHTML = data.map(i => `<div style="padding:10px; border-bottom:1px solid #333"><b>${i.i} ${i.n}</b><br><span style="color:#94a3b8">${i.l}</span></div>`).join(''); }
+
 function setSan(v) { state.san = v; document.getElementById('san-disp').innerText = v+"%"; saveState(); }
 function saveState() { localStorage.setItem('phasmo_v21', JSON.stringify(state)); }
-function loadState() { const s = localStorage.getItem('phasmo_v21'); if(s) state = JSON.parse(s); }
+function loadState() { const s = localStorage.getItem('phasmo_v21'); if(s) { state = JSON.parse(s); if(document.getElementById('diff-select')) document.getElementById('diff-select').value = state.difficulty || 'ama'; } }
 function resetAll() { if(confirm('Tout remettre à zéro ?')) { localStorage.removeItem('phasmo_v21'); location.reload(); } }
 
 init();
