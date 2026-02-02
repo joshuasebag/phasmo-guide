@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate v30.0</title>
+  <title>PHASMO-TRACKER Ultimate v31.0</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:title" content="Tracker Phasmophobia Expert v30.0" />
-  <meta name="description" content="Outil complet Phasmophobia v30.0 : Journal, Vitesse, Vocal IA, Objets Maudits (Dayan, Gallu, Obambo inclus)." />
+  <meta property="og:title" content="Tracker Phasmophobia Expert v31.0" />
+  <meta name="description" content="Tracker Phasmophobia : Journal, IA Vocale, Objets Maudits. Inclus Dayan, Gallu, Obambo (TyBayn Stats)." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
@@ -31,12 +31,13 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+    /* LAYOUT */
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
     .controls-area { background: #020617; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
     .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
 
+    /* RESPONSIVE */
     .pc-only { display: block; } .mobile-only { display: none; }
-    
     @media (min-width: 900px) {
       .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
@@ -46,7 +47,6 @@
       .nav-item.active { background: var(--accent); color: #000; }
       .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
     }
-    
     @media (max-width: 899px) {
       .app-layout { flex-direction: column; }
       .controls-area, .pc-header { display: none; }
@@ -61,6 +61,7 @@
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     }
 
+    /* COMPOSANTS */
     .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
     .proof-btn, .sidebar-btn { flex: 0 0 auto; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: #1e293b; color: #cbd5e1; font-weight: bold; font-size: 0.85rem; cursor: pointer; transition: 0.2s; user-select: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px; }
     .sidebar-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
@@ -71,16 +72,19 @@
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); } .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
+    /* SEARCH */
     .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
     .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
     .mic-btn { width: 50px; background: #1e293b; border: 1px solid var(--border); border-radius: 8px; color: #cbd5e1; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
     .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
 
+    /* AI BOX */
     .ai-box { background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5)); border: 1px solid #38bdf8; border-left: 4px solid #38bdf8; border-radius: 8px; padding: 15px; margin-bottom: 20px; display: none; animation: slideDown 0.3s ease-out; }
     .ai-box.visible { display: block; }
     .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
     .ai-content { font-size: 0.9rem; color: #e0f2fe; line-height: 1.4; }
 
+    /* FANTOMES */
     .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
@@ -97,6 +101,7 @@
     .g-details ul { margin: 0; padding-left: 20px; } .g-details li { margin-bottom: 4px; }
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
+    /* UTILS & GUIDES */
     .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
     .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
     .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
@@ -120,7 +125,7 @@
   <aside class="controls-area">
     <div class="pc-header">
       PHASMO ULTIMATE 👻 
-      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v30.0</span>
+      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v31.0</span>
     </div>
     
     <div class="nav-pills">
@@ -248,8 +253,7 @@ const AI_RULES = [
   { k: ['lumiere', 'courant', 'lampe'], m: "💡 <b>Élec ?</b> <b>Cauchemar</b> n'allume jamais. <b>Hantu</b> n'allume jamais courant. <b>Jinn</b> ne coupe jamais courant." },
   { k: ['objet', 'jeter'], m: "📦 <b>Objets ?</b> <b>Poltergeist</b> jette fort (Explosion)." },
   { k: ['photo'], m: "📸 <b>Photo ?</b> Si fantôme invisible sur photo validée = <b>FANTÔME</b>." },
-  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Lent = <b>Fantôme</b>. Rapide = <b>Oni</b>. Forme = <b>Obake</b>." },
-  { k: ['piece', 'favori', 'bouge'], m: "🏠 <b>Pièce favorite ?</b> Le <b>Goryo</b> ne change jamais de pièce favorite." }
+  { k: ['disparait', 'clignote'], m: "👁️ <b>Clignotement ?</b> Lent = <b>Fantôme</b>. Rapide = <b>Oni</b>. Forme = <b>Obake</b>." }
 ];
 
 const GHOSTS = [
@@ -472,4 +476,4 @@ function resetAll() { if(confirm('Tout remettre à zéro ?')) { localStorage.rem
 init();
 </script>
 </body>
-</html>v
+</html>
