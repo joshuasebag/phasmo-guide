@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   
-  <title>PHASMO-TRACKER Ultimate v34.0</title>
+  <title>PHASMO-TRACKER Ultimate v35.0</title>
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
-  <meta property="og:title" content="Tracker Phasmophobia Expert v34.0" />
-  <meta name="description" content="Tracker Phasmophobia avec Modes de Difficulté, Reset Rapide, IA Vocale et Chronos." />
+  <meta property="og:title" content="Tracker Phasmophobia Expert v35.0" />
+  <meta name="description" content="Tracker Phasmophobia Adaptatif. Mode Sans Preuves ergonomique, IA Vocale, Objets Maudits." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
   <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
@@ -32,7 +32,7 @@
     body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
-    .controls-area { background: #020617; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; overflow-y: auto; }
+    .controls-area { background: #020617; border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 20; overflow-y: auto; transition: 0.3s; }
     .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
 
     .pc-only { display: block; } .mobile-only { display: none; }
@@ -54,7 +54,7 @@
       .mn-item { background: none; border: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: bold; width: 100%; padding: 8px 0; }
       .mn-item.active { color: var(--accent); }
       .mn-icon { font-size: 1.2rem; }
-      .mobile-proof-bar { position: sticky; top: 0; z-index: 50; background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 8px; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; }
+      .mobile-proof-bar { position: sticky; top: 0; z-index: 50; background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 8px; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none; transition: 0.3s; }
       .mobile-proof-bar::-webkit-scrollbar { display: none; }
       .main-area { padding-bottom: 80px; }
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
@@ -70,7 +70,7 @@
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); } .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* FILTRES VITESSE & DIFF */
+    /* ZONE FILTRES */
     .speed-filter-container { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; margin-bottom: 15px; }
     .speed-btn { padding: 8px; background: #1e293b; border: 1px solid var(--border); border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
     .speed-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
@@ -133,15 +133,15 @@
   <aside class="controls-area">
     <div class="pc-header">
       PHASMO ULTIMATE 👻 
-      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v34.0</span>
+      <span style="font-size:0.5em; vertical-align:middle; color:#f59e0b; opacity:0.8; margin-left:5px;">v35.0</span>
     </div>
     
     <div class="diff-container">
       <select id="diff-select" class="diff-select" onchange="setDiff(this.value)">
-        <option value="ama">🟢 Amateur/Pro (3 Preuves)</option>
-        <option value="night">🔴 Cauchemar (2 Preuves)</option>
-        <option value="ins">🟣 Démence (1 Preuve)</option>
-        <option value="apoc">⚫ Sans Preuve (0)</option>
+        <option value="ama">🟢 3 Preuves (Normal)</option>
+        <option value="night">🔴 2 Preuves (Cauch.)</option>
+        <option value="ins">🟣 1 Preuve (Démence)</option>
+        <option value="apoc">⚫ 0 Preuve (Apoc.)</option>
       </select>
       <button class="btn-reset-pc" onclick="resetGame()" title="Reset Partie">↻</button>
     </div>
@@ -151,6 +151,7 @@
       <button class="nav-item" onclick="setTab('tools')">CARTES</button>
       <button class="nav-item" onclick="setTab('guides')">GUIDES</button>
     </div>
+    
     <div id="pc-proofs-list" style="display: flex; flex-direction: column; gap: 5px;"></div>
     
     <div class="sidebar-section">
@@ -267,7 +268,7 @@
         <div class="obj-card"><div class="obj-icon">🎶</div><div class="obj-info"><h4>Boîte à Musique</h4><span class="risk">Chasse si touchée/jetée. Joueur < 5m = Chasse. Coût : -75%</span></div></div>
         <div class="obj-card"><div class="obj-icon">🧸</div><div class="obj-info"><h4>Poupée Vaudou</h4><span class="risk">-5% par pic. Cœur = CHASSE (-10%).</span></div></div>
         <div class="obj-card"><div class="obj-icon">🔮</div><div class="obj-info"><h4>Miroir Hanté</h4><span class="risk">-7.5%/s. 0% = CHASSE.</span></div></div>
-        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">-16% par bougie. Invoque et Chasse après 5s.</span></div></div>
+        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">-16% par bougie (-80% total). Invoque et Chasse après 5s.</span></div></div>
       </div>
     </div>
 
@@ -328,6 +329,18 @@ const GHOSTS = [
   { n:'Obambo', p:['wrt','uv','dot'], th:65, sp:'Var', t:'Double face.', d:'<h5>Le Bipolaire</h5><ul><li><b>Calme :</b> 1.45 m/s. Chasse à 10% (Rare).</li><li><b>Agressif :</b> 1.96 m/s. Chasse à 65%.</li><li>Change d\'état toutes les 2 min ou si on le regarde.</li></ul>' }
 ];
 
+const LOCATIONS = {
+  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
+  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
+  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
+  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
+  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
+  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
+  'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
+  'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
+  'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
+};
+
 let state = { inc: [], exc: [], manual: [], san: 100, search: '', speedFilter: null, difficulty: 'ama' };
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioContext();
@@ -356,6 +369,17 @@ function setTab(tabName, btnMobile) {
 function setDiff(val) {
   state.difficulty = val;
   saveState();
+  
+  // RESET AUTO SI 0 PREUVE
+  if(val === 'apoc') {
+    state.inc = []; state.exc = [];
+    document.getElementById('pc-proofs-list').style.display = 'none';
+    document.getElementById('mobile-proofs').style.display = 'none';
+  } else {
+    document.getElementById('pc-proofs-list').style.display = 'flex';
+    document.getElementById('mobile-proofs').style.display = 'flex';
+  }
+  renderProofs(); renderGhosts();
 }
 
 function resetGame() {
@@ -379,6 +403,15 @@ function renderProofs() {
   }).join('');
   document.getElementById('mobile-proofs').innerHTML = html; 
   document.getElementById('pc-proofs-list').innerHTML = html.replace(/proof-btn/g, 'proof-btn sidebar-btn'); 
+  
+  // Appliquer la visibilité selon difficulté au chargement
+  if(state.difficulty === 'apoc') {
+    document.getElementById('pc-proofs-list').style.display = 'none';
+    document.getElementById('mobile-proofs').style.display = 'none';
+  } else {
+    document.getElementById('pc-proofs-list').style.display = 'flex';
+    document.getElementById('mobile-proofs').style.display = 'flex';
+  }
 }
 
 function toggleProof(id) {
@@ -563,7 +596,6 @@ function loadLocs(key) { const div = document.getElementById('loc-area'); if(!ke
 function setSan(v) { state.san = v; document.getElementById('san-disp').innerText = v+"%"; saveState(); }
 function saveState() { localStorage.setItem('phasmo_v21', JSON.stringify(state)); }
 function loadState() { const s = localStorage.getItem('phasmo_v21'); if(s) { state = JSON.parse(s); if(document.getElementById('diff-select')) document.getElementById('diff-select').value = state.difficulty || 'ama'; } }
-function resetAll() { if(confirm('Tout remettre à zéro ?')) { localStorage.removeItem('phasmo_v21'); location.reload(); } }
 
 init();
 </script>
