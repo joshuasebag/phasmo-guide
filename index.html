@@ -11,9 +11,10 @@
   
   <meta property="og:site_name" content="Phasmo-Tracker Ultimate" />
   <meta property="og:title" content="Tracker Phasmophobia Expert" />
-  <meta name="description" content="Tracker Phasmophobia Expert. Données précises (TyBayn), IA vocale, chronos et guide complet." />
+  <meta name="description" content="L'outil ultime pour Phasmophobia. Identification, Vitesse, Vocal IA et Objets Maudits." />
   <meta name="author" content="Sebag Joshua & Logeais Maélann" />
   <meta name="theme-color" content="#0f172a">
+  <meta name="google-site-verification" content="JgHSgqTfww6oZH2IdNMV8B5l6QsDQdTVgnMvWqpjd08" />
 
   <script type="application/ld+json">
   {
@@ -21,99 +22,170 @@
     "@type": "WebSite",
     "name": "Phasmo-Tracker Ultimate",
     "url": "https://joshuasebag.github.io/phasmo-guide/",
-    "description": "L'outil ultime pour Phasmophobia. Journal de preuves, Assistant IA vocal, Chronomètres et Guide des objets maudits."
+    "description": "Tracker interactif pour Phasmophobia avec reconnaissance vocale et guide expert."
   }
   </script>
 
   <style>
+    /* === VARIABLES & BASE === */
     :root {
-      --bg: #0f172a; --panel: #1e293b; --accent: #2dd4bf; --text: #f1f5f9;
-      --border: #334155; --danger: #ef4444; --success: #10b981; --warn: #f59e0b; --purple: #a855f7;
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --accent: #2dd4bf;
+      --text: #f1f5f9;
+      --border: #334155;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warn: #f59e0b;
+      --purple: #a855f7;
       --nav-height: 60px;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    body { 
+      margin: 0; 
+      font-family: 'Segoe UI', system-ui, sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
 
-    /* LAYOUT */
+    /* === LAYOUT === */
     .app-layout { display: flex; height: 100%; width: 100%; overflow: hidden; }
+    
     .controls-area { 
-      background: #020617; border-right: 1px solid var(--border); 
-      display: flex; flex-direction: column; z-index: 20; 
+      background: #020617; 
+      border-right: 1px solid var(--border); 
+      display: flex; flex-direction: column; 
+      z-index: 20; 
       overflow-y: auto;
     }
-    .main-area { flex: 1; overflow-y: auto; padding: 15px; position: relative; scroll-behavior: smooth; }
+    
+    .main-area { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 15px; 
+      position: relative; 
+      scroll-behavior: smooth; 
+    }
 
-    /* RESPONSIVE */
+    /* === RESPONSIVE (PC vs MOBILE) === */
     .pc-only { display: block; }
     .mobile-only { display: none; }
 
+    /* PC (> 900px) */
     @media (min-width: 900px) {
       .controls-area { width: 340px; padding: 20px; }
       .mobile-nav, .mobile-proof-bar { display: none !important; }
-      .pc-header { display: block; margin-bottom: 20px; font-size: 1.2rem; font-weight: 900; color: var(--accent); letter-spacing: 1px; }
-      .nav-pills { display: flex; gap: 5px; margin-bottom: 15px; background: #1e293b; padding: 5px; border-radius: 8px; }
-      .nav-item { flex: 1; padding: 8px; border: none; background: transparent; color: #94a3b8; cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.2s; }
+      .pc-header { 
+        display: block; margin-bottom: 20px; 
+        font-size: 1.2rem; font-weight: 900; 
+        color: var(--accent); letter-spacing: 1px; 
+      }
+      .nav-pills { 
+        display: flex; gap: 5px; margin-bottom: 15px; 
+        background: #1e293b; padding: 5px; border-radius: 8px; 
+      }
+      .nav-item { 
+        flex: 1; padding: 8px; border: none; 
+        background: transparent; color: #94a3b8; 
+        cursor: pointer; font-weight: bold; border-radius: 6px; 
+        transition: 0.2s; 
+      }
       .nav-item.active { background: var(--accent); color: #000; }
-      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+      .grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 15px; 
+      }
     }
 
+    /* MOBILE (< 900px) */
     @media (max-width: 899px) {
       .app-layout { flex-direction: column; }
       .controls-area, .pc-header { display: none; }
       .pc-only { display: none !important; }
       .mobile-only { display: block !important; }
+      
       .mobile-nav {
         position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
         background: #0f172a; border-top: 1px solid var(--border);
         display: flex; justify-content: space-around; align-items: center;
         z-index: 100; padding-bottom: env(safe-area-inset-bottom);
       }
-      .mn-item { background: none; border: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: bold; width: 100%; padding: 8px 0; }
+      .mn-item { 
+        background: none; border: none; color: #64748b; 
+        font-size: 0.7rem; display: flex; flex-direction: column; 
+        align-items: center; gap: 4px; font-weight: bold; 
+        width: 100%; padding: 8px 0; 
+      }
       .mn-item.active { color: var(--accent); }
       .mn-icon { font-size: 1.2rem; }
+      
       .mobile-proof-bar {
         position: sticky; top: 0; z-index: 50;
         background: rgba(15,23,42, 0.95); backdrop-filter: blur(10px);
         border-bottom: 1px solid var(--border);
-        padding: 8px; display: flex; gap: 8px; overflow-x: auto;
-        white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
+        padding: 8px; display: flex; gap: 8px; 
+        overflow-x: auto; white-space: nowrap; 
+        -ms-overflow-style: none; scrollbar-width: none;
       }
       .mobile-proof-bar::-webkit-scrollbar { display: none; }
+      
       .main-area { padding-bottom: 80px; }
       .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     }
 
-    /* UI ELEMENTS */
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    /* === COMPOSANTS GRAPHIQUES === */
+    .card { 
+      background: var(--panel); border: 1px solid var(--border); 
+      border-radius: 12px; padding: 12px; margin-bottom: 12px; 
+    }
     
     .proof-btn, .sidebar-btn {
-      flex: 0 0 auto; padding: 10px; border: 1px solid var(--border); border-radius: 8px;
-      background: #1e293b; color: #cbd5e1; font-weight: bold; font-size: 0.85rem;
-      cursor: pointer; transition: 0.2s; user-select: none; text-align: center;
+      flex: 0 0 auto; padding: 10px; border: 1px solid var(--border); 
+      border-radius: 8px; background: #1e293b; color: #cbd5e1; 
+      font-weight: bold; font-size: 0.85rem; cursor: pointer; 
+      transition: 0.2s; user-select: none; text-align: center;
       display: flex; align-items: center; justify-content: center; gap: 5px;
     }
     
     .sidebar-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
-    .sidebar-title { color: var(--accent); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+    .sidebar-title { 
+      color: var(--accent); font-size: 0.8rem; font-weight: 800; 
+      text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; 
+    }
     .sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
 
+    /* Etats des boutons */
     .proof-btn[data-state="inc"] { background: var(--success); color: #000; border-color: var(--success); }
     .proof-btn[data-state="exc"] { background: var(--danger); color: #fff; border-color: var(--danger); text-decoration: line-through; opacity: 0.7; }
+    
     .sidebar-btn.active { background: var(--success); color: #000; border-color: var(--success); animation: pulse 1s infinite; }
     .sidebar-btn.stop { border-color: var(--danger); color: var(--danger); }
     .sidebar-btn.stop:active { background: var(--danger); color: white; }
 
-    /* SEARCH */
+    /* Recherche & Micro */
     .search-container { display: flex; gap: 10px; margin-bottom: 15px; }
-    .search-input { flex: 1; padding: 12px; background: #0f172a; border: 1px solid var(--accent); color: white; border-radius: 8px; font-size: 1rem; }
-    .mic-btn {
-      width: 50px; background: #1e293b; border: 1px solid var(--border); border-radius: 8px;
-      color: #cbd5e1; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
-      transition: 0.2s;
+    .search-input { 
+      flex: 1; padding: 12px; background: #0f172a; 
+      border: 1px solid var(--accent); color: white; 
+      border-radius: 8px; font-size: 1rem; 
     }
-    .mic-btn.listening { background: var(--danger); color: white; border-color: var(--danger); animation: pulse-red 1.5s infinite; }
+    .mic-btn {
+      width: 50px; background: #1e293b; border: 1px solid var(--border); 
+      border-radius: 8px; color: #cbd5e1; cursor: pointer; 
+      font-size: 1.2rem; display: flex; justify-content: center; 
+      align-items: center; transition: 0.2s;
+    }
+    .mic-btn.listening { 
+      background: var(--danger); color: white; 
+      border-color: var(--danger); animation: pulse-red 1.5s infinite; 
+    }
 
-    /* AI BOX */
+    /* Boite IA */
     .ai-box {
       background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(30, 41, 59, 0.5));
       border: 1px solid #38bdf8; border-left: 4px solid #38bdf8;
@@ -121,11 +193,18 @@
       display: none; animation: slideDown 0.3s ease-out;
     }
     .ai-box.visible { display: block; }
-    .ai-title { color: #38bdf8; font-weight: 900; margin-bottom: 5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .ai-title { 
+      color: #38bdf8; font-weight: 900; margin-bottom: 5px; 
+      font-size: 0.9rem; display: flex; align-items: center; gap: 8px; 
+    }
     .ai-content { font-size: 0.9rem; color: #e0f2fe; line-height: 1.4; }
 
-    /* GHOST CARDS */
-    .ghost { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; position: relative; transition: 0.2s; }
+    /* Cartes Fantômes */
+    .ghost { 
+      background: var(--panel); border: 1px solid var(--border); 
+      border-radius: 12px; padding: 15px; position: relative; 
+      transition: 0.2s; 
+    }
     .ghost.excluded { display: none; }
     .ghost.manual-excluded { opacity: 0.4; order: 10; display: block; filter: grayscale(1); border-style: dashed; }
     .ghost.candidate { border-color: var(--accent); order: 1; box-shadow: 0 0 10px rgba(45,212,191,0.1); }
@@ -135,17 +214,36 @@
     .g-meta { font-size: 0.8rem; color: #94a3b8; display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
     
     .g-actions { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 5px; margin-top: 8px; }
-    .btn-action { padding: 8px; border-radius: 6px; border: 1px solid var(--border); background: #0f172a; color: #cbd5e1; font-weight: bold; font-size: 0.75rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 5px; }
+    .btn-action { 
+      padding: 8px; border-radius: 6px; border: 1px solid var(--border); 
+      background: #0f172a; color: #cbd5e1; font-weight: bold; 
+      font-size: 0.75rem; cursor: pointer; display: flex; 
+      justify-content: center; align-items: center; gap: 5px; 
+    }
     .btn-action.active { background: var(--accent); color: black; animation: pulse 1s infinite; border-color: var(--accent); }
     
-    .g-details { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; }
+    .g-details { 
+      display: none; margin-top: 10px; padding-top: 10px; 
+      border-top: 1px dashed var(--border); font-size: 0.85rem; 
+      line-height: 1.5; color: #e2e8f0; 
+    }
     .g-details.open { display: block; animation: slideDown 0.3s ease-out; }
-    .g-details h5 { color: var(--accent); margin: 10px 0 4px 0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; }
+    .g-details h5 { 
+      color: var(--accent); margin: 10px 0 4px 0; 
+      text-transform: uppercase; font-size: 0.75rem; 
+      letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 2px; 
+    }
+    .g-details ul { margin: 0; padding-left: 20px; }
+    .g-details li { margin-bottom: 4px; }
     
     .highlight { background-color: #facc15; color: #000; font-weight: bold; border-radius: 2px; padding: 0 2px; }
 
-    /* GUIDES & UTILS */
-    .obj-card { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid #333; }
+    /* Guides */
+    .obj-card { 
+      display: flex; gap: 10px; margin-bottom: 15px; 
+      align-items: flex-start; background: rgba(0,0,0,0.2); 
+      padding: 10px; border-radius: 8px; border: 1px solid #333; 
+    }
     .obj-icon { font-size: 2rem; min-width: 40px; text-align: center; }
     .obj-info h4 { margin: 0 0 5px 0; color: var(--accent); font-size: 1rem; }
     .obj-info p { margin: 0; font-size: 0.85rem; color: #cbd5e1; line-height: 1.4; }
@@ -155,13 +253,14 @@
 
     .hidden { display: none !important; }
     .text-center { text-align: center; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    
     .badge { font-size: 0.7rem; padding: 2px 6px; background: #000; border-radius: 4px; color: #64748b; border: 1px solid #333; }
     .badge.match { color: var(--success); border-color: var(--success); }
     .timer-val { font-family: monospace; font-size: 1.5rem; color: var(--warn); text-align: center; background: #000; border-radius: 6px; padding: 4px; margin-bottom: 5px; border: 1px solid #333; }
+
+    /* Animations */
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -172,6 +271,7 @@
   
   <aside class="controls-area">
     <div class="pc-header">PHASMO ULTIMATE 👻</div>
+    
     <div class="nav-pills">
       <button class="nav-item active" onclick="setTab('tracker')">JOURNAL</button>
       <button class="nav-item" onclick="setTab('tools')">CARTES</button>
@@ -270,86 +370,19 @@
       <div class="card">
         <h4 style="color:var(--accent); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🔮 GUIDE DES OBJETS MAUDITS</h4>
         
-        <div class="obj-card">
-          <div class="obj-icon">🃏</div>
-          <div class="obj-info">
-            <h4>Cartes de Tarot</h4>
-            <ul class="obj-list">
-              <li><b style="color:#facc15">Soleil</b> : Santé 100%</li>
-              <li><b style="color:#ef4444">Lune</b> : Santé 0%</li>
-              <li><b style="color:#2dd4bf">Tour</b> : Interaction forcée</li>
-              <li><b style="color:#facc15">Roue</b> : +25% (Vert) ou -25% (Rouge)</li>
-              <li><b style="color:#ef4444">Diable</b> : Event Fantôme</li>
-              <li><b style="color:#ef4444">Mort</b> : CHASSE MAUDITE</li>
-              <li><b style="color:#a855f7">Ermite</b> : Bloque le fantôme (1min)</li>
-              <li><b style="color:#10b981">Prêtresse</b> : Ressuscite un joueur</li>
-              <li><b style="color:#ef4444">Pendu</b> : MORT INSTANTANÉE</li>
-              <li><b style="color:#a855f7">Fou</b> : Fausse carte (Troll)</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🧩</div>
-          <div class="obj-info">
-            <h4>Ouija Board</h4>
-            <p>Dites <b>"Au revoir"</b> sinon le tableau casse = Chasse.</p>
-            <ul class="obj-list">
-              <li>"Où êtes-vous ?" : <span class="risk">-50% Santé</span></li>
-              <li>"Quelle est votre pièce ?" : <span class="risk">-50% Santé</span></li>
-              <li>"Où est l'os ?" : <span class="risk">-50% Santé</span></li>
-              <li>"Quel âge avez-vous ?" : <span class="risk">-5% Santé</span></li>
-              <li>"Cache-cache !" : Compte 5s puis <span class="risk">-25% + CHASSE</span></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">✋</div>
-          <div class="obj-info">
-            <h4>Patte de Singe (Vœux)</h4>
-            <ul class="obj-list">
-              <li><b>Je souhaite voir le fantôme :</b> Event + Aveugle + Chasse</li>
-              <li><b>Je souhaite revivre :</b> 50% chance de mourir soi-même</li>
-              <li><b>Je souhaite partir :</b> Déverrouille portes mais ralentit joueur</li>
-              <li><b>Je souhaite être sain :</b> Santé 50% + Baisse rapide</li>
-              <li><b>Je souhaite le piéger :</b> Bloqué 1min mais joueur enfermé</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🎶</div>
-          <div class="obj-info">
-            <h4>Boîte à Musique</h4>
-            <span class="risk">Le fantôme chante. CHASSE SI : Touchée par le fantôme, jetée, ou joueur trop proche (< 5m). Coût : -75% Santé.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🧸</div>
-          <div class="obj-info">
-            <h4>Poupée Vaudou</h4>
-            <span class="risk">Coût : -5% par pic. Aiguille CŒUR = CHASSE MAUDITE (-10%). Si santé < 0 = Chasse.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">🔮</div>
-          <div class="obj-info">
-            <h4>Miroir Hanté</h4>
-            <span class="risk">Montre la pièce. Coût : -7.5% sanity/sec. Brise à 0% = CHASSE.</span>
-          </div>
-        </div>
-
-        <div class="obj-card">
-          <div class="obj-icon">⭕</div>
-          <div class="obj-info">
-            <h4>Cercle d'Invocation</h4>
-            <span class="risk">Coût : -16% par bougie (-80% total). Invoque le fantôme (Piégé 5s) puis CHASSE.</span>
-          </div>
-        </div>
-
+        <div class="obj-card"><div class="obj-icon">🃏</div><div class="obj-info"><h4>Cartes de Tarot</h4><ul class="obj-list"><li><b style="color:#facc15">Soleil</b>: 100% Santé</li><li><b style="color:#ef4444">Lune</b>: 0% Santé</li><li><b style="color:#2dd4bf">Tour</b>: Interaction</li><li><b style="color:#facc15">Roue</b>: +/- 25% Santé</li><li><b style="color:#ef4444">Diable</b>: Event</li><li><b style="color:#ef4444">Mort</b>: CHASSE MAUDITE</li><li><b style="color:#a855f7">Ermite</b>: Bloque 1min</li><li><b style="color:#10b981">Prêtresse</b>: Ressuscite</li><li><b style="color:#ef4444">Pendu</b>: MORT</li><li><b style="color:#a855f7">Fou</b>: Troll</li></ul></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">🧩</div><div class="obj-info"><h4>Ouija Board</h4><p>Dites <b>"Au revoir"</b> !</p><ul class="obj-list"><li>Lieu : <span class="risk">-50%</span></li><li>Os : <span class="risk">-50%</span></li><li>Âge : <span class="risk">-5%</span></li><li>Cache-cache : <span class="risk">-25% + CHASSE (5s)</span></li></ul></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">✋</div><div class="obj-info"><h4>Patte de Singe</h4><ul class="obj-list"><li><b>Voir:</b> Aveugle + Chasse</li><li><b>Revivre:</b> 50% chance mort</li><li><b>Partir:</b> Lent</li><li><b>Sain:</b> Santé 50% + Baisse</li><li><b>Piéger:</b> Enfermé</li></ul></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">🎶</div><div class="obj-info"><h4>Boîte à Musique</h4><span class="risk">Chasse si touchée/jetée. Joueur < 5m = Chasse. Coût : -75%</span></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">🧸</div><div class="obj-info"><h4>Poupée Vaudou</h4><span class="risk">-5% par pic. Cœur = CHASSE (-10%). Si santé < 0 = Chasse.</span></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">🔮</div><div class="obj-info"><h4>Miroir Hanté</h4><span class="risk">-7.5% sanity/sec. Brise à 0% = CHASSE.</span></div></div>
+        
+        <div class="obj-card"><div class="obj-icon">⭕</div><div class="obj-info"><h4>Cercle</h4><span class="risk">-16% par bougie (-80% total). Invoque et Chasse après 5s.</span></div></div>
       </div>
     </div>
 
@@ -364,13 +397,12 @@
 </nav>
 
 <script>
-/* === DONNÉES === */
+/* === DONNÉES COMPLÈTES === */
 const PROOFS = [ { id:'emf', label:'EMF 5' }, { id:'orb', label:'Orbe' }, { id:'box', label:'Box' }, { id:'frz', label:'Froid' }, { id:'uv', label:'UV' }, { id:'dot', label:'DOTS' }, { id:'wrt', label:'Ecrit' } ];
 
-// RÈGLES INTELLIGENTES (IA)
 const AI_RULES = [
   { k: ['sel', 'salt'], m: "👣 <b>Problème de Sel ?</b> Si un fantôme marche dans le sel sans laisser d'UV (ou ne marche jamais dedans), c'est un <b>SPECTRE</b> (100% sûr)." },
-  { k: ['rapide', 'vitesse', 'speed', 'courir'], m: "⚡ <b>Vitesse Anormale ?</b> Vérifiez le <b>Revenant</b> (Si vue), <b>Hantu</b> (Froid), <b>Thaye</b> (Jeune), <b>Deogen</b> (De loin), <b>Moroi</b> (Santé basse) ou <b>Raiju</b> (Élec)." },
+  { k: ['rapide', 'vitesse', 'speed', 'courir'], m: "⚡ <b>Vitesse Anormale ?</b> Vérifiez le <b>Revenant</b> (Si vue), <b>Hantu</b> (Froid), <b>Thaye</b> (Jeune), <b>Deogen</b> (De loin) ou <b>Moroi</b> (Santé basse). Utilisez le métronome !" },
   { k: ['lent', 'slow'], m: "🐢 <b>Fantôme Lent ?</b> <b>Deogen</b> (Tout près), <b>Revenant</b> (Caché), <b>Thaye</b> (Vieux) ou <b>Hantu</b> (Chaud)." },
   { k: ['tot', 'tôt', 'attaque', 'chasse', 'agressif'], m: "⚔️ <b>Attaque Précoce ?</b> Le <b>Démon</b> attaque à 70% (et parfois 100%). Le <b>Thaye</b> à 75%. Le <b>Yokai</b> à 80% si vous parlez. Le <b>Raiju</b> à 65% près d'électronique." },
   { k: ['parler', 'voix', 'cri', 'box'], m: "🎤 <b>Réaction à la voix ?</b> Le <b>Yokai</b> chasse si vous parlez. La <b>Banshee</b> a un cri unique au micro. Le <b>Deogen</b> respire fort dans la Spirit Box (1m)." },
@@ -382,20 +414,20 @@ const AI_RULES = [
 ];
 
 const GHOSTS = [
-  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><ul><li>Si vous utilisez de l\'encens près de lui, il ne chasse pas pendant <b>180s</b> (3min).</li><li>Les autres fantômes chassent après 90s.</li><li>Vitesse standard : 1.7 m/s.</li></ul>' },
-  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', d:'<h5>Test Sel (100%)</h5><ul><li>Ne marche <b>JAMAIS</b> dans le sel.</li><li>S\'il marche dans le sel = Pas Spectre.</li><li>Peut se téléporter sur un joueur (EMF 2 ou 5).</li></ul>' },
-  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', d:'<h5>Test Photo</h5><ul><li>Disparaît sur la photo (Photo "Fantôme" validée mais vide).</li><li>Clignotement très lent en chasse (Invisible 1s à 2s).</li><li>Draine la santé si on le regarde.</li></ul>' },
+  { n:'Esprit', p:['emf','box','wrt'], th:50, sp:'1.7', t:'Basique. Test Encens.', d:'<h5>Test Encens</h5><ul><li>Ne chasse pas pendant <b>180s</b> après encens (les autres c\'est 90s).</li><li>Si chasse avant 3min = Pas Esprit.</li></ul>' },
+  { n:'Spectre', p:['dot','emf','box'], th:50, sp:'1.7', t:'Ne marche pas dans le sel. TP.', d:'<h5>Test Sel (100%)</h5><ul><li>Ne marche <b>JAMAIS</b> dans le sel.</li><li>S\'il marche dans le sel = Pas Spectre.</li><li>Peut se téléporter sur un joueur (EMF 2/5).</li></ul>' },
+  { n:'Fantôme', p:['dot','uv','box'], th:50, sp:'1.7', t:'Disparition photo. Clignote lent.', d:'<h5>Test Photo</h5><ul><li>Disparaît sur la photo (Photo "Fantôme" validée mais vide).</li><li>Clignote lentement en chasse (Invisible 1s à 2s).</li><li>Draine la santé si on le regarde.</li></ul>' },
   { n:'Poltergeist', p:['uv','box','wrt'], th:50, sp:'1.7', t:'Jette objets.', d:'<h5>Test Pile</h5><ul><li>Faites une pile d\'objets. Il peut tout jeter d\'un coup (Explosion).</li><li>-2% santé par objet jeté.</li><li>Jette les objets plus fort et plus loin.</li></ul>' },
-  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique. Chant.', d:'<h5>Cible Unique</h5><ul><li>Ne tue que sa cible. Ignore les autres joueurs (passe à travers).</li><li>Cri unique au micro parabolique.</li><li>Si elle chante et touche le joueur : -15% santé.</li></ul>' },
+  { n:'Banshee', p:['dot','orb','uv'], th:50, sp:'1.7', t:'Cible unique. Chant.', d:'<h5>Cible Unique</h5><ul><li>Ne tue que sa cible. Ignore les autres (passe à travers).</li><li>Cri unique au micro parabolique.</li><li>Si elle chante et touche le joueur : -15% santé.</li></ul>' },
   { n:'Djinn', p:['emf','uv','frz'], th:50, sp:'2.5', t:'Rapide avec courant.', d:'<h5>Pouvoir Courant</h5><ul><li>Vitesse 2.5 m/s si courant ON et vous voit de loin.</li><li>Ralentit à moins de 3m.</li><li>Ne coupe JAMAIS le courant.</li><li>Pouvoir caché : -25% santé si près de lui (EMF 2 au disjoncteur).</li></ul>' },
-  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Obscurité</h5><ul><li>Chasse à 60% dans le noir (40% lumière).</li><li>Éteint les lumières instantanément.</li><li>Ne peut PAS allumer la lumière.</li><li>Event : Brise les ampoules souvent.</li></ul>' },
+  { n:'Cauchemar', p:['orb','box','wrt'], th:60, sp:'1.7', t:'Déteste lumière.', d:'<h5>Obscurité</h5><ul><li>Chasse à 60% dans le noir (40% lumière).</li><li>Éteint les lumières instantanément.</li><li>Ne peut PAS allumer la lumière.</li></ul>' },
   { n:'Revenant', p:['orb','wrt','frz'], th:50, sp:'3.0', t:'Dangereux.', d:'<h5>Vitesse Extrême</h5><ul><li><b>Caché :</b> Très lent (1.0 m/s).</li><li><b>Vu :</b> TGV (3.0 m/s) dès qu\'il vous voit (ou lampe/voix).</li><li>Ralentit à la dernière position connue. Ne courez pas en ligne droite.</li></ul>' },
-  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><ul><li>Ne chasse pas si plusieurs joueurs dans la pièce.</li><li>Chasse à 35% seulement.</li><li>Beaucoup d\'events "Fumée" (Ombre noire).</li><li>Moins d\'activité si joueurs proches.</li></ul>' },
+  { n:'Ombre', p:['emf','wrt','frz'], th:35, sp:'1.7', t:'Timide.', d:'<h5>Timidité</h5><ul><li>Ne chasse pas si plusieurs joueurs dans la pièce.</li><li>Chasse à 35% seulement.</li><li>Beaucoup d\'events "Fumée" (Ombre noire).</li></ul>' },
   { n:'Démon', p:['wrt','uv','frz'], th:70, sp:'1.7', t:'Agressif.', d:'<h5>Chasse Fréquente</h5><ul><li>Peut chasser à 70% santé (Rarement 100% avec pouvoir).</li><li>Cooldown de 20s seulement entre chasses.</li><li>Encens dure 60s (au lieu de 90s).</li><li>Portée Crucifix augmentée (5m).</li></ul>' },
   { n:'Yurei', p:['dot','orb','frz'], th:50, sp:'1.7', t:'Portes.', d:'<h5>Porte d\'entrée</h5><ul><li>Seul fantôme qui ferme TOTALEMENT la porte d\'entrée hors chasse (-15% santé).</li><li>L\'encens le bloque dans sa pièce pendant 90s.</li></ul>' },
   { n:'Oni', p:['dot','emf','frz'], th:50, sp:'1.7', t:'Visible.', d:'<h5>Visibilité</h5><ul><li>Clignote très peu en chasse (Très visible).</li><li>Ne fait JAMAIS l\'event "Boule de fumée" (souffle).</li><li>Draine -20% santé sur collision (Event).</li></ul>' },
   { n:'Yokai', p:['dot','orb','box'], th:80, sp:'1.7', t:'Sourd.', d:'<h5>Sensible Voix</h5><ul><li>Chasse à 80% si on parle près de lui.</li><li>Sourd en chasse : Entend à moins de 2.5m (au lieu de 10m).</li><li>Activité augmente si on parle.</li></ul>' },
-  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Thermique</h5><ul><li><b>Froid :</b> Rapide (2.7 m/s).</li><li><b>Chaud :</b> Lent (1.4 m/s).</li><li>Buée visible en chasse (si courant coupé).</li><li>N\'allume JAMAIS le courant.</li></ul>' },
+  { n:'Hantu', p:['orb','uv','frz'], th:50, sp:'2.7', t:'Froid.', d:'<h5>Thermique</h5><ul><li><b>Froid :</b> Rapide (2.7 m/s).</li><li><b>Chaud :</b> Lent (1.4 m/s).</li><li>Buée visible en chasse (si courant OFF).</li><li>N\'allume JAMAIS le courant.</li></ul>' },
   { n:'Goryo', p:['dot','emf','uv'], th:50, sp:'1.7', t:'DOTS Caméra.', d:'<h5>DOTS Spécial</h5><ul><li>DOTS visible UNIQUEMENT via caméra vidéo.</li><li>Ne se montre pas aux DOTS si quelqu\'un est dans la pièce.</li><li>Ne change JAMAIS de pièce favorite.</li></ul>' },
   { n:'Myling', p:['wrt','emf','uv'], th:50, sp:'1.7', t:'Silencieux.', d:'<h5>Pas Discrets</h5><ul><li>Pas silencieux en chasse (On l\'entend à < 12m au lieu de 20m).</li><li>Astuce : Si la lampe clignote mais que vous n\'entendez pas de pas, c\'est un Myling.</li></ul>' },
   { n:'Onryo', p:['orb','frz','box'], th:60, sp:'1.7', t:'Feu.', d:'<h5>Peur du Feu</h5><ul><li>Le feu agit comme un crucifix (portée 4m).</li><li>Priorité : Bougie > Crucifix.</li><li>S\'il souffle une bougie et qu\'il n\'y a pas d\'autre feu/crucifix = CHASSE (même à 100% santé).</li></ul>' },
@@ -406,10 +438,22 @@ const GHOSTS = [
   { n:'Moroi', p:['box','wrt','frz'], th:50, sp:'Var', t:'Maudit.', d:'<h5>Vitesse & Santé</h5><ul><li>Vitesse augmente quand santé baisse (Max 2.25 m/s à 0%).</li><li>Aveuglé 7.5s après encens (au lieu de 5s).</li><li>Réponse Spirit Box = Maudit (Baisse santé x2).</li></ul>' },
   { n:'Deogen', p:['dot','wrt','box'], th:40, sp:'3.0', t:'Traqueur.', d:'<h5>Vision Totale</h5><ul><li>Vous trouve TOUJOURS (Cachette inutile).</li><li>Rapide de loin (3.0 m/s), très lent de près (0.4 m/s).</li><li>Spirit Box : Respire fort (1m) au lieu de parler (33% chance).</li></ul>' },
   { n:'Thaye', p:['dot','orb','wrt'], th:75, sp:'2.7', t:'Vieillit.', d:'<h5>Vieillissement</h5><ul><li><b>Jeune :</b> Rapide (2.75 m/s), Actif, Chasse tôt (75%).</li><li><b>Vieux :</b> Lent (1.0 m/s), Calme, Chasse tard (15%).</li><li>Ne s\'accélère pas avec la ligne de vue.</li></ul>' },
-  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'(Entité Custom)', d:'<h5>Custom</h5><p>Entité non-officielle. Comportement variable selon les mods serveurs.</p>' },
-  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'1.7', t:'(Entité Custom)', d:'<h5>Custom</h5><p>Entité non-officielle. Comportement variable selon les mods serveurs.</p>' },
-  { n:'Obambo', p:['wrt','uv','dot'], th:60, sp:'Var', t:'(Entité Custom)', d:'<h5>Custom</h5><p>Entité non-officielle. Comportement variable selon les mods serveurs.</p>' }
+  { n:'Dayan', p:['emf','orb','box'], th:65, sp:'Var', t:'Détecte Mouvement.', d:'<h5>Mouvement</h5><ul><li><b>Unique :</b> Il sait où vous êtes si vous bougez.</li><li><b>Vitesse :</b> 1.2 m/s (Lent) si vous êtes immobile.</li><li><b>Vitesse :</b> 2.25 m/s (Rapide) si vous bougez.</li><li><b>Chasse :</b> 65% si vous bougez, 45% si immobile.</li><li><b>Femme :</b> Toujours modèle féminin.</li></ul>' },
+  { n:'Gallu', p:['emf','uv','box'], th:60, sp:'Var', t:'Cycles & Sel.', d:'<h5>Cycles</h5><ul><li><b>Normal :</b> 1.7 m/s (50% seuil).</li><li><b>Enragé :</b> 1.96 m/s (60% seuil). Ne marche <b>PAS</b> dans le sel.</li><li><b>Affaibli :</b> 1.36 m/s (40% seuil).</li><li>Déteste les crucifix (Portée +?).</li></ul>' },
+  { n:'Obambo', p:['wrt','uv','dot'], th:65, sp:'Var', t:'Double face.', d:'<h5>Bipolaire</h5><ul><li><b>Calme :</b> Lent (1.45 m/s), Chasse tard (10%).</li><li><b>Agressif :</b> Rapide (1.96 m/s), Chasse tôt (65%).</li><li>Change d\'état toutes les 2 min ou <b>pendant la chasse</b>.</li><li>Accélération LOS très forte (Max 3.2 m/s).</li></ul>' }
 ];
+
+const LOCATIONS = {
+  'tanglewood': [ { i:'🔮', n:'Miroir', l:'Salon (Mur vers chambre)' }, { i:'🧩', n:'Ouija', l:'Sous-sol (Fond gauche)' }, { i:'🧸', n:'Poupée', l:'Garage (Poubelle)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Nursery' }, { i:'✋', n:'Patte', l:'Salle à manger' } ],
+  'willow': [ { i:'🔮', n:'Miroir', l:'Couloir (Coin)' }, { i:'🧩', n:'Ouija', l:'Garage (Buanderie)' }, { i:'🧸', n:'Poupée', l:'Chambre garçons' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Salon' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Couloir' } ],
+  'edgefield': [ { i:'🔮', n:'Miroir', l:'1er étage' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'1er étage (Ado)' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Cuisine' } ],
+  'ridgeview': [ { i:'🔮', n:'Miroir', l:'RDC (Escaliers)' }, { i:'🧩', n:'Ouija', l:'Buanderie' }, { i:'🧸', n:'Poupée', l:'Couloir RDC' }, { i:'⭕', n:'Cercle', l:'Sous-sol' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Chambre Fille' }, { i:'✋', n:'Patte', l:'Chambre Garçon' } ],
+  'grafton': [ { i:'🔮', n:'Miroir', l:'Salon' }, { i:'🧩', n:'Ouija', l:'Chambre Master' }, { i:'🧸', n:'Poupée', l:'Nursery' }, { i:'⭕', n:'Cercle', l:'Entrepôt' }, { i:'🃏', n:'Tarot', l:'Salle à manger' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Chambre Jumelle' } ],
+  'bleasdale': [ { i:'🔮', n:'Miroir', l:'Bureau RDC' }, { i:'🧩', n:'Ouija', l:'Atelier' }, { i:'🧸', n:'Poupée', l:'Couloir 2e' }, { i:'⭕', n:'Cercle', l:'Grenier' }, { i:'🃏', n:'Tarot', l:'Bureau RDC' }, { i:'📦', n:'Boîte', l:'Salon' }, { i:'✋', n:'Patte', l:'Chambre Master' } ],
+  'woodwind': [ { i:'🔮', n:'Miroir', l:'Tente départ' }, { i:'🧩', n:'Ouija', l:'Zone Jeux' }, { i:'🧸', n:'Poupée', l:'Tente rouge' }, { i:'⭕', n:'Cercle', l:'Tente Nourriture' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Tente Jaune' }, { i:'✋', n:'Patte', l:'Feu de camp' } ],
+  'prison': [ { i:'🔮', n:'Miroir', l:'Entrée' }, { i:'🧩', n:'Ouija', l:'Arrière cellules A' }, { i:'🧸', n:'Poupée', l:'Accueil' }, { i:'⭕', n:'Cercle', l:'Cafétéria' }, { i:'🃏', n:'Tarot', l:'Entrée' }, { i:'📦', n:'Boîte', l:'Entrée' }, { i:'✋', n:'Patte', l:'Visiteurs' } ],
+  'sunny': [ { i:'🔮', n:'Miroir', l:'Chapelle' }, { i:'🧩', n:'Ouija', l:'Chapelle' }, { i:'🧸', n:'Poupée', l:'Chapelle' }, { i:'⭕', n:'Cercle', l:'Chapelle' }, { i:'🃏', n:'Tarot', l:'Chapelle' }, { i:'📦', n:'Boîte', l:'Chapelle' }, { i:'✋', n:'Patte', l:'Chapelle' } ]
+};
 
 let state = { inc: [], exc: [], manual: [], san: 100, search: '' };
 const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -418,12 +462,7 @@ let metroId = null;
 let tInterval = null;
 let lastTap = 0;
 
-function init() {
-  loadState();
-  renderProofs();
-  renderGhosts();
-  setTab('tracker');
-}
+function init() { loadState(); renderProofs(); renderGhosts(); setTab('tracker'); }
 
 function setTab(tabName, btnMobile) {
   document.getElementById('view-tracker').classList.add('hidden');
@@ -532,35 +571,26 @@ function renderGhosts() {
   }).join('');
 }
 
-function toggleDetails(name) {
-  const el = document.getElementById('details-'+name);
-  if(el) el.classList.toggle('open');
-}
-
-function toggleManual(name) {
-  if(state.manual.includes(name)) state.manual = state.manual.filter(x=>x!==name); else state.manual.push(name);
-  saveState(); renderGhosts();
-}
+function toggleDetails(name) { document.getElementById('details-'+name).classList.toggle('open'); }
+function toggleManual(name) { if(state.manual.includes(name)) state.manual = state.manual.filter(x=>x!==name); else state.manual.push(name); saveState(); renderGhosts(); }
 function setSearch(val) { state.search = val; renderGhosts(); }
 
 // VOICE
 function toggleVoice() {
   const micBtn = document.getElementById('mic-btn');
-  if (!('webkitSpeechRecognition' in window)) { alert("Vocal non supporté (Utilisez Chrome/Edge)"); return; }
-  
+  if (!('webkitSpeechRecognition' in window)) { alert("Utilisez Chrome/Edge"); return; }
   const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
   recognition.lang = 'fr-FR';
-  
   recognition.onstart = () => { micBtn.classList.add('listening'); };
   recognition.onend = () => { micBtn.classList.remove('listening'); };
-  
   recognition.onresult = (event) => {
     let transcript = event.results[0][0].transcript.toLowerCase();
     transcript = transcript
       .replace(/deo.*/g, 'deogen').replace(/taille|thai/g, 'thaye').replace(/jean|gin/g, 'djinn')
       .replace(/han tou|un tout/g, 'hantu').replace(/raichu|rail/g, 'raiju')
       .replace(/on y|au nid/g, 'oni').replace(/l'oeil|ok/g, 'yokai')
-      .replace(/benchy/g, 'banshee').replace(/maillling/g, 'myling');
+      .replace(/benchy/g, 'banshee').replace(/maillling/g, 'myling')
+      .replace(/dayan|diane/g, 'dayan').replace(/gallu|galou/g, 'gallu').replace(/obambo|obama/g, 'obambo');
     document.getElementById('search-input').value = transcript;
     setSearch(transcript);
   };
